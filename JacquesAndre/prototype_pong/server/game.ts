@@ -54,7 +54,7 @@ export function createGameServer(webSocketServer: WebSocketServer)
 			score: 0,
 			ready: false,
 			key: "none",
-			paddleSize: 30
+			paddleSize: 50
 		};
 		players.push(player);
 		console.log("👤 Joueur connecté:", player.id);

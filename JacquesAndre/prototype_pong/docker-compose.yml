@@ -1,0 +1,12 @@
+services:
+  nodeapp:
+    build: .
+    container_name: node-dev
+    # On monte le dossier local dans le conteneur
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - "3000:3000"
+    # Nodemon redémarrera automatiquement à chaque changement
+    command: "npm run dev"

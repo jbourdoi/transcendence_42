@@ -10,11 +10,17 @@ import fs from "fs"
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const fastify = Fastify({https: {
-    key: fs.readFileSync(".\\certs\\key.pem"),
-    cert: fs.readFileSync(".\\certs\\cert.pem"),
-}});
+// const fastify = Fastify({https: {
+//     key: fs.readFileSync("./certs/key.pem"),
+//     cert: fs.readFileSync("./certs/cert.pem"),
+// }});
 
+const fastify = Fastify({
+  https: {
+    key: fs.readFileSync('/etc/ssl/private/server.key'),
+    cert: fs.readFileSync('/etc/ssl/certs/server.crt')
+  }
+})
 // fastify.register(websocketPlugin)
 
 // Servir les fichiers statiques (frontend)
@@ -30,8 +36,8 @@ fastify.get("/", (_, reply) => {
 // Démarrer Fastify
 const start = async () => {
 
-	await fastify.listen({ port: 7777 });
-	console.log("✅ Serveur HTTPS/WSS sur https://localhost:7777");
+	await fastify.listen({ port: 3000, host : "0.0.0.0" });
+	console.log("✅ Serveur HTTPS/WSS sur https://localhost:3000");
 
 	const wss = new WebSocketServer({ server: fastify.server });
 	createGameServer(wss);
