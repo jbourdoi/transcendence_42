@@ -6,10 +6,10 @@
 	"type": "module",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "concurrently \"npm run tsc:watch\" \"npm run nodemon\"",
+		"dev": "concurrently \"npm run tailwind\" \"npm run tsc:watch\" \"npm run nodemon\"",
 		"tsc:watch": "tsc -watch",
 		"nodemon": "sleep 2 && nodemon ./dist/index.js",
-		"tailwind": ""
+		"tailwind": "npx @tailwindcss/cli -o ./dist/public/styles/tailwind.css --watch"
 	},
 	"keywords": [],
 	"author": "",
@@ -22,6 +22,7 @@
 		"linkedom": "^0.18.12"
 	},
 	"devDependencies": {
+		"@tailwindcss/cli": "^4.1.16",
 		"@types/node": "^24.9.1",
 		"concurrently": "^9.2.1",
 		"nodemon": "^3.1.10",

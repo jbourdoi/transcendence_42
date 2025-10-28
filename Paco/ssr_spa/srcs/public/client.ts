@@ -37,14 +37,12 @@ function updateStyleModule(htmlDocStyle: HTMLStyleElement) {
 
 function runFunction(htmlDocScript: HTMLScriptElement) {
 	if (htmlDocScript) {
+		document.querySelectorAll('body script[type="module"]:not([src])').forEach($el => {
+			$el.remove()
+		})
 		const newScript: HTMLScriptElement = document.createElement('script')
-
 		if (htmlDocScript.type) newScript.type = htmlDocScript.type
-		if (htmlDocScript.src) {
-			newScript.src = htmlDocScript.src
-		} else {
-			newScript.textContent = htmlDocScript.textContent
-		}
+		newScript.textContent = htmlDocScript.textContent
 		document.body.appendChild(newScript)
 	}
 }
