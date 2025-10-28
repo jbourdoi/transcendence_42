@@ -1,6 +1,9 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+let localDirname = ''
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
+export function setDirName(newName: string) {
+	localDirname = newName
+}
 
-export default __dirname
+export default function __dirname() {
+	return localDirname
+}

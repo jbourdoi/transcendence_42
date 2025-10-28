@@ -3,14 +3,17 @@ import path from 'path'
 import { readFile } from 'fs/promises'
 import fastifyStatic from '@fastify/static'
 import { renderTemplateFromFile } from './functions/renderTemplateFromFile.fn.js'
+import { publicWatcher } from './services/publicWatcher.service.js'
+import __dirname ,{setDirName} from './functions/dirname.fn.js'
 
 const fastify: FastifyInstance = Fastify()
-const __dirname = path.resolve()
-
 const validRoutes = ['index', 'about']
 
+setDirName(path.resolve())
+publicWatcher()
+
 fastify.register(fastifyStatic, {
-	root: path.join(__dirname, 'public'),
+	root: path.join(__dirname(), 'dist/public'),
 	prefix: '/public/'
 })
 
@@ -18,7 +21,7 @@ async function getHTML(route: string, type?: string): Promise<any> {
 	return new Promise(async (resolve, reject) => {
 		let page
 		if (type === 'hydrate') {
-			const filePath = path.join(__dirname, 'srcs/pages', `${route}.html`)
+			const filePath = path.join(__dirname(), 'srcs/pages', `${route}.html`)
 			page = await readFile(filePath, 'utf8').catch(() => reject(null))
 		} else {
 			page = await renderTemplateFromFile(`${route}.html`).catch(() => reject(null))
