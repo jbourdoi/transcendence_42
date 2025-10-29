@@ -16,12 +16,14 @@ RUN npm i -g pnpm
 
 # Copier tous les fichiers/dossiers essentiels pour l'applications
 COPY package.json ./
-COPY srcs ./
+COPY srcs ./srcs
 COPY pnpm-lock.yaml ./
 COPY tsconfig.json ./
+COPY tailwind.config.js ./
 
 RUN pnpm install
 
 EXPOSE 3000
 
+# CMD ["sleep", "infinity"]
 CMD ["npm", "run", "dev"]
