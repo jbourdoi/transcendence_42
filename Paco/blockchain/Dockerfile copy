@@ -1,0 +1,25 @@
+FROM avaplatform/avalanchego:latest
+
+RUN mv avalanchego /usr/bin
+
+ENV PATH="$PATH:/root/.bun/bin"
+
+ARG TARGETARCH
+
+WORKDIR /app
+
+RUN apt-get update
+
+RUN apt-get -y install curl tar gzip unzip netcat-openbsd bash ca-certificates procps && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://bun.com/install | bash
+
+COPY package.json ./
+COPY contracts ./contracts
+COPY script/start.sh ./start.sh
+
+RUN chmod +x ./start.sh
+RUN bun install
+
+CMD ["sleep", "infinity"]
+# CMD ['/start.sh']

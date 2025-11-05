@@ -4,7 +4,7 @@ up:
 	docker compose up -d
 
 it:
-	docker exec -it blockchain bash
+	docker exec -it backend bash
 
 down:
 	docker compose down

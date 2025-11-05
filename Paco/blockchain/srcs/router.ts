@@ -1,5 +1,4 @@
 import { getNodeID } from './avalanche'
-import { RouteType } from './types/route.type'
 
 const slashRoute = {
 	'/': {

@@ -6,8 +6,10 @@ import { renderTemplateFromFile } from './functions/renderTemplateFromFile.fn.js
 import { publicWatcher } from './services/publicWatcher.service.js'
 import __dirname ,{setDirName} from './functions/dirname.fn.js'
 
+/**********************  **********************/
+
 const fastify: FastifyInstance = Fastify()
-const validRoutes = ['index', 'about']
+const validRoutes = ['index', 'about', 'login']
 
 setDirName(path.resolve())
 publicWatcher()

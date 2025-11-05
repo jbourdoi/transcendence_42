@@ -1,5 +1,5 @@
 import { watch } from 'chokidar'
-import { join as pathJoin, extname, basename } from 'path'
+import { join as pathJoin, basename } from 'path'
 import fs from 'fs'
 import __dirname from '../functions/dirname.fn.js'
 
@@ -19,6 +19,7 @@ export function publicWatcher() {
 	})
 
 	watcher.on('add', path => {
+		console.log(path)
 		const originalFile = pathJoin(__dirname(), path)
 		const newFile = pathJoin(__dirname(), path.replace('srcs', 'dist'))
 
@@ -37,7 +38,8 @@ export function publicWatcher() {
 	})
 
 	watcher.on('ready', () => {
-		watcher.on('all', event => {
+		watcher.on('all', (event, path) => {
+			console.log(path, event)
 			if (['unlinkDir', 'add', 'unlink'].includes(event)) {
 				watcher.close()
 				publicWatcher()
