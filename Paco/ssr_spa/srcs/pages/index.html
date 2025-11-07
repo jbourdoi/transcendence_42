@@ -1,16 +1,33 @@
 <head>
 	<title>Home</title>
 	<style module>
-		video {
-			display: inline;
+		background-video {
 			position: fixed;
 			top: 0;
 			left: 0;
-			z-index: -1;
+			z-index: -2;
 			height: 100vh;
+			width: 100vw;
+			display: grid;
+			grid-column: 1;
+			grid-row: 1;
+		}
+		video {
+			height: 100%;
 			width: auto;
 			object-fit: cover;
 			filter: blur(2px) grayscale(0.25);
+			grid-column: 1 / 2;
+			grid-row: 1 / 2;
+		}
+		overlay {
+			display: block;
+			height: 100%;
+			width: 100%;
+			z-index: 1;
+			background-color: rgba(0, 0, 0, 0.33);
+			grid-column: 1 / 2;
+			grid-row: 1 / 2;
 		}
 		page {
 			display: flex;
@@ -21,27 +38,80 @@
 			color: #fff;
 		}
 		page-title {
-			/* font-size: 5rem; */
 			margin-bottom: 2rem;
 		}
-		start-game-button {
-			/* font-size: 3rem; */
+
+		main-menu-buttons {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
 		}
-		.button {
-			/* font-size: 1rem; */
+
+		main-menu-buttons * {
+			padding: 0.5rem 1rem;
+			transform: scale(1);
+			transition-property: transform;
+			transition-duration: 300ms;
+			transition-timing-function: ease-in-out;
+			cursor: pointer;
+		}
+
+		main-menu-buttons *[data-selected='true'] {
+			background-color: rgba(0, 0, 0, 0.75);
+			transform: scale(1.1);
 		}
 	</style>
 </head>
 
 <page type="index">
-	<video src="/public/videos/bg.mp4" autoplay muted></video>
+	<background-video>
+		<overlay></overlay>
+		<video src="/public/videos/bg.mp4" autoplay muted loop></video>
+	</background-video>
 	<page-title class="text-7xl">Pong Pong</page-title>
-	<start-game-button class="button text-5xl">Start Game</start-game-button>
-	<option-button class="button text-3xl">Options</option-button>
-	<login-button class="button text-3xl">Login</login-button>
-	<exit-button class="button text-3xl">Exit</exit-button>
+	<main-menu-buttons>
+		<start-game-button data-route="" class="button text-5xl mb-4" data-selected="true">Start Game</start-game-button>
+		<option-button data-route="about" class="button text-3xl">Options</option-button>
+		<login-button class="button text-3xl">Login</login-button>
+		<exit-button class="button text-3xl">Exit</exit-button>
+	</main-menu-buttons>
 </page>
 
 <script type="module">
-	console.log('This is home')
+	let currentIdx = 0
+	let buttonList = []
+
+	document.addEventListener('keyup', evt => {
+		if (evt.key === 'ArrowDown') {
+			if (currentIdx + 1 >= buttonList.length) currentIdx = 0
+			else currentIdx++
+		} else if (evt.key === 'ArrowUp') {
+			if (currentIdx - 1 < 0) currentIdx = buttonList.length - 1
+			else currentIdx--
+		}
+		unselectButtons()
+		buttonList[currentIdx].dataset.selected = true
+	})
+	document.querySelectorAll('main-menu-buttons *').forEach((el, idx) => {
+		buttonList.push(el)
+		el.dataset.idx = idx
+		el.addEventListener('mouseenter', evt => {
+			unselectButtons()
+			currentIdx = Number(el.dataset.idx)
+			el.dataset.selected = true
+		})
+		el.addEventListener('mousedown', evt => {
+			console.log(buttonList[currentIdx])
+		})
+	})
+	document.addEventListener('keypress', evt => {
+		if (evt.key === 'Enter') {
+			console.log(buttonList[currentIdx])
+			const newRoute = buttonList[currentIdx].getAttribute('data-route')
+			if (newRoute != undefined) navigate(newRoute)
+		}
+	})
+	function unselectButtons() {
+		buttonList.forEach(el => (el.dataset.selected = false))
+	}
 </script>

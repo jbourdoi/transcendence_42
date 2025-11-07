@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', _ => {
 		e.preventDefault()
 		if (e?.target) {
 			const target: HTMLElement = e.target as HTMLElement
-			const $a: HTMLAnchorElement | null = target.closest('a[data-route]')
+			const $a: HTMLAnchorElement | null = target.closest('*[data-route]')
 			if ($a) {
 				const newRoute = $a.getAttribute('data-route')
 				if (newRoute != undefined) navigate(newRoute)
