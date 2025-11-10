@@ -37,12 +37,20 @@ function updateStyleModule(htmlDocStyle: HTMLStyleElement) {
 
 function runFunction(htmlDocScript: HTMLScriptElement) {
 	if (htmlDocScript) {
-		document.querySelectorAll('body script[type="module"]:not([src])').forEach($el => {
+		document.querySelectorAll('body script[type="module"]:not([keep])').forEach($el => {
 			$el.remove()
 		})
 		const newScript: HTMLScriptElement = document.createElement('script')
 		if (htmlDocScript.type) newScript.type = htmlDocScript.type
-		newScript.textContent = htmlDocScript.textContent
+		if (htmlDocScript.src) {
+			fetch(htmlDocScript.src)
+				.then(res => res.text())
+				.then(res => {
+					newScript.textContent = res
+				})
+		} else {
+			newScript.textContent = htmlDocScript.textContent
+		}
 		document.body.appendChild(newScript)
 	}
 }

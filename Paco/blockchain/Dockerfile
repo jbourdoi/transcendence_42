@@ -23,6 +23,6 @@ RUN chmod +x start.sh
 
 RUN bun install
 
-CMD ["sleep", "infinity"]
+# CMD ["sleep", "infinity"]
 
-# ENTRYPOINT ["/start.sh"]
+ENTRYPOINT ["./start.sh"]
