@@ -22,7 +22,5 @@ COPY tailwind.config.js ./
 
 RUN pnpm install
 
-EXPOSE 3000
-
 # CMD ["sleep", "infinity"]
 CMD ["npm", "run", "dev"]

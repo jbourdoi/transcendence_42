@@ -1,5 +1,5 @@
 const AVALANCHE_URL = 'http://127.0.0.1:9650'
-
+// https://chatgpt.com/share/691330f9-f19c-8011-856f-a36c455da07a
 export async function getNodeID() {
 	const res = await fetch(`${AVALANCHE_URL}/ext/info`, {
 		method: 'POST',

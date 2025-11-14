@@ -1,25 +1,29 @@
 services:
-  blockchain:
-    build:
-      context: ./blockchain
-      dockerfile: Dockerfile
-    container_name: blockchain
-    ports:
-      - 3001:3001
-    volumes:
-      - "./blockchain/srcs:/app/srcs"
-    networks:
-      - transcendence
-
   backend:
     build:
       context: ./ssr_spa
       dockerfile: Dockerfile
     container_name: backend
     ports:
-      - 3000:3000
+      - 3000
     volumes:
       - "./ssr_spa/srcs:/app/srcs"
+    networks:
+      - transcendence
+
+  waf:
+    build:
+      context: ./waf
+      dockerfile: Dockerfile
+    container_name: waf
+    restart: unless-stopped
+    volumes:
+      - "./waf/srcs:/app/srcs"
+      - "./waf/package.json:/app/package.json"
+    ports:
+      - "443:443"
+    depends_on:
+      - backend
     networks:
       - transcendence
 
