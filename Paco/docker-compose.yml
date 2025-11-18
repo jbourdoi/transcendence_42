@@ -19,6 +19,7 @@ services:
     restart: unless-stopped
     volumes:
       - "./waf/srcs:/app/srcs"
+      - "./waf/rules:/app/rules"
       - "./waf/package.json:/app/package.json"
     ports:
       - "443:443"

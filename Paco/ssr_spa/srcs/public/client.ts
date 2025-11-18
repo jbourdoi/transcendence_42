@@ -1,8 +1,8 @@
 async function loadPage(route: string) {
 	const location: string = `/${route || ''}`
-	const res: Response = await fetch(location, { headers: { type: 'hydrate' } })
+	const res: Response = await window.fetch(location, { headers: { type: 'hydrate' } })
 	const html: string = await res.text()
-	const parser: DOMParser = new DOMParser()
+	const parser: DOMParser = new window.DOMParser()
 	const htmlDoc: Document = parser.parseFromString(html, 'text/html')
 
 	updateDom(htmlDoc)

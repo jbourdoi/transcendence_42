@@ -12,15 +12,6 @@ export async function renderTemplateFromFile(filename: string) {
 		if (content == null) return reject()
 		let { document } = parseHTML(content)
 
-		const components = Array.from(document.querySelectorAll('component'))
-			.map(el => el.getAttribute('name'))
-			.map(async el => {
-				const componentPath = pathJoin(__dirname(), './srcs/components', `${el}.html`)
-				let componentContent = await readFile(componentPath, { encoding: 'utf8' }).catch(() => null)
-				console.log(el, componentPath, componentContent)
-				return el
-			})
-
 		const title: string | undefined = document.querySelector('title')?.innerHTML!
 		const style: string | undefined = document.querySelector('style')?.outerHTML!
 		const script: string | undefined = document.querySelector('script')?.outerHTML!
