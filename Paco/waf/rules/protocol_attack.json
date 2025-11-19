@@ -1,0 +1,60 @@
+[
+	{
+		"id": 921110,
+		"name": "HTTP Request Smuggling Attack",
+		"targets": [
+			"ARGS_NAMES",
+			"ARGS",
+			"REQUEST_BODY"
+		],
+		"regex": "/(?:get|post|head|options|connect|put|delete|trace|track|patch|propfind|propatch|mkcol|copy|move|lock|unlock)\\s+[^\\s]+\\s+http\/\\d/i"
+	},
+	{
+		"id": 921120,
+		"name": "HTTP Response Splitting",
+		"targets": [
+			"REQUEST_COOKIES",
+			"REQUEST_COOKIES_NAMES",
+			"ARGS_NAMES",
+			"ARGS"
+		],
+		"regex": "[\r\n]\\W*?(?:content-(?:type|length)|set-cookie|location):\\s*\\w"
+	},
+	{
+		"id": 921130,
+		"name": "HTTP Response Splitting",
+		"targets": [
+			"REQUEST_COOKIES",
+			"REQUEST_COOKIES_NAMES",
+			"ARGS_NAMES",
+			"ARGS"
+		],
+		"regex": "(?:\bhttp/\\d|<(?:html|meta)\b)"
+	},
+	{
+		"id": 921130,
+		"name": "HTTP Header Injection Attack via headers",
+		"targets": [
+			"REQUEST_HEADERS_NAMES",
+			"REQUEST_HEADERS"
+		],
+		"regex": "[\n\r]"
+	},
+	{
+		"id": 921150,
+		"name": "HTTP Header Injection Attack via payload (CR/LF detected)",
+		"targets": [
+			"ARGS_NAMES"
+		],
+		"regex": "[\n\r]"
+	},
+	{
+		"id": 921160,
+		"name": "HTTP Header Injection Attack via payload (CR/LF and header-name detected)",
+		"targets": [
+			"ARGS_GET_NAMES",
+			"ARGS_GET"
+		],
+		"regex": "[\n\r]+(?:\\s|location|refresh|(?:set-)?cookie|(?:x-)?(?:forwarded-(?:for|host|server)|host|via|remote-ip|remote-addr|originating-IP))\\s*:"
+	}
+]

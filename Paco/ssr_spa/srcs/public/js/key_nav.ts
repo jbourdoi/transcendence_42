@@ -16,15 +16,20 @@ document.addEventListener('keyup', evt => {
 
 document.addEventListener('keyup', evt => {
 	let currentButton = buttonList[currentIdx]
-	console.log(currentButton)
 	if (currentButton) {
-		let currentoption = Number(currentButton.dataset.currentoption)
-		let length = Number(currentButton.dataset.length)
+		const currentoption = Number(currentButton.dataset.currentoption)
+		const max = Number(currentButton.dataset.max)
+		const min = Number(currentButton.dataset.min)
+		const steps = Number(currentButton.dataset.steps)
+		const length = max - min + 1
+
 		if (evt.key === 'ArrowLeft') {
-			currentButton.dataset.currentoption = String((currentoption - 1 + length) % length)
+			const calc = ((currentoption - steps - min + length) % length) + min
+			currentButton.dataset.currentoption = String(calc)
 			currentButton.click()
 		} else if (evt.key === 'ArrowRight') {
-			currentButton.dataset.currentoption = String((currentoption + 1) % length)
+			const calc = ((currentoption + steps - min) % length) + min
+			currentButton.dataset.currentoption = String(calc)
 			currentButton.click()
 		}
 	}
