@@ -25,9 +25,26 @@
 <page type="index">
 	<page-title class="text-6xl">Options</page-title>
 	<main-menu-buttons>
-		<span class="button traverse text-3xl" data-action="updateLanguage" data-length="3" data-currentOption="0" data-selected="true">Language</span>
+		<span
+			class="button traverse text-3xl"
+			data-action="updateLanguage"
+			data-min="0"
+			data-max="2"
+			data-steps="1"
+			data-currentOption="0"
+			data-selected="true"
+			>Language</span
+		>
 		<span class="button traverse text-3xl">Contrast</span>
-		<span class="button traverse text-3xl">Text Size</span>
+		<span
+			class="button traverse text-3xl"
+			data-action="updateTextSize"
+			data-min="5"
+			data-max="24"
+			data-steps="2"
+			data-currentOption="16"
+			>Text Size</span
+		>
 		<span class="button traverse text-3xl">Theme</span>
 		<span data-route="" class="button traverse text-4xl">Back</span>
 	</main-menu-buttons>
