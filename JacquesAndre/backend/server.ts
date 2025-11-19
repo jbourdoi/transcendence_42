@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 import Lobby from "./classes/Lobby.js"
-import { json_parse } from "../utils/json_wrapper.mjs"
+import { json_parse } from "../shared/json_wrapper.ts"
 
 const app: FastifyInstance = Fastify({
 	  https: {

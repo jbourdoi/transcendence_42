@@ -1,4 +1,4 @@
-import { json_stringify, json_parse } from "../../utils/json_wrapper.mjs"
+import { json_stringify, json_parse } from "../../shared/json_wrapper.js"
 
 const STORAGE_KEY = "chat_messages";
 const MAX_MESSAGES = 20;

@@ -11,20 +11,19 @@ gameContainer?.appendChild(canvas);
 
 let state = { ball: {x:0, y:0}, players: [
 	{score:0, pseudo:"player0", angle:0, side:0, paddleSize:10},
+	{score:0, pseudo:"player1", angle:0, side:1, paddleSize:1},
 	{score:0, pseudo:"player1", angle:0, side:1, paddleSize:1}],
 	changeColor: false }
 let end : any = null
 let keyState : any  = {}
-let side = -1
 let modeAI = true
 
 let wss : any = null
 
-export function setWss(webSocket : any, nb: number)
+export function setWss(webSocket : any)
 {
 	console.log("start a new game")
 	wss = webSocket
-	side = nb
 	wss.onmessage = (e: any) =>
 	{
 		const data = JSON.parse(e.data)
@@ -63,11 +62,7 @@ function draw()
 	if (!ctx) return
 	// Score
 	if (end?.message) return score!.innerText = end.message
-	let player1Tag = state.players[0].pseudo
-	let player2Tag = state.players[1].pseudo
-	if (modeAI && side === 0) player1Tag += " (AI)"
-	if (modeAI && side === 1) player2Tag += " (AI)"
-	if (state.players[1]) score!.innerText = `${player1Tag} ${state.players[0].score} | ${player2Tag} ${state.players[1].score}`
+	score!.innerText = formatScore(state.players)
 	ctx.clearRect(0, 0, board.width, board.height);
 	if (state.changeColor) toggleColor()
 
@@ -126,27 +121,26 @@ function start()
 		if (keyState["i"]){ modeAI = !modeAI; keyState["i"] = false;}
 		if (keyState[" "])
 			return wss?.send(JSON.stringify({ type: "input", key: "space" })); keyState[" "] = false
-		if (state.players.length !== 2) return
 		// const centerX = arena.centerX
 		// const centerY = arena.centerY
 		// const ball_angle = Math.atan2(state.ball.y - centerY, state.ball.x - centerX)
-		const diff1 = arena.centerY - state.ball.y + arena.radius * Math.sin(state.players[0].angle)
-		const diff2 = arena.centerY - state.ball.y + arena.radius * Math.sin(state.players[1].angle)
+		// const diff1 = arena.centerY - state.ball.y + arena.radius * Math.sin(state.players[0].angle)
+		// const diff2 = arena.centerY - state.ball.y + arena.radius * Math.sin(state.players[1].angle)
 		// debug!.innerHTML = `diff1 ${diff1} <br> diff2 ${diff2}`
-		if (modeAI && side=== 0)
-		{
-			if (diff1 < -20) wss.send(JSON.stringify({ type: "input", key: "+" }))
-			else if (diff1 > 20) wss.send(JSON.stringify({ type: "input", key: "-" }))
-			else wss.send(JSON.stringify({type:"input", key: "none"}))
-			return
-		}
-		if (modeAI && side=== 1)
-		{
-			if (diff2 < -20) wss.send(JSON.stringify({ type: "input", key: "-" }))
-			else if (diff2 > 20) wss.send(JSON.stringify({ type: "input", key: "+" }))
-			else wss.send(JSON.stringify({type:"input", key: "none"}))
-			return
-		}
+		// if (modeAI && side=== 0)
+		// {
+		// 	if (diff1 < -20) wss.send(JSON.stringify({ type: "input", key: "+" }))
+		// 	else if (diff1 > 20) wss.send(JSON.stringify({ type: "input", key: "-" }))
+		// 	else wss.send(JSON.stringify({type:"input", key: "none"}))
+		// 	return
+		// }
+		// if (modeAI && side=== 1)
+		// {
+		// 	if (diff2 < -20) wss.send(JSON.stringify({ type: "input", key: "-" }))
+		// 	else if (diff2 > 20) wss.send(JSON.stringify({ type: "input", key: "+" }))
+		// 	else wss.send(JSON.stringify({type:"input", key: "none"}))
+		// 	return
+		// }
 		if (keyState["s"] && !keyState["d"]) wss?.send(JSON.stringify({ type: "input", key: "-" }))
 		else if (!keyState["s"] && keyState["d"]) wss?.send(JSON.stringify({ type: "input", key: "+" }))
 		else wss?.send(JSON.stringify({type:"input", key: "none"}))
@@ -155,3 +149,20 @@ function start()
 	draw()
 }//start
 
+function formatScore(players: any) : string
+{
+  if (!players.length) return "";
+
+  // Tri décroissant par score
+  const sorted = [...players].sort((a, b) => b.score - a.score);
+
+  // Le meilleur joueur reçoit la couronne
+  const bestScore : number = sorted[0].score;
+
+  return players
+    .map((p : any) => {
+      const crown = p.score === bestScore ? " 👑" : "";
+      return `${p.pseudo.slice(0,5)}${crown} (${p.score})`;
+    })
+    .join(" | ");
+}

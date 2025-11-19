@@ -1,4 +1,4 @@
-import {json_parse, json_stringify} from "../../../utils/json_wrapper.mjs"
+import {json_parse, json_stringify} from "../../../shared/json_wrapper.js"
 
 
 // export const stringify = JSON.stringify;

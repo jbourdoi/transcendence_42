@@ -1,4 +1,4 @@
-import { json_stringify, json_parse } from "../../utils/json_wrapper.mjs"
+import { json_stringify, json_parse } from "../../shared/json_wrapper.ts"
 import { loadChatHistory, handleIncomingMessage, cleanHistory } from "./messagesLocalStorage.ts"
 import { setWss } from "./app/GameClient.ts"
 
@@ -29,7 +29,7 @@ messageInput.className = "chat-input hidden";
 userListDiv.className = "user-list"
 userListDiv.style.display = "none"
 
-lobbyDiv.addEventListener("mouseenter", async (e:any) => {
+lobbyDiv.addEventListener("mouseenter", async () => {
   try {
     const res = await fetch("https://localhost:3000/api/lobby");
     const lobby = await res.json();
@@ -161,7 +161,7 @@ function openMPWindow(targetPseudo: string | undefined) {
     const key = `mp_${targetPseudo}`;
     const stored = localStorage.getItem(key);
 	console.log(`getItem(${key})`, stored)
-    const messages = stored ? json_parse(stored) : [];
+    const messages : any = stored ? json_parse(stored) : [];
     messages.forEach((msg: any) => { displayMP(msg, messagesMPDiv) });
 
 	/**
@@ -188,7 +188,7 @@ function openMPWindow(targetPseudo: string | undefined) {
     sendBtn.textContent = "Envoyer";
 
     sendBtn.addEventListener("click", () => {
-        sendMPMessage(targetPseudo, input.value, messagesMPDiv, key);
+        sendMPMessage(targetPseudo, input.value);
         input.value = "";
     });
 
@@ -205,7 +205,7 @@ function openMPWindow(targetPseudo: string | undefined) {
 }
 
 // fonction pour envoyer un MP
-function sendMPMessage(targetPseudo: string, text: string, messagesDiv: HTMLElement, key: string) {
+function sendMPMessage(targetPseudo: string, text: string) {
     if (!text.trim()) return;
 	console.log(`sending mp to ${targetPseudo} : ${text}`)
 	user?.websocket?.send(json_stringify({type: "mp", text, to:targetPseudo}))
@@ -348,16 +348,16 @@ async function refreshWebSocket() {
 	});
 
 	ws.addEventListener("message", (e)=>{
-		const message = json_parse(e.data);
+		const message : any = json_parse(e.data);
 		if (!message) return
 		if (message?.type === "error") console.log("received: ", message)
 		if (message?.type === "duel" && message?.action === "accept")
-			return setWss(user.websocket, 0)
+			return setWss(user.websocket)
 		if (message?.type === "duel" && message?.action === "propose")
 		{
 			if (confirm(`${message?.from} send you a duel, do you accept?`))
 			{
-				setWss(user.websocket, 1)
+				setWss(user.websocket)
 				return user?.websocket?.send(json_stringify({type: "duel", to: message?.from, action: "accept"}))
 			}
 			else

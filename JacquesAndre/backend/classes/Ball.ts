@@ -1,29 +1,32 @@
 export class Ball
 {
+	readonly defaultX: number;
+	readonly defaultY: number;
 	x: number;
 	y: number;
-	defaultX: number;
-	defaultY: number;
 	vx: number;
 	vy: number;
 
-	constructor(x: number, y: number, vx: number, vy: number)
+	constructor(defaultX: number, defaultY: number)
 	{
-		this.x = x
-		this.y = y
-		this.defaultX = x
-		this.defaultY = y
-		this.vx = vx
-		this.vy = vy
+		this.defaultX = defaultX
+		this.defaultY = defaultY
+		this.x = 0
+		this.y = 0
+		this.vx = 0
+		this.vy = 0
+		this.reset(0)
 	}
 
 	reset(defaultAngle: number)
 	{
 		this.x = this.defaultX + this.defaultX * (1.5 - Math.random()) / 5
 		this.y = this.defaultY + this.defaultY * (1.5 - Math.random()) / 5
-		const minV = 2;
-		const maxV = 4;
-		const randomV = minV + Math.random() * (maxV - minV);
+		const minV : number = 3;
+		const maxV : number = 4;
+		const randomV : number = minV + Math.random() * (maxV - minV);
+		const randomNoiseAngle : number = - (Math.PI / 6) + Math.random() * (Math.PI / 3)
+		defaultAngle += randomNoiseAngle
 		this.vx = randomV *  Math.cos(defaultAngle)
 		this.vy = randomV * Math.sin(defaultAngle)
 	}

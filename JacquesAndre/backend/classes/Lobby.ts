@@ -2,7 +2,8 @@ import { WebSocket } from "ws";
 import { randomUUID } from "crypto";
 
 import User from "./User.js"
-import createGameServer from "./GameServer.js"
+// import createGameServer from "./GameServer.js"
+import { Game } from "./Game.js"
 
 export default class Lobby
 {
@@ -110,7 +111,7 @@ export default class Lobby
 		else if (msg?.type === "duel" && msg?.action === "accept")
 		{
 			console.log(`${sender.pseudo} create game`)
-			createGameServer(destinataire, sender)
+			new Game(destinataire, sender)
 			destinataire.send({type:"duel", from: sender.pseudo, action:"accept" , timestamp: now})
 			// sender.send({type:"duel", from: destinataire.pseudo, action:"accept" , timestamp: now})
 			console.log(`${sender.pseudo} accept a duel from ${destinataire.pseudo}`)

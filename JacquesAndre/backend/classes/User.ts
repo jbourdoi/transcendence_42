@@ -1,6 +1,6 @@
 import { WebSocket } from "ws"
 
-import { json_stringify } from "../../utils/json_wrapper.mjs"
+import { json_stringify } from "../../shared/json_wrapper.ts"
 
 export default class User
 {
@@ -15,7 +15,7 @@ export default class User
     this.pseudo = pseudo?.trim() || `Player-${Math.floor(Math.random() * 1000)}`
     this.socket = undefined
     this.status = 'chat'
-    console.log(`new user ${this.id} ${this.pseudo} `)
+    console.log(`new user ${this.id} ${this.pseudo}`)
   }
 
   send(data: any)
