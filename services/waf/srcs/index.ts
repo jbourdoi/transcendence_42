@@ -37,7 +37,6 @@ function parseCookies(req: Request): Record<string, string> {
 		const value = rest.join('=')
 		cookies[name.trim()] = value?.trim() || ''
 	})
-	console.log(cookies)
 	return cookies
 }
 
@@ -150,20 +149,27 @@ Bun.serve({
 		}
 
 		const url = new URL(req.url)
-		let result = await fetch(`http://server:3000${url.pathname}`)
+
+		let result = await fetch(`http://server:3000${url.pathname}`, {
+			method: req.method,
+			headers: req.headers,
+			body: bodyText
+		})
 			.then(async res => {
 				return {
 					status: res.status,
+					headers: res.headers,
 					blob: (await res.blob()) || ''
 				}
 			})
 			.catch(err => {
 				return {
 					status: 500,
+					headers: '',
 					blob: err
 				}
 			})
-		return new Response(result.blob, { status: result.status })
+		return new Response(result.blob, { status: result.status, headers: result.headers })
 	},
 	key: fs.readFileSync('./certs/key.pem'),
 	cert: fs.readFileSync('./certs/cert.pem')

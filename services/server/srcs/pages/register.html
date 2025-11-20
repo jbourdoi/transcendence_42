@@ -11,29 +11,29 @@
 	<a data-route="" class="">/index</a>
 	<a data-route="options">Options</a>
 	<a data-route="login">Login</a>
-    <a data-route="dashboard">Dashboard</a>
-    <a data-route="users">Users</a>
+	<a data-route="dashboard">Dashboard</a>
+	<a data-route="users">Users</a>
 	<p class="bg-blue-400">This the Register</p>
 </page>
 
 <script type="module">
 	console.log('This is register')
 
-    /////////// REGISTER ///////////
-    fetch('/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            name: '2',
-            pwd: 'password123',
-            checkpwd: 'password123',
-            email: '2@example.com',
-            checkmail: '2@example.com',
-            username: '2'
-        })
-    })
-    .then(res => res.json())
-    .then(data => console.log('Register response:', data))
+	/////////// REGISTER ///////////
+	fetch('/register', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({
+			name: '2',
+			pwd: 'password123',
+			checkpwd: 'password123',
+			email: '2@example.com',
+			checkmail: '2@example.com',
+			username: '2'
+		})
+	})
+		.then(res => res.json())
+		.then(data => console.log('Register response:', data))
 </script>
