@@ -1,14 +1,5 @@
-import { cleanOptionEvents, initOptionEvents } from '../modules/options.js'
-import { cleanKeyNav, initKeyNav } from './key_nav.js'
+import { KeyboardStore } from '../stores/keyboard.store.js'
 
-export function initEvents() {
-	console.log("Initializing Events")
-	initKeyNav()
-	initOptionEvents()
-}
-
-export function cleanEvents() {
-	console.log("Cleaning Events")
-	cleanKeyNav()
-	cleanOptionEvents()
-}
+document.addEventListener('keyup', (evt: KeyboardEvent) => {
+	KeyboardStore.emit(evt.key)
+})

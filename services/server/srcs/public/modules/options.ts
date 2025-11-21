@@ -1,5 +1,15 @@
 const langs = ['En', 'Fr', 'Es']
 
+const $page: HTMLElement = document.querySelector('page[type=options]')!
+
+const cleanPage = () => {
+	console.log('Cleaning Page Options')
+	$page.removeEventListener('cleanup', cleanPage)
+}
+
+console.log('Adding event listener options')
+$page.addEventListener('cleanup', cleanPage)
+
 function updateLanguage(origin: 'init' | 'event') {
 	const $languageOption = document.querySelector('span[data-action="updateLanguage"]') as HTMLSpanElement
 	if (!$languageOption) return

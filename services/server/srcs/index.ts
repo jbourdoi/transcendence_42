@@ -1,6 +1,7 @@
 import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import path from 'path'
 import { readFile } from 'fs/promises'
+import { existsSync, readFileSync, readSync } from 'fs'
 import fastifyStatic from '@fastify/static'
 import { renderTemplateFromFile } from './functions/renderTemplateFromFile.fn.js'
 import { publicWatcher } from './services/publicWatcher.service.js'
@@ -27,7 +28,7 @@ publicWatcher()
 
 fastify.register(fastifyStatic, {
 	root: path.join(__dirname(), 'dist/public'),
-	prefix: '/public/'
+	prefix: '/'
 })
 
 async function getHTML(route: string, type?: string): Promise<any> {
@@ -60,8 +61,15 @@ fastify.route({
 			const html = await getHTML(route, type).catch(() => {
 				return reply.status(404).send()
 			})
-			reply.type('text/html').send(html)
-		} else reply.status(404).send()
+			return reply.type('text/html').send(html)
+		} else {
+			const filePath = path.join(__dirname(), 'dist/public', route)
+			if (existsSync(filePath)) {
+				const fileData = readFileSync(filePath, { encoding: 'utf8' })
+				return reply.type('text/javascript').send(fileData)
+			}
+		}
+		return reply.status(404).send()
 	}
 })
 
