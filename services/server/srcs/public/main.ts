@@ -1,3 +1,5 @@
+import { PageChangeStore } from "./stores/page_change.js"
+
 const $bgContainer = document.querySelector('background-container')
 
 if ($bgContainer) {
@@ -10,3 +12,5 @@ if ($bgContainer) {
 		}, 300)
 	})
 }
+
+PageChangeStore.emit('')

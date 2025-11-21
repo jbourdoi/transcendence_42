@@ -1,4 +1,6 @@
-import { cleanEvents, initEvents } from './events.js'
+// import { cleanEvents, initEvents } from './events.js'
+
+import { PageChangeStore } from '../stores/page_change.js'
 
 export async function loadPage(route: string) {
 	const location: string = `/${route || ''}`
@@ -7,9 +9,9 @@ export async function loadPage(route: string) {
 	const parser: DOMParser = new window.DOMParser()
 	const htmlDoc: Document = parser.parseFromString(html, 'text/html')
 
-	cleanEvents()
+	// cleanEvents()
 	updateDom(htmlDoc)
-	initEvents()
+	// initEvents()
 }
 
 function updateDom(htmlDoc: Document) {
@@ -19,17 +21,21 @@ function updateDom(htmlDoc: Document) {
 	const $htmlDocStyle: HTMLStyleElement | null = htmlDoc.querySelector('head style')
 	const $htmlDocScript: HTMLScriptElement | null = htmlDoc.querySelector('body script[type="module"]')
 
+	$mainPage?.dispatchEvent(new Event('cleanup'))
+	// $mainPage?.click()
 	if ($htmlDocTitle) document.title = $htmlDocTitle.innerHTML
 
 	if ($htmlDocStyle) updateStyleModule($htmlDocStyle)
 
 	if ($mainPage && $htmlDocPage) {
 		$mainPage.innerHTML = $htmlDocPage.innerHTML
-		console.log($htmlDocPage.getAttribute('type'))
+		// console.log($htmlDocPage.getAttribute('type'))
 		$mainPage.setAttribute('type', $htmlDocPage.getAttribute('type') || '')
 	}
 
 	if ($htmlDocScript) runFunction($htmlDocScript)
+
+	PageChangeStore.emit(document.title)
 }
 
 function updateStyleModule(htmlDocStyle: HTMLStyleElement) {
@@ -40,6 +46,7 @@ function updateStyleModule(htmlDocStyle: HTMLStyleElement) {
 }
 
 function runFunction(htmlDocScript: HTMLScriptElement) {
+	// console.log("HTML Script: ", htmlDocScript)
 	if (htmlDocScript) {
 		document.querySelectorAll('body script[type="module"]:not([keep])').forEach($el => {
 			$el.remove()
@@ -50,6 +57,7 @@ function runFunction(htmlDocScript: HTMLScriptElement) {
 			fetch(htmlDocScript.src)
 				.then(res => res.text())
 				.then(res => {
+					// console.log("Fetched script: ", res)
 					newScript.textContent = res
 				})
 		} else {

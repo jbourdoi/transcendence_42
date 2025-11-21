@@ -4,22 +4,23 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>{{title}}</title>
-		<link rel="stylesheet" href="public/fonts/jua.css" />
-		<link rel="stylesheet" href="public/styles/tailwind.css" />
-		<link rel="stylesheet" href="public/styles/style.css" />
-		<link rel="icon" type="image/webp" href="public/images/favicon.webp" />
+		<link rel="stylesheet" href="/fonts/jua.css" />
+		<link rel="stylesheet" href="/styles/tailwind.css" />
+		<link rel="stylesheet" href="/styles/style.css" />
+		<link rel="icon" type="image/webp" href="/images/favicon.webp" />
 		{{style}}
 	</head>
 	<body>
 		<background-container>
 			<overlay></overlay>
-			<video src="/public/videos/bg.mp4" muted loop></video>
-			<img src="/public/images/bg.webp" alt="" />
+			<video src="/videos/bg.mp4" muted loop></video>
+			<img src="/images/bg.webp" alt="" />
 		</background-container>
 		<div id="app">{{body}}</div>
 		{{script}}
-		<script src="public/main.js" type="module" keep></script>
-		<script src="public/js/routing.js" type="module" keep></script>
-		<script src="public/js/key_nav.js" type="module" keep></script>
+		<script src="/js/key_nav.js" type="module" keep></script>
+		<script src="/main.js" type="module" keep></script>
+		<script src="/js/routing.js" type="module" keep></script>
+		<script src="/js/events.js" type="module" keep></script>
 	</body>
 </html>

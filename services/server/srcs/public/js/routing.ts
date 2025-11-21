@@ -1,5 +1,5 @@
 import { loadPage } from './dom_update.js'
-import { initEvents } from './events.js'
+// import { initEvents } from './events.js'
 
 export async function navigate(route: string) {
 	history.pushState({}, '', `/${route}`)
@@ -12,7 +12,7 @@ window.addEventListener('popstate', () => {
 })
 
 document.addEventListener('DOMContentLoaded', _ => {
-	initEvents()
+	// initEvents()
 	document.body.addEventListener('click', e => {
 		e.preventDefault()
 		if (e?.target) {

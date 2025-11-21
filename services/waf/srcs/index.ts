@@ -149,7 +149,7 @@ Bun.serve({
 		}
 
 		const url = new URL(req.url)
-
+		
 		let result = await fetch(`http://server:3000${url.pathname}`, {
 			method: req.method,
 			headers: req.headers,
