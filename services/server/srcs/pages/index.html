@@ -19,6 +19,31 @@
 			flex-direction: column;
 			align-items: center;
 		}
+
+		nav-button.y-nav[data-selected='true']::after {
+			content: ' >';
+			opacity: 1;
+		}
+
+		nav-button.y-nav[data-selected='true']::before {
+			content: '< ';
+			opacity: 1;
+		}
+
+		nav-button.y-nav::after {
+			content: ' >';
+			opacity: 0;
+			transition-property: opacity;
+			transition-duration: 300ms;
+			transition-timing-function: ease-in-out;
+		}
+		nav-button.y-nav::before {
+			content: '< ';
+			opacity: 0;
+			transition-property: opacity;
+			transition-duration: 300ms;
+			transition-timing-function: ease-in-out;
+		}
 	</style>
 </head>
 
@@ -27,8 +52,7 @@
 	<main-menu-buttons>
 		<nav-button data-route="" class="traverse button text-5xl mb-4" data-selected="true">Start Game</nav-button>
 		<nav-button data-route="options" class="traverse button text-3xl">Options</nav-button>
-		<!-- <nav-button data-route="login" class="traverse button text-3xl">Login</nav-button> -->
-		<nav-button data-route="login" class="button traverse text-3xl" id="loginButton">Login</nav-button>
+		<nav-button data-route="login" class="y-nav button traverse text-3xl" id="loginButton">Login</nav-button>
 		<nav-button class="traverse button text-3xl">Exit</nav-button>
 	</main-menu-buttons>
 </page>
