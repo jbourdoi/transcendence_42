@@ -1,13 +1,36 @@
 import { CurrentButtonStore } from '../stores/current_button.store.js'
 import { KeyboardStore } from '../stores/keyboard.store.js'
 
+function applyTextUpdate(textSize: number, self: HTMLElement) {
+	self.innerText = `Text Size (${textSize}px)`
+	document.documentElement.style.setProperty('--text-size', `${textSize}px`)
+}
+
+function applyLangUpdate(val: string, self: HTMLElement) {
+	const langs = {
+		En: 'Language (En)',
+		Fr: 'Langue (Fr)',
+		Es: 'Lenguage (Es)'
+	}
+	self.innerText = `${langs[val]}`
+}
+
 const actions = {
 	updateLanguage: {
 		min: 0,
 		max: 2,
 		steps: 1,
-		values: ['En', 'Fr', 'Es'],
-		innerText: ['Language (En)', 'Langue (Fr)', 'Lenguage (Es)']
+		callback: applyLangUpdate,
+		values: ['En', 'Fr', 'Es']
+	},
+	updateTextSize: {
+		min: 8,
+		max: 32,
+		steps: 2,
+		callback: applyTextUpdate,
+		get values() {
+			return Array.from({ length: (this.max - this.min) / this.steps + 1 }, (_, i) => this.min + i * this.steps)
+		}
 	}
 }
 
@@ -20,11 +43,30 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key)) {
 		const data = currentButton.dataset
-		if (data && data?.action) {
+		if (data && data?.currentoption) {
 			const action = actions[data.action]
-			const currentOption = data.currentoption
-			console.log(currentOption)
-			currentButton.innerText = action.innerText[currentOption]
+			const current = Number(data.currentoption)
+
+			const min = action.min
+			const max = action.max
+			const steps = action.steps
+			let newValue
+			if (key === 'ArrowLeft') {
+				newValue = current - steps
+				if (newValue < min) newValue = max
+			} else {
+				newValue = current + steps
+				if (newValue > max) newValue = min
+			}
+			data.currentoption = String(newValue)
+
+			const index = (newValue - min) / steps
+
+			const nextValue = action.values[index]
+
+			// console.log(nextValue)
+			action.callback(nextValue, currentButton)
+			// currentButton.innerText = nextValue.inner
 		}
 	}
 })

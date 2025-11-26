@@ -1,5 +1,6 @@
 // import { cleanEvents, initEvents } from './events.js'
 
+import { CurrentButtonStore } from '../stores/current_button.store.js'
 import { PageChangeStore } from '../stores/page_change.js'
 
 export async function loadPage(route: string) {
@@ -12,6 +13,8 @@ export async function loadPage(route: string) {
 	// cleanEvents()
 	updateDom(htmlDoc)
 	// initEvents()
+	const selectedElement: HTMLElement = document.querySelector('*[data-selected=true]') as HTMLElement
+	if (selectedElement) CurrentButtonStore.emit(selectedElement)
 }
 
 function updateDom(htmlDoc: Document) {
