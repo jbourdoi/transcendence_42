@@ -1,7 +1,22 @@
+FILEPATH = docker-compose.yml
+FILEPATH_ELK = docker-compose-elk.yml
+FILEPATH_METRICS = docker-compose-metrics.yml
+
+elk:
+	make -C . up FILEPATH=$(FILEPATH_ELK)
+
+metrics:
+	make -C . up  FILEPATH=$(FILEPATH_METRICS)
+
+all:
+	make -C . up  FILEPATH=$(FILEPATH)
+	make -C . up  FILEPATH=$(FILEPATH_ELK)
+	make -C . up  FILEPATH=$(FILEPATH_METRICS)
+
 up: docker-required
-	docker compose build
-	docker compose up -d
-	docker compose logs -f
+	docker compose -f $(FILEPATH) build
+	docker compose -f $(FILEPATH) up -d
+# docker compose -f $(FILEPATH) logs -f
 
 docker-required:
 	@docker info >/dev/null 2>&1 || { \
@@ -14,11 +29,10 @@ docker-required:
 		echo "Docker is running."; \
 	}
 
-it:
-	docker exec -it backend bash
-
 down:
-	docker compose down
+	docker compose -f $(FILEPATH) down
+	docker compose -f $(FILEPATH_ELK) down
+	docker compose -f $(FILEPATH_METRICS) down
 
 nuke:
 	docker ps -q | xargs -r docker stop

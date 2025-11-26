@@ -23,7 +23,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 		if (data && data?.action) {
 			const action = actions[data.action]
 			const currentOption = data.currentoption
-
+			console.log(currentOption)
 			currentButton.innerText = action.innerText[currentOption]
 		}
 	}

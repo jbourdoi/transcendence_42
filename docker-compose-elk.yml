@@ -1,0 +1,85 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
+    container_name: elasticsearch
+    ports:
+      - "9200:9200"
+      # - "9300:9300"
+    # volumes:
+      # - ./services/elk/elasticsearch/data:/usr/share/elasticsearch/data
+    environment:
+      - logger.level=error
+      - cluster.name=elasticsearch
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.license.self_generated.type=trial
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - elk
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.0
+    container_name: logstash
+    ports:
+      - "5044:5044"
+      # - "9600:9600"
+    volumes:
+      - ./services/elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+      - ./logs:/app/logs:ro
+    environment:
+      - http.host=0.0.0.0
+      # - xpack.monitoring.elasticsearch.hosts=http://elasticsearch:9200
+      - xpack.monitoring.enabled=false
+      # - xpack.monitoring.elasticsearch.username=bro
+      # - xpack.monitoring.elasticsearch.password=changeme
+    # depends_on:
+    #   elasticsearch:
+    #     condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9600/_node/pipelines"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - elk
+
+  kibana:
+    build:
+      context: ./services/elk/kibana
+      dockerfile: Dockerfile
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./services/elk/kibana/imports:/usr/share/kibana/imports
+      - ./services/elk/kibana/import_dashboards.sh:/usr/local/bin/import_dashboards.sh
+      # - ./services/elk/kibana/data:/usr/share/kibana/data
+    # entrypoint: ["/bin/bash", "-c", "/usr/local/bin/import_dashboards.sh & /usr/local/bin/kibana-docker"]
+    # command: ["/bin/bash", "-c", "/usr/local/bin/kibana-docker & apt-get update && apt-get install -y jq"]
+    environment:
+      - server.name=kibana
+      - server.host=localhost
+      - elasticsearch.hosts=["http://elasticsearch:9200"]
+      - xpack.monitoring.ui.container.elasticsearch.enabled=true
+      - elasticsearch.username=bro
+      - elasticsearch.password=changeme
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - elk
+
+networks:
+  transcendence:
+    name: transcendence_network
+    driver: bridge
+  monitoring:
+    name: monitoring_network
+    driver: bridge
+  elk:
+    name: elk_network
+    driver: bridge

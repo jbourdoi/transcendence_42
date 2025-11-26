@@ -1,37 +1,37 @@
 services:
-  # server:
-  #   build:
-  #     context: ./services/server
-  #     dockerfile: Dockerfile
-  #   container_name: server
-  #   expose:
-  #     - 3000
-  #   depends_on:
-  #     database:
-  #       condition: service_healthy
-  #     vault:
-  #       condition: service_healthy
-  #   volumes:
-  #     - "./services/server/srcs:/app/srcs"
-  #   networks:
-  #     - transcendence
+  server:
+    build:
+      context: ./services/server
+      dockerfile: Dockerfile
+    container_name: server
+    expose:
+      - 3000
+    depends_on:
+      database:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+    volumes:
+      - "./services/server/srcs:/app/srcs"
+    networks:
+      - transcendence
 
-  # waf:
-  #   build:
-  #     context: ./services/waf
-  #     dockerfile: Dockerfile
-  #   container_name: waf
-  #   restart: unless-stopped
-  #   volumes:
-  #     - "./services/waf/srcs:/app/srcs"
-  #     - "./services/waf/rules:/app/rules"
-  #     - "./services/waf/package.json:/app/package.json"
-  #   ports:
-  #     - "443:443"
-  #   depends_on:
-  #     - server
-  #   networks:
-  #     - transcendence
+  waf:
+    build:
+      context: ./services/waf
+      dockerfile: Dockerfile
+    container_name: waf
+    restart: unless-stopped
+    volumes:
+      - "./services/waf/srcs:/app/srcs"
+      - "./services/waf/rules:/app/rules"
+      - "./services/waf/package.json:/app/package.json"
+    ports:
+      - "443:443"
+    depends_on:
+      - server
+    networks:
+      - transcendence
 
   vault:
     build:
@@ -61,302 +61,27 @@ services:
     labels:
       filebeat.network: transcendence
 
-  # database:
-  #   build:
-  #     context: ./services/database
-  #     dockerfile: Dockerfile
-  #   container_name: database
-  #   ports:
-  #     - "6989:6989"
-  #   volumes:
-  #     # - database:/app/services/database
-  #     - ./services/database/srcs:/app/services/database/srcs
-  #     - ./services/database/data:/app/services/database/data
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:6989/health"]
-  #     interval: 2s
-  #     timeout: 1s
-  #     retries: 5
-  #   depends_on:
-  #     vault:
-  #       condition: service_healthy
-  #   networks:
-  #     - transcendence
-
-  # grafana:
-  #   build:
-  #     context: ./services/grafana
-  #     dockerfile: Dockerfile
-  #   container_name: grafana
-  #   user: '0' # root, otherwisse find right id with cmd 'id -u'
-  #   ports:
-  #     - "4000:4000"
-  #   environment:
-  #     - GF_SERVER_HTTP_PORT=4000 # user = admin, pwd = admin
-  #     # - GF_SECURITY_ADMIN_PASSWORD=your_password
-  #   volumes:
-  #     - ./services/grafana/provisioning:/etc/grafana/provisioning
-  #     - ./services/grafana/dashboards:/var/lib/grafana/dashboards
-  #   networks:
-  #     - monitoring
-  
-  # prometheus:
-  #   image: prom/prometheus:v3.7.3
-  #   container_name: prometheus
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #     - ./services/prometheus/rules:/etc/prometheus/rules
-  #   networks:
-  #     - transcendence
-  #     - monitoring
-
-  # cadvisor:
-  #   image: gcr.io/cadvisor/cadvisor:v0.52.0
-  #   container_name: cadvisor
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - /:/rootsfs:ro # see filesys of host -> mesure host disk usage
-  #     - /var/run:/var/run:ro # docker socket + containers info -> list containers running
-  #     - /sys:/sys:ro # system info -> hardware stats (cpu, mem, io usage)
-  #     - /var/lib/docker/:/var/lib/docker:ro # docker metadata (images, containers, volumes...) -> container stats
-  #   networks:
-  #     - monitoring
-  
-  # node_exporter:
-  #   image: prom/node-exporter:v1.10.2
-  #   container_name: node_exporter
-  #   ports:
-  #     - "9100:9100"
-  #   pid: "host" # pour avoir les bonnes stats cpu/mem/io du host
-  #   volumes:
-  #     - /proc:/host/proc:ro # host process info -> cpu, mem, io stats
-  #     - /sys:/host/sys:ro # host system info -> hardware stats (cpu, mem, io usage)
-  #     - /:/rootfs:ro # host filesystem info -> disk usage stats
-  #   networks:
-  #     - monitoring
-
-  # docker_custom_exporter:
-  #   build:
-  #     context: ./services/docker_custom_exporter
-  #     dockerfile: Dockerfile
-  #   container_name: docker_custom_exporter
-  #   ports:
-  #     - "6789:6789"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock # pour communiquer avec le daemon docker
-  #   networks:
-  #     - monitoring
-  
-  # alertmanager:
-  #   image: prom/alertmanager:v0.29.0
-  #   container_name: alert_manager
-  #   ports:
-  #     - "9093:9093"
-  #   volumes:
-  #     - ./services/alertManager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-  #   networks:
-  #     - monitoring
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.0
-    container_name: elasticsearch
-    ports:
-      - "9200:9200"
-      # - "9300:9300"
-    # volumes:
-      # - ./services/elk/elasticsearch/data:/usr/share/elasticsearch/data
-    environment:
-      - logger.level=error
-      - cluster.name=elasticsearch
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - xpack.license.self_generated.type=trial
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - elk
-
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.15.0
-    container_name: logstash
-    ports:
-      - "5044:5044"
-      # - "9600:9600"
-    volumes:
-      - ./services/elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
-      - ./logs:/app/logs:ro
-    environment:
-      - http.host=0.0.0.0
-      # - xpack.monitoring.elasticsearch.hosts=http://elasticsearch:9200
-      - xpack.monitoring.enabled=false
-      # - xpack.monitoring.elasticsearch.username=bro
-      # - xpack.monitoring.elasticsearch.password=changeme
-    # depends_on:
-    #   elasticsearch:
-    #     condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9600/_node/pipelines"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - elk
-
-  kibana:
+  database:
     build:
-      context: ./services/elk/kibana
+      context: ./services/database
       dockerfile: Dockerfile
-    # image: docker.elastic.co/kibana/kibana:8.15.0
-    container_name: kibana
+    container_name: database
     ports:
-      - "5601:5601"
+      - "6989:6989"
     volumes:
-      - ./services/elk/kibana/imports:/usr/share/kibana/imports
-      - ./services/elk/kibana/import_dashboards.sh:/usr/local/bin/import_dashboards.sh
-      # - ./services/elk/kibana/data:/usr/share/kibana/data
-    # entrypoint: ["/bin/bash", "-c", "/usr/local/bin/import_dashboards.sh & /usr/local/bin/kibana-docker"]
-    # command: ["/bin/bash", "-c", "/usr/local/bin/kibana-docker & apt-get update && apt-get install -y jq"]
-    environment:
-      - server.name=kibana
-      - server.host=localhost
-      - elasticsearch.hosts=["http://elasticsearch:9200"]
-      - xpack.monitoring.ui.container.elasticsearch.enabled=true
-      - elasticsearch.username=bro
-      - elasticsearch.password=changeme
+      # - database:/app/services/database
+      - ./services/database/srcs:/app/services/database/srcs
+      - ./services/database/data:/app/services/database/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6989/health"]
+      interval: 2s
+      timeout: 1s
+      retries: 5
     depends_on:
-      elasticsearch:
+      vault:
         condition: service_healthy
     networks:
-      - elk
-
       - transcendence
-
-  # grafana:
-  #   build:
-  #     context: ./services/grafana
-  #     dockerfile: Dockerfile
-  #   container_name: grafana
-  #   user: '0' # root, otherwisse find right id with cmd 'id -u'
-  #   ports:
-  #     - "4000:4000"
-  #   environment:
-  #     - GF_SERVER_HTTP_PORT=4000 # user = admin, pwd = admin
-  #     # - GF_SECURITY_ADMIN_PASSWORD=your_password
-  #   volumes:
-  #     - ./services/grafana/provisioning:/etc/grafana/provisioning
-  #     - ./services/grafana/dashboards:/var/lib/grafana/dashboards
-  #   networks:
-  #     - monitoring
-  
-  # prometheus:
-  #   image: prom/prometheus:v3.7.3
-  #   container_name: prometheus
-  #   ports:
-  #     - "9090:9090"
-  #   volumes:
-  #     - ./services/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #     - ./services/prometheus/rules:/etc/prometheus/rules
-  #   networks:
-  #     - transcendence
-  #     - monitoring
-
-  # cadvisor:
-  #   image: gcr.io/cadvisor/cadvisor:v0.52.0
-  #   container_name: cadvisor
-  #   ports:
-  #     - "8080:8080"
-  #   volumes:
-  #     - /:/rootsfs:ro # see filesys of host -> mesure host disk usage
-  #     - /var/run:/var/run:ro # docker socket + containers info -> list containers running
-  #     - /sys:/sys:ro # system info -> hardware stats (cpu, mem, io usage)
-  #     - /var/lib/docker/:/var/lib/docker:ro # docker metadata (images, containers, volumes...) -> container stats
-  #   networks:
-  #     - monitoring
-  
-  # node_exporter:
-  #   image: prom/node-exporter:v1.10.2
-  #   container_name: node_exporter
-  #   ports:
-  #     - "9100:9100"
-  #   pid: "host" # pour avoir les bonnes stats cpu/mem/io du host
-  #   volumes:
-  #     - /proc:/host/proc:ro # host process info -> cpu, mem, io stats
-  #     - /sys:/host/sys:ro # host system info -> hardware stats (cpu, mem, io usage)
-  #     - /:/rootfs:ro # host filesystem info -> disk usage stats
-  #   networks:
-  #     - monitoring
-
-  # docker_custom_exporter:
-  #   build:
-  #     context: ./services/docker_custom_exporter
-  #     dockerfile: Dockerfile
-  #   container_name: docker_custom_exporter
-  #   ports:
-  #     - "6789:6789"
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock # pour communiquer avec le daemon docker
-  #   networks:
-  #     - monitoring
-  
-  # alertmanager:
-  #   image: prom/alertmanager:v0.29.0
-  #   container_name: alert_manager
-  #   ports:
-  #     - "9093:9093"
-  #   volumes:
-  #     - ./services/alertManager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-  #   networks:
-  #     - monitoring
-
-  # elastic_search:
-  #   image: elasticsearch:9.2.0
-  #   container_name: elastic_search
-  #   ports:
-  #     - "9200:9200"
-  #     - "9300:9300"
-  #   volumes:
-  #     - ./services/elk/elasticsearch/data:/usr/share/elasticsearch/data
-  #     - ./services/elk/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-  #   environment:
-  #     - discovery.type=single-node
-  #     - http.host=localhost
-  #     - cluster.name=elasticsearch-cluster
-  #   networks:
-  #     - elk
-
-  # logstash:
-  #   image: logstash:9.2.0
-  #   container_name: logstash
-  #   ports:
-  #     - "5044:5044"
-  #     - "9600:9600"
-  #   volumes:
-  #     - ./services/elk/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-  #     - ./services/elk/logstash/config/logstash.yml:/usr/share/logstash/config/logstash.yml
-  #     - ./services/elk/logstash/data:/usr/share/logstash/data
-  #   depends_on:
-  #     - elastic_search
-  #   networks:
-  #     - elk
-
-  # kibana:
-  #   image: kibana:9.2.0
-  #   container_name: kibana
-  #   ports:
-  #     - "5601:5601"
-  #   volumes:
-  #     - ./services/elk/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
-  #     - ./services/elk/kibana/data:/usr/share/kibana/data
-  #   depends_on:
-  #     - elastic_search
-  #   networks:
-  #     - elk
 
 networks:
   transcendence:

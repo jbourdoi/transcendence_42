@@ -21,3 +21,12 @@
 {"container_name":"vault","timestamp":"2025-11-25T12:44:54.058Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
 {"container_name":"vault","timestamp":"2025-11-25T12:44:54.070Z","level":"INFO","message":"Secret jws_secret set in Vault"}
 {"container_name":"vault","timestamp":"2025-11-25T12:44:54.074Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T07:44:40.968Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T07:44:40.971Z","level":"INFO","message":"Secret jws_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T07:44:40.972Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T09:13:28.097Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T09:13:28.101Z","level":"INFO","message":"Secret jws_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T09:13:28.103Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T09:15:06.242Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T09:15:06.246Z","level":"INFO","message":"Secret jws_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T09:15:06.248Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
