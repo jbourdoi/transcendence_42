@@ -30,3 +30,18 @@
 {"container_name":"vault","timestamp":"2025-11-26T09:15:06.242Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
 {"container_name":"vault","timestamp":"2025-11-26T09:15:06.246Z","level":"INFO","message":"Secret jws_secret set in Vault"}
 {"container_name":"vault","timestamp":"2025-11-26T09:15:06.248Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T14:16:24.359Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T14:16:24.364Z","level":"INFO","message":"Secret jws_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-26T14:16:24.366Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T08:47:02.674Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T08:47:02.679Z","level":"INFO","message":"Secret jws_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T08:47:02.681Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T12:09:18.561Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T12:09:18.563Z","level":"INFO","message":"Secret jws_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T12:09:18.565Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T12:09:18.568Z","level":"INFO","message":"Listening on http://localhost:6988"}
+{"container_name":"vault","timestamp":"2025-11-27T12:56:12.563Z","level":"INFO","message":"Secret bcrypt_salt set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T12:56:12.567Z","level":"INFO","message":"Secret jws_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T12:56:12.568Z","level":"INFO","message":"Secret jwe_secret set in Vault"}
+{"container_name":"vault","timestamp":"2025-11-27T12:56:12.571Z","level":"INFO","message":"Listening on http://localhost:6988"}
+{"container_name":"vault","timestamp":"2025-11-27T14:14:36.789Z","level":"INFO","message":"Secret bcrypt_salt retrieved from Vault"}

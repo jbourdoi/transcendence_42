@@ -1,9 +1,10 @@
 import { CurrentButtonStore } from '../stores/current_button.store.js'
 import { KeyboardStore } from '../stores/keyboard.store.js'
+import { StateStore } from '../stores/state.store.js'
 
 function applyTextUpdate(textSize: number, self: HTMLElement) {
-	self.innerText = `Text Size (${textSize}px)`
-	document.documentElement.style.setProperty('--text-size', `${textSize}px`)
+	// self.innerText = `Text Size (${textSize}px)`
+	StateStore.update({ textSize })
 }
 
 function applyLangUpdate(val: string, self: HTMLElement) {
@@ -43,9 +44,9 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key)) {
 		const data = currentButton.dataset
-		if (data && data?.currentoption) {
+		if (data && data?.stateValue) {
 			const action = actions[data.action]
-			const current = Number(data.currentoption)
+			const current = Number(data.stateValue)
 
 			const min = action.min
 			const max = action.max
@@ -58,7 +59,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 				newValue = current + steps
 				if (newValue > max) newValue = min
 			}
-			data.currentoption = String(newValue)
+			data.stateValue = String(newValue)
 
 			const index = (newValue - min) / steps
 
