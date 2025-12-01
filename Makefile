@@ -17,6 +17,8 @@ all:
 	make -C . up  FILEPATH=$(FILEPATH)
 	make -C . up  FILEPATH=$(FILEPATH_ELK)
 	make -C . up  FILEPATH=$(FILEPATH_METRICS)
+	
+re: down up
 
 
 docker-required:

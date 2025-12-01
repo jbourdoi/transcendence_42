@@ -3,7 +3,7 @@ import path from 'path'
 import { readFile } from 'fs/promises'
 import { existsSync, readFileSync } from 'fs'
 import fastifyStatic from '@fastify/static'
-import { renderTemplateFromFile } from './functions/renderTemplateFromFile.fn.js'
+import { applyTemplate } from './functions/applyTemplate.fn.js'
 import { publicWatcher } from './services/publicWatcher.service.js'
 import __dirname, { setDirName } from './functions/dirname.fn.js'
 import cookie from '@fastify/cookie'
@@ -32,17 +32,18 @@ fastify.register(fastifyStatic, {
 	prefix: '/'
 })
 
-async function getHTML(route: string, type?: string): Promise<any> {
+async function getHTML(route: string, type?: string): Promise<string> {
 	return new Promise(async (resolve, reject) => {
-		let page
+		const filePath = path.join(__dirname(), 'srcs/pages', `${route}.html`)
+		if (!existsSync(filePath)) return reject()
 
-		if (type === 'hydrate') {
-			const filePath = path.join(__dirname(), 'srcs/pages', `${route}.html`)
-			page = await readFile(filePath, 'utf8').catch(() => reject(null))
-		} else {
-			page = await renderTemplateFromFile(`${route}.html`).catch(() => reject(null))
+		let pageContent = await readFile(filePath, 'utf8')
+		if (pageContent === null) return reject()
+
+		if (type === 'render') {
+			pageContent = await applyTemplate(pageContent)
 		}
-		resolve(page)
+		resolve(pageContent)
 	})
 }
 
@@ -59,7 +60,7 @@ fastify.route({
 		const type = req.headers.type as string
 		if (route === '') route = 'index'
 		if (validRoutes.includes(route)) {
-			const html = await getHTML(route, type).catch(() => {
+			const html = await getHTML(route, type || 'render').catch(() => {
 				return reply.status(404).send()
 			})
 			return reply.type('text/html').send(html)
