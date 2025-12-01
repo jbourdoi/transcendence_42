@@ -10,6 +10,7 @@ import cookie from '@fastify/cookie'
 import { authRoutes, metricsRoutes, userRoutes } from './routes/handler.route.js'
 import { totalHttpRequests } from './services/prometheus.service.js'
 import { log } from './logs.js'
+import { applyError } from './functions/applyError.fn.js'
 
 const fastify: FastifyInstance = Fastify()
 const validRoutes = ['index', 'about', 'login', 'options', 'register', 'dashboard', 'users']
@@ -32,9 +33,10 @@ fastify.register(fastifyStatic, {
 	prefix: '/'
 })
 
-async function getHTML(route: string, type?: string): Promise<string> {
+async function getHTML(route: string, type?: string, error?: number): Promise<string> {
 	return new Promise(async (resolve, reject) => {
-		const filePath = path.join(__dirname(), 'srcs/pages', `${route}.html`)
+		const filePath = path.join(__dirname(), 'srcs/pages', `${type !== 'error' ? route : 'error'}.html`)
+
 		if (!existsSync(filePath)) return reject()
 
 		let pageContent = await readFile(filePath, 'utf8')
@@ -42,6 +44,9 @@ async function getHTML(route: string, type?: string): Promise<string> {
 
 		if (type === 'render') {
 			pageContent = await applyTemplate(pageContent)
+		} else if (type === 'error') {
+			pageContent = await applyTemplate(pageContent)
+			pageContent = await applyError(pageContent, error)
 		}
 		resolve(pageContent)
 	})
@@ -60,10 +65,12 @@ fastify.route({
 		const type = req.headers.type as string
 		if (route === '') route = 'index'
 		if (validRoutes.includes(route)) {
-			const html = await getHTML(route, type || 'render').catch(() => {
-				return reply.status(404).send()
-			})
-			return reply.type('text/html').send(html)
+			const html = await getHTML(route, type || 'render')
+			if (html) return reply.type('text/html').send(html)
+			else {
+				const html = await getHTML(route, 'error', 404)
+				return reply.type('text/html').send(html)
+			}
 		} else {
 			const filePath = path.join(__dirname(), 'dist/public', route)
 			if (existsSync(filePath)) {
@@ -71,7 +78,8 @@ fastify.route({
 				return reply.type('text/javascript').send(fileData)
 			}
 		}
-		return reply.status(404).send()
+		const html = await getHTML(route, 'error', 404)
+		return reply.type('text/html').send(html)
 	}
 })
 
