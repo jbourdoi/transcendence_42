@@ -1,0 +1,12 @@
+#!/bin/bash
+echo "server install..."
+cd server && pnpm install
+
+echo "vault install..."
+cd ../vault && pnpm install
+
+echo "waf install..."
+cd ../waf && pnpm install
+
+echo "database install..."
+cd ../database && pnpm install

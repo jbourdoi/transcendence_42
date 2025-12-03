@@ -1,0 +1,3 @@
+###
+GET https://localhost:443/api/user?userId=79b8f448-cb2f-4ad3-b4c5-690f7075ff29
+
