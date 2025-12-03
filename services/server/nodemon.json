@@ -1,5 +1,6 @@
 {
 	"ignore": [
-		"dist"
+		"dist/public/lib/**/*.js",
+		"srcs/public/lib/**/*.js"
 	]
 }

@@ -144,6 +144,14 @@ async function allowRequest(req: Request, bodyText: string): Promise<boolean> {
 
 Bun.serve({
 	port: 443,
+	websocket: {
+		async message(ws, message) {
+			console.log(new Date().toLocaleString())
+			// messages from backend get sent out automatically
+			console.log("WebSocket: ", ws)
+			console.log("Message: ", message)
+		}
+	},
 	fetch: async req => {
 		console.log(new Date().toLocaleString())
 		console.log(req.method)
@@ -157,8 +165,8 @@ Bun.serve({
 		}
 
 		const url = new URL(req.url)
-
-		let result = await fetch(`https://server:3000${url.pathname}`, {
+		// console.log(url)
+		let result = await fetch(`https://server:3000${url.pathname}${url.search}`, {
 			method: req.method,
 			headers: req.headers,
 			body: bodyText

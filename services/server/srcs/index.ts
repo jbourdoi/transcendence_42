@@ -5,18 +5,19 @@ import { existsSync, readFileSync } from 'fs'
 import sanitizeHtml from 'sanitize-html'
 import fastifyStatic from '@fastify/static'
 import fastifyWebsocket from '@fastify/websocket'
+import cors from '@fastify/cors'
 import { applyTemplate } from './functions/applyTemplate.fn.js'
-import { publicWatcher } from './services/publicWatcher.service.js'
 import __dirname, { setDirName } from './functions/dirname.fn.js'
+import { publicWatcher } from './services/publicWatcher.service.js'
 import cookie from '@fastify/cookie'
 import { authRoutes, metricsRoutes, userRoutes } from './routes/handler.route.js'
 import { totalHttpRequests } from './services/prometheus.service.js'
 import { log } from './logs.js'
 import { applyError } from './functions/applyError.fn.js'
 import fs from 'fs'
-import cors from '@fastify/cors'
 import Lobby from './classes/Lobby.js'
 import { json_parse, json_stringify } from './public/functions/json_wrapper.js'
+
 const MAX_MESSAGE_LENGTH = 150
 
 const validRoutes = ['index', 'about', 'login', 'options', 'register', 'dashboard', 'users', 'game']
@@ -118,13 +119,20 @@ fastify.delete('/api/lobby', (req, reply) => {
 
 fastify.get('/api/ws', { websocket: true }, (socket, req) => {
 	const query: any = req.query
+	console.log(query)
 	const { userId } = query
 	const cleanId = sanitizeHtml(userId)
 	console.log(`Connexion avec userId='${cleanId}'`)
 	const user = lobby.getUser(cleanId)
+	console.log('User lobby: ', user)
 	if (!user) return socket.close()
+		console.log('Socket closed')
 	lobby.refreshWebsocket(cleanId, socket)
-	lobby.broadcast({})
+	console.log('User lobby: ', user?.socket?._readyState)
+	// lobby.broadcast({})
+	lobby.broadcast({
+		id: user.id
+	})
 	socket.on('close', () => lobby.broadcast({}))
 	socket.on('message', (raw: any) => {
 		const rawString = sanitizeHtml(raw.toString())

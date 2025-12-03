@@ -342,6 +342,7 @@ async function refreshWebSocket() {
 
 	ws.addEventListener('message', e => {
 		const message: any = json_parse(e.data)
+		console.log(message)
 		if (!message) return
 		if (message?.type === 'error') console.log('received: ', message)
 		if (message?.type === 'duel' && message?.action === 'accept') return setWss(user.websocket, user.pseudo)
