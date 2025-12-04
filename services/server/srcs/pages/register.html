@@ -1,3 +1,29 @@
+<page type="register">
+	<page-title>Register</page-title>
+	<register-form>
+		<form-section>
+			<span>Username:</span>
+			<input type="text" tabindex="1" />
+		</form-section>
+		<nav-button
+			tabindex="2"
+			class="button text-3xl y-nav"
+			data-action="selectRegisterType"
+			data-state-value="0"
+			></state
+		></nav-button>
+		<form-section>
+			<span>Password:</span>
+			<input type="text" tabindex="3" />
+		</form-section>
+	</register-form>
+	<menu-buttons>
+		<nav-button data-route="" class="button text-3xl" tabindex="3">Back</nav-button>
+	</menu-buttons>
+</page>
+
+<script type="module" src="modules/register.js"></script>
+
 <head>
 	<title>Register</title>
 	<style module>
@@ -8,6 +34,7 @@
 		form-section {
 			display: flex;
 			margin-bottom: 1rem;
+			align-items: center;
 		}
 
 		form-section span {
@@ -20,7 +47,7 @@
 			border-bottom: 2px transparent dashed;
 			/* box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.75); */
 		}
-		
+
 		input:focus {
 			outline: none;
 			border-bottom: 2px white dashed;
@@ -28,22 +55,3 @@
 		}
 	</style>
 </head>
-
-<page type="register">
-	<page-title>Register</page-title>
-	<register-form>
-		<form-section>
-			<span>Username:</span>
-			<input type="text" tabindex="1"/>
-		</form-section>
-		<form-section>
-			<span>Password:</span>
-			<input type="text" tabindex="2"/>
-		</form-section>
-	</register-form>
-	<menu-buttons>
-		<nav-button data-route="" class="button text-3xl" tabindex="3">Back</nav-button>
-	</menu-buttons>
-</page>
-
-<script type="module" src="modules/register.js"></script>

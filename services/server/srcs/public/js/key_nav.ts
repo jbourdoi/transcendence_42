@@ -8,8 +8,7 @@ import { navigate } from './routing.js'
 let buttonList: HTMLElement[] = []
 let currentTabIndex = 0
 
-PageUpdateStore.subscribe(newPage => {
-	console.log('New page: ', newPage)
+PageUpdateStore.subscribe(_ => {
 	buttonList = getTabIndexedElements()
 })
 

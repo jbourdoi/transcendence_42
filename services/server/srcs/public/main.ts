@@ -15,14 +15,11 @@ if ($bgContainer) {
 	const $bgVideo = $bgContainer.querySelector('video') as HTMLVideoElement
 	const $bgImg = $bgContainer.querySelector('img') as HTMLImageElement
 
-	$bgVideo.addEventListener('progress', showBGVideo)
+	$bgVideo.addEventListener('play', showBGVideo)
 
 	function showBGVideo() {
-		$bgVideo.removeEventListener('progress', showBGVideo)
+		$bgVideo.removeEventListener('play', showBGVideo)
 		$bgImg.style.opacity = '0'
-		setTimeout(() => {
-			$bgVideo.play()
-		}, 100)
 	}
 }
 
