@@ -2,16 +2,38 @@ import { log } from '../logs.ts';
 import https from 'https';
 import fs from 'fs';
 
-const VAULT_TOKEN = fs.readFileSync(process.env.VAULT_ROOT_TOKEN_FILE as string, 'utf8').trim();
 const VAULT_CERT_PATH = fs.readFileSync(process.env.VAULT_CERT_PATH as string, 'utf8');
+const VAULT_APPROLE_ROLE_ID = fs.readFileSync(process.env.VAULT_APPROLE_ROLE_ID_FILE as string, 'utf8').trim();
+const VAULT_APPROLE_SECRET_ID = fs.readFileSync(process.env.VAULT_APPROLE_SECRET_ID_FILE as string, 'utf8').trim();
 
 const httpsAgent = new https.Agent({ ca: VAULT_CERT_PATH });
+
+async function loginWithAppRole() {
+    const user = await fetch(`${process.env.VAULT_ADDR}/v1/auth/approle/login`, {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            role_id: VAULT_APPROLE_ROLE_ID,
+            secret_id: VAULT_APPROLE_SECRET_ID,
+        }),
+        dispatcher: httpsAgent
+    });
+    if (!user.ok) {
+        log(`Failed to login to Vault: ${user.status} ${user.statusText}`, 'error');
+        throw new Error(`Failed to login to Vault: ${user.status} ${user.statusText}`);
+    }
+    const { auth } = await user.json();
+    const clientToken = auth.client_token;
+    return clientToken;
+}
+
+const clientToken = await loginWithAppRole();
 
 async function vaultFetch(path: string, options: RequestInit) {
     return fetch(`${process.env.VAULT_ADDR}/v1/${path}`, {
         ...options,
         headers: {
-            'X-Vault-Token': VAULT_TOKEN,
+            'X-Vault-Token': clientToken,
             'Content-Type': 'application/json',
             ...(options.headers || {})
         },

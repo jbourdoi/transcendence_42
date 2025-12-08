@@ -69,6 +69,8 @@ services:
       VAULT_ROOT_TOKEN_FILE: ${VAULT_ROOT_TOKEN_FILE}
       NODE_EXTRA_CA_CERTS: ${VAULT_CERT_PATH} # env var belonging to nodejs
       VAULT_CERT_PATH: ${VAULT_CERT_PATH}
+      VAULT_APPROLE_ROLE_ID_FILE: ${VAULT_APPROLE_ROLE_ID_FILE}
+      VAULT_APPROLE_SECRET_ID_FILE: ${VAULT_APPROLE_SECRET_ID_FILE}
     healthcheck:
       test: ["CMD", "curl", "-f", "${VAULT_API_HEALTH_URL}"]
       interval: 5s

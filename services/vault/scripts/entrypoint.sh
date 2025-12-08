@@ -25,13 +25,17 @@ shred -u ${UNSEAL_FILE} 2>/dev/null || rm -f ${UNSEAL_FILE}
 echo "Vault unsealed. Logging in as root with token from ${VAULT_ROOT_TOKEN_FILE}..."
 cat ${VAULT_ROOT_TOKEN_FILE} | vault login -
 
-# if kv already enabled, continue without enabling it
 echo "Enabling KV secrets engine at path 'secret'..."
 if [ "$(vault secrets list -format=json | jq -r '."secret/"?.type')" = "kv" ]; then
   echo "KV secrets engine already enabled at path. Continuing..."
 else
   vault secrets enable -version=2 -path=secret kv
 fi
+
+bash ./scripts/approle_init.sh
+
+echo "Unsetting VAULT_TOKEN for security."
+export VAULT_TOKEN=""
 
 echo "Starting API..."
 bun ./srcs/index.ts
