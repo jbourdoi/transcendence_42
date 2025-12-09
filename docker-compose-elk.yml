@@ -43,11 +43,6 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "${LOGSTASH_HEALTH_URL}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - elk
     labels:
