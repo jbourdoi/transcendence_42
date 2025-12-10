@@ -1,0 +1,117 @@
+import { v4 as uuidv4 } from 'uuid'
+
+let chats = [
+	{
+		time: '09:50',
+		user: 'Bob',
+		message: 'Hello Alice!',
+		to: 'Alice',
+		id: uuidv4()
+	},
+	{
+		time: '09:52',
+		user: 'Alice',
+		message: 'General message',
+		to: undefined,
+		id: uuidv4()
+	},
+	{
+		time: '09:53',
+		user: 'Bob',
+		message: 'General message',
+		to: undefined,
+		id: uuidv4()
+	},
+	{
+		time: '09:54',
+		user: 'Alice',
+		message: 'Hi Bob!',
+		to: 'Bob',
+		id: uuidv4()
+	},
+	{
+		time: '09:55',
+		user: 'Pedro',
+		message: 'General message',
+		to: undefined,
+		id: uuidv4()
+	},
+	{
+		time: '09:56',
+		user: 'Maria',
+		message: 'General message',
+		to: undefined,
+		id: uuidv4()
+	},
+	{
+		time: '09:57',
+		user: 'Alice',
+		message: 'General message',
+		to: undefined,
+		id: uuidv4()
+	}
+]
+
+const $chatWindow = document.querySelector('chat-window') as HTMLElement
+const $chatInput = document.querySelector('chat-input input')
+const user = 'Bob'
+
+refreshChat()
+
+function refreshChat() {
+	$chatWindow.innerText = ''
+	chats.forEach(chat => {
+		let $line = document.createElement('chat-line')
+		let $time = document.createElement('chat-time')
+		let $user = document.createElement('chat-user')
+		let $message = document.createElement('chat-message')
+
+		if (chat.to === undefined) {
+			$line.classList.add('g')
+			$user.innerText = `${chat.user}`
+		} else {
+			$line.classList.add('mp')
+			if (chat.user === user) {
+				$user.innerText = `To ${chat.to}`
+			} else {
+				$user.innerText = `From ${chat.user}`
+			}
+		}
+
+		$time.innerText = chat.time
+		$message.innerText = chat.message
+
+		$line.appendChild($time)
+		$line.appendChild($user)
+		$line.appendChild($message)
+
+		$chatWindow?.appendChild($line)
+		$chatWindow.scrollTop = $chatWindow.scrollHeight
+	})
+}
+
+document.querySelector('chat-input button')?.addEventListener('click', evt => {
+	const chatValue = $chatInput?.value
+
+	/* 
+		time: '09:54',
+		user: 'Alice',
+		message: 'Hi Bob!',
+		to: 'Bob',
+		id: uuidv4()
+	
+	*/
+
+	const foo = {
+		time: ,
+		user: 'Alice',
+		message: chatValue,
+		to: undefined,
+		id: uuidv4()
+	}
+
+	// console.log(foo)
+
+	chats.push(foo)
+	refreshChat()
+})

@@ -1,0 +1,75 @@
+<head>
+	<title>Lobby</title>
+	<style module>
+		lobby-container {
+			display: block;
+			height: 50%;
+			width: 80%;
+			background-color: rgba(0, 0, 0, 0.25);
+			padding: 1rem;
+			margin-bottom: 1rem;
+		}
+
+		grid-container {
+			display: flex;
+			flex-direction: column;
+		}
+
+		grid-row {
+			display: flex;
+			flex-direction: row;
+			justify-content: space-around;
+			padding: 0 0.5rem;
+		}
+
+		grid-row.grid-header {
+			font-size: 1.5rem;
+			border-bottom: 2px solid #fff;
+		}
+
+		grid-row:not(.grid-header) {
+			background-color: rgba(255, 255, 255, 0.15);
+			margin-top: 0.5rem;
+			padding: 0.25rem 0.5rem;
+			cursor: pointer;
+		}
+
+		grid-col {
+			width: 100%;
+		}
+
+		grid-col:not(:first-child) {
+			border-left: 2px solid #fff;
+			padding-left: 0.5rem;
+		}
+	</style>
+</head>
+
+<page type="lobby">
+	<page-title>Lobby</page-title>
+	<lobby-container>
+		<grid-container>
+			<grid-row class="grid-header">
+				<grid-col>Type</grid-col>
+				<grid-col>Players</grid-col>
+			</grid-row>
+			<grid-row>
+				<grid-col>Normal</grid-col>
+				<grid-col>1/8</grid-col>
+			</grid-row>
+			<grid-row>
+				<grid-col>Tournament</grid-col>
+				<grid-col>2/2</grid-col>
+			</grid-row>
+			<grid-row>
+				<grid-col>Normal</grid-col>
+				<grid-col>4/5</grid-col>
+			</grid-row>
+		</grid-container>
+	</lobby-container>
+	<menu-buttons>
+		<nav-button data-route="" tabindex="1" class="button text-3xl">Back</nav-button>
+	</menu-buttons>
+</page>
+
+<script type="module" src="modules/lobby.js"></script>
