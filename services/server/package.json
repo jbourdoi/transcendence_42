@@ -9,11 +9,11 @@
 		"dev": "concurrently \"npm run tailwind\" \"npm run tsc:watch\" \"npm run build\" \"npm run nodemon\"",
 		"tsc:watch": "tsc -watch",
 		"build": "node ./build.ts",
-		"nodemon": "sleep 5 && nodemon ./dist/index.js",
+		"nodemon": "sleep 5 && nodemon ./dist/backend/server.js",
 		"tailwind": "tailwindcss -o ./dist/public/styles/tailwind.css --watch",
 		"prod": "npm run build && npm run start",
 		"_build": "tsc && tailwindcss -o ./dist/public/styles/tailwind.css",
-		"_start": "node ./dist/index.js"
+		"_start": "node ./dist/server.js"
 	},
 	"keywords": [],
 	"author": "",

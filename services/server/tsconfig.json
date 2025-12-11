@@ -21,8 +21,8 @@
 		"skipLibCheck": true
 	},
 	"include": [
-		"srcs/index.ts",
-		"srcs/logs.ts"
+		"srcs/backend/server.ts",
+		"srcs/backend/logs.ts"
 	],
 	"exclude": [
 		"srcs/public/**"

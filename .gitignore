@@ -3,6 +3,7 @@ node_modules
 dist
 logs/*
 services/elk/logstash/pipeline/logstash.conf
+services/elk/kibana/kibana.yml
 services/metrics/alertManager/alertmanager.yml
 services/metrics/grafana/provisioning/dashboards/dashboards.yml
 services/metrics/grafana/provisioning/datasources/datasources.yml

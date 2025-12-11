@@ -8,6 +8,7 @@ set +a
 
 FILES="
 ./services/elk/logstash/pipeline/logstash.conf.tpl:./services/elk/logstash/pipeline/logstash.conf
+./services/elk/kibana/kibana.yml.tpl:./services/elk/kibana/kibana.yml
 ./services/metrics/alertManager/alertmanager.yml.tpl:./services/metrics/alertManager/alertmanager.yml
 ./services/metrics/grafana/provisioning/dashboards/dashboards.yml.tpl:./services/metrics/grafana/provisioning/dashboards/dashboards.yml
 ./services/metrics/grafana/provisioning/datasources/datasources.yml.tpl:./services/metrics/grafana/provisioning/datasources/datasources.yml

@@ -10,13 +10,14 @@ services:
     environment:
       - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}
       - ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT}
-      - logger.level=error
+      # - logger.level=error
       - cluster.name=elasticsearch
       - discovery.type=single-node
       - xpack.security.enabled=false
       - xpack.license.self_generated.type=trial
+      - ELASTIC_PASSWORD=${ELASTICSEARCH_PWD}
     healthcheck:
-      test: ["CMD", "curl", "-f", "${ELASTICSEARCH_HEALTH_URL}"]
+      test: ["CMD", "curl", "-u", "${ELASTICSEARCH_USER}:${ELASTICSEARCH_PWD}", "-f", "${ELASTICSEARCH_HEALTH_URL}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,6 +41,8 @@ services:
       - xpack.monitoring.enabled=true
       - xpack.monitoring.elasticsearch.username=${ELASTICSEARCH_USER}
       - xpack.monitoring.elasticsearch.password=${ELASTICSEARCH_PWD}
+      - ELASTICSEARCH_USER=${ELASTICSEARCH_USER}
+      - ELASTICSEARCH_PWD=${ELASTICSEARCH_PWD}
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -58,17 +61,12 @@ services:
       - "${KIBANA_PORT}:${KIBANA_PORT}"
     volumes:
       - ./services/elk/kibana/imports:/usr/share/kibana/imports
+      - ./services/elk/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:ro
     environment:
       - KIBANA_OBJECTS_URL=${KIBANA_OBJECTS_URL}
       - KIBANA_STATUS_URL=${KIBANA_STATUS_URL}
       - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}
       - ELASTICSEARCH_PORT=${ELASTICSEARCH_PORT}
-      - server.name=kibana
-      - server.host=${KIBANA_HOST}
-      - elasticsearch.hosts=["http://${ELASTICSEARCH_HOST}:${ELASTICSEARCH_PORT}"]
-      - xpack.monitoring.ui.container.elasticsearch.enabled=true
-      - elasticsearch.username=${ELASTICSEARCH_USER}
-      - elasticsearch.password=${ELASTICSEARCH_PWD}
     depends_on:
       elasticsearch:
         condition: service_healthy

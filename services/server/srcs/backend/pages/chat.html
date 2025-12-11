@@ -1,0 +1,113 @@
+<head>
+	<title>Chat</title>
+	<style module>
+		chat-container {
+			display: grid;
+			grid-template-columns: auto 192px;
+			grid-template-rows: auto 48px;
+			grid-template-areas:
+				'chat-window chat-users'
+				'chat-input chat-input';
+			height: 70%;
+			width: 80%;
+			margin-bottom: 1rem;
+		}
+
+		chat-window {
+			grid-area: chat-window;
+			background-color: rgba(255, 255, 255, 0.5);
+			display: flex;
+			flex-direction: column;
+			padding: 1rem;
+			border-radius: 5px 0 0 0;
+			margin-right: 6px;
+			overflow-y: scroll;
+			color: rgb(33, 33, 33);
+		}
+
+		chat-window::before {
+			content: 'Chat Window';
+			font-size: 1.5rem;
+			text-align: center;
+			margin-bottom: 1rem;
+		}
+
+		chat-users {
+			grid-area: chat-users;
+			display: flex;
+			flex-direction: column;
+			padding: 1rem;
+			background-color: rgba(255, 255, 255, 0.5);
+			border-radius: 0 5px 0 0;
+			color: rgb(33, 33, 33);
+		}
+
+		chat-users::before {
+			content: 'Users';
+			font-size: 1.5rem;
+			text-align: center;
+			margin-bottom: 1rem;
+		}
+
+		chat-input {
+			grid-area: chat-input;
+			background-color: rgba(255, 255, 255, 0.5);
+			padding: 5px;
+			display: flex;
+			flex-direction: row;
+			margin-top: 6px;
+			border-radius: 0 0 5px 5px;
+		}
+
+		chat-input input {
+			color: black;
+			width: 100%;
+			height: 100%;
+			padding: 0.5rem;
+			margin-right: 5px;
+			border-radius: 5px;
+		}
+
+		chat-line.mp {
+			color: hsl(210, 70%, 50%);
+		}
+
+		chat-line.g {
+			color: rgb(33, 33, 33);
+		}
+
+		chat-time::before {
+			content: '[';
+		}
+
+		chat-time::after {
+			content: ']';
+		}
+
+		chat-user::after {
+			content: ': ';
+		}
+	</style>
+</head>
+
+<page type="chat">
+	<page-title>Chat</page-title>
+	<chat-container>
+		<chat-window></chat-window>
+		<chat-users>
+			<user-line>Alice</user-line>
+			<user-line>Bob</user-line>
+			<user-line>Pedro</user-line>
+			<user-line>Maria</user-line>
+		</chat-users>
+		<chat-input>
+			<input type="text" />
+			<button>Send</button>
+		</chat-input>
+	</chat-container>
+	<menu-buttons>
+		<nav-button data-route="" tabindex="1" class="button text-3xl">Back</nav-button>
+	</menu-buttons>
+</page>
+
+<script type="module" src="modules/chat.js"></script>

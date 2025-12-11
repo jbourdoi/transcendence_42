@@ -3,12 +3,12 @@ import fg from 'fast-glob'
 import { watch } from 'chokidar'
 
 async function buildAll() {
-	const entryPoints = await fg('srcs/public/**/*.ts')
+	const entryPoints = await fg('srcs/frontend/**/*.ts')
 	console.log('Building files:', entryPoints)
 
 	await build({
 		entryPoints,
-		outbase: 'srcs/public',
+		outbase: 'srcs/frontend',
 		outdir: 'dist/public',
 		bundle: true,
 		splitting: true,
@@ -19,7 +19,7 @@ async function buildAll() {
 
 buildAll().catch(console.error)
 
-watch('srcs/public', { ignoreInitial: true }).on('all', async () => {
+watch('srcs/frontend', { ignoreInitial: true }).on('all', async () => {
 	console.log('Change detected, rebuilding...')
 	await buildAll()
 })

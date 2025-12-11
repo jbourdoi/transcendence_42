@@ -1,3 +1,31 @@
+Obligatoire:
+- Tournoi
+- Forms
+- Local
+
+Grands:
+- Live chat
+- User Management (login, inscription, match history)
+
+Petits:
+- 2FA
+- Screen reader - SEO SSR
+- Kibana (archiving policies) - Grafana (storage strategies)
+- Languages
+
+A la fin:
+- Vault - WAF
+
+Peut etre:
+- Support pc + tel - GDPR
+
+
+
+
+
+
+---------------------------------------------
+
 III.2 (page 5)
 . if backend should be in pure PHP , can be overriden by FRAMEWORK module
 . if database should follow DATABASE module
