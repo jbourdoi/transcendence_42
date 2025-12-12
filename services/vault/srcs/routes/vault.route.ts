@@ -66,7 +66,7 @@ export async function getSecret(request:Request) {
         })
         if (!secret.ok) throw new Error(`${secret.status} ${secret.statusText}`);
         const data = await secret.json();
-        const secretData = { value: data.data.value };
+        const secretData = { value: data.data.data.value };
         log(`Secret ${name} retrieved from Vault`, 'info');
         res = { status: 200, message: secretData };
     }
