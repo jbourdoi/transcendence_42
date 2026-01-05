@@ -1,14 +1,91 @@
 <head>
-	<title>Login</title>
+	<title>Register</title>
 	<style module>
-		a {
-			color: rgb(0, 172, 14);
+		menu-buttons {
+			display: none;
+		}
+
+		login-form {
+			margin-bottom: 1rem;
+			display: none;
+		}
+
+		form-section {
+			display: flex;
+			margin-bottom: 1rem;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		form-section span {
+			margin-right: 0.5rem;
+		}
+
+		form-section input {
+			padding: 0.25rem 0.5rem;
+			background-color: rgba(0, 0, 0, 0.75);
+			border-bottom: 2px transparent dashed;
+			/* box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.75); */
+		}
+
+		input:focus {
+			outline: none;
+			border-bottom: 2px white dashed;
+			/* box-shadow: inset 0px -2px 0px yellow; */
+		}
+
+		oauth-container {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
 		}
 	</style>
 </head>
 
 <page type="login">
-	<span data-route="" tabindex="1" class="button text-4xl">Back</span>
+	<page-title>Login</page-title>
+	<span type="spinner"><img src="/images/spinner.svg" alt="Loading" /></span>
+	<login-form>
+		<oauth-container
+			tabindex="1"
+			class="button text-3xl y-nav"
+			data-action="selectLoginType"
+			data-state-value="0"
+			data-selected="true">
+			<a
+				href="https://api.intra.42.fr/oauth/authorize?client_id=u-s4t2ud-9f30b2430e51c381ae5e38158295eef89230a74b070231a798bd1bcb7a01709c&amp;redirect_uri=https%3A%2F%2Flocalhost%2Fregister&amp;response_type=code&amp;state=4c793e48-15be-4e09-8240-ff1152e39a33">
+				42
+			</a>
+		</oauth-container>
+		<user-form
+			class="button text-3xl y-nav"
+			data-action="selectLoginType"
+			data-state-value="1">
+			<form
+				class="hidden"
+				>
+				<form-section>
+					<span>Username:</span>
+					<input type="text" name="username" value="username" required tabindex="2"/>
+				</form-section>
+				<form-section>
+					<span>Password:</span>
+					<input type="password" name="pwd" required value="Password1!@" tabindex="5"/>
+				</form-section>
+				<button
+					type="submit"
+					class="button text-3xl"
+					data-action="submitLoginForm" tabindex="8">
+					Login
+				</button>
+			</form>
+		</user-form>
+	</login-form>
+	<menu-buttons>
+		<nav-button data-route="" class="button text-3xl" tabindex="3">Back</nav-button>
+	</menu-buttons>
 </page>
 
 <script type="module" src="modules/login.js"></script>
