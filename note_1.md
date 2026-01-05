@@ -2,10 +2,13 @@ Obligatoire:
 - Microservices (jeu et chat dans leurs propres conteneurs)
 - Tournoi
 - Forms
-    + login: pwd obligatoire coté front
-    + register: css, reset avatar, renvoi vers page principal + remplace login/register par deconnection
-- clé API 42 à mettre dans Vault
+    + login: redirection home + remplace login/register par deconnection
+    + register: css, reset avatar, redirection home + remplace login/register par deconnection, fait office de login
+    + register OAUTH: ajouter dans db
+- clé API 42 (client_id et client_secret) à mettre dans Vault
 - Local
+- double submit
+- problemes nav
 
 Grands:
 - Live chat
