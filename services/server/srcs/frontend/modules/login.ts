@@ -74,7 +74,6 @@ function handleLoginForm(self: HTMLElement) {
 	$el.innerText = 'Login Form'
 	self.innerHTML = ''
 
-	//
 	const $username = ($form.querySelector('input[name="username"]') as HTMLInputElement).value
 	const $pwd = ($form.querySelector('input[name="pwd"]') as HTMLInputElement).value
 
@@ -107,6 +106,8 @@ function handleLoginForm(self: HTMLElement) {
 				return res.json()
 		}).then(json => {
 			console.log('json:', json)
+			if (json.status < 400)
+				navigate('')
 		})
 	}
 

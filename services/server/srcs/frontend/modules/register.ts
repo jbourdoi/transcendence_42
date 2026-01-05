@@ -98,13 +98,15 @@ function handleUserForm(self: HTMLElement) {
 			method: 'POST',
 			body: formData
 		})
-			.then(res => {
-				console.log('res status:', res.status)
-				return res.json()
-			})
-			.then(json => {
-				console.log('json:', json)
-			})
+		.then(res => {
+			console.log('res status:', res.status)
+			return res.json()
+		})
+		.then(json => {
+			console.log('json:', json)
+			if (!json?.message?.errno)
+				navigate('')
+		})
 	}
 
 	self.append($el)
