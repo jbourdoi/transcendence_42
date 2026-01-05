@@ -39,6 +39,19 @@ export function setupConfirmFieldValidation(originalInput: HTMLInputElement, con
     })
 }
 
+export function setupUsernameAndPwdFieldsValidation($form: HTMLElement) {
+    setupFieldValidation(
+		$form.querySelector('input[name="username"]') as HTMLInputElement,
+		(value: string) => value.trim() === '',
+		'Empty field'
+	)
+	setupFieldValidation(
+		$form.querySelector('input[name="pwd"]') as HTMLInputElement,
+		(value: string) => value.trim() === '',
+		'Empty field'
+	)
+}
+
 export function setupAllFieldValidation($form: HTMLElement) {
     setupFieldValidation(
 		$form.querySelector('input[name="username"]') as HTMLInputElement,
