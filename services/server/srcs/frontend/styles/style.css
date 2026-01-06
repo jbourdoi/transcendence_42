@@ -28,6 +28,7 @@ body {
 
 :not(input)[data-selected='true'][tabindex] {
 	background-color: rgba(0, 0, 0, 0.75);
+	box-shadow: inset 0px 0px 0px 2px #fff;
 	transform: scale(1.2);
 }
 
@@ -103,13 +104,23 @@ span[type='spinner'] img {
 	opacity: 1;
 }
 
+nav-button span {
+	padding: 0 1rem;
+}
+
 nav-left,
 nav-right {
 	padding: 1rem;
 	opacity: 0;
-	transition-property: opacity;
+	transition-property: opacity, transform;
 	transition-duration: 300ms;
-	transition-timing-function: ease-in-out;
+	transition-timing-function: ease-in-out, cubic-bezier(0.68, -0.55, 0.265, 1.55);
+	display: inline-block;
+}
+
+nav-left:hover,
+nav-right:hover {
+	transform: scale(1.5);
 }
 
 .invalid-field {

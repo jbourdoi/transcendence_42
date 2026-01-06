@@ -42,7 +42,7 @@ export function setupConfirmFieldValidation(
 }
 
 export function setupUsernameAndPwdFieldsValidation($form: HTMLElement) {
-    setupFieldValidation(
+	setupFieldValidation(
 		$form.querySelector('input[name="username"]') as HTMLInputElement,
 		(value: string) => value.trim() === '',
 		'Empty field'
@@ -152,7 +152,6 @@ export function createFormData(form: HTMLElement, avatarInput: HTMLInputElement)
 	formData.append('checkmail', (form.querySelector('input[name="checkmail"]') as HTMLInputElement).value)
 	formData.append('pwd', (form.querySelector('input[name="pwd"]') as HTMLInputElement).value)
 	formData.append('checkpwd', (form.querySelector('input[name="checkpwd"]') as HTMLInputElement).value)
-
 	const avatarFile: File | null = avatarInput.files?.[0] || null
 	if (avatarFile) formData.append('avatar', avatarFile)
 	else formData.append('avatar', '')
