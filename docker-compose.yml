@@ -16,6 +16,9 @@ services:
       - "./services/server/srcs:/app/srcs"
       - "./services/server/build.ts:/app/build.ts"
       - ${LOGS_PATH}:${LOGS_DIR}
+    environment:
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
     networks:
       - transcendence
     labels:
