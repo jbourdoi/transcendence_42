@@ -10,6 +10,7 @@ import {
 	resetAvatarButton
 } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
+import { fetchRegister } from '../functions/loginRegisterFetch.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -91,25 +92,7 @@ function handleUserForm(self: HTMLElement) {
 				return
 			}
 
-			fetch('https://localhost:443/register', {
-				method: 'POST',
-				body: formData
-			})
-				.then(res => {
-					if (res.status >= 400) {
-						console.log(res)
-						return {
-							status: res.status
-						}
-					}
-					return res.json()
-				})
-				.then(res => {
-					if (res?.status >= 400) {
-						return
-					}
-					console.log('Server response: ', res)
-				})
+			fetchRegister(formData, $registerForm)
 		}
 	}
 
