@@ -2,17 +2,16 @@ Obligatoire:
 - Microservices (jeu et chat dans leurs propres conteneurs)
 - Tournoi
 - Forms
-    + login: remplace login/register par deconnection
-    + register: css, remplace login/register par deconnection, fait office de login
-    + register OAUTH: ajouter dans db
-- clé API 42 (client_id et client_secret) à mettre dans Vault
+    + login: remplace login/register par logout
+    + register: css, remplace login/register par logout, fait office de login
+    + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
 - Local
 - double submit
 - problemes nav
 
 Grands:
 - Live chat
-- User Management (match history, changer son username, avatar, friends)
+- User Management (match history, changer son username/avatar, friends)
 
 Petits:
 - 2FA
