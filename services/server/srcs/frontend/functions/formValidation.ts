@@ -158,3 +158,14 @@ export function createFormData(form: HTMLElement, avatarInput: HTMLInputElement)
 
 	return formData
 }
+
+export function createLoginFormData(form: HTMLElement): FormData {
+	const formData = new FormData()
+	formData.append('username', (form.querySelector('input[name="username"]') as HTMLInputElement).value)
+	formData.append('email', (form.querySelector('input[name="email"]') as HTMLInputElement).value)
+	formData.append('checkmail', (form.querySelector('input[name="checkmail"]') as HTMLInputElement).value)
+	formData.append('pwd', (form.querySelector('input[name="pwd"]') as HTMLInputElement).value)
+	formData.append('checkpwd', (form.querySelector('input[name="checkpwd"]') as HTMLInputElement).value)
+
+	return formData
+}

@@ -1,9 +1,13 @@
-import { hasInvalidFields, setupUsernameAndPwdFieldsValidation } from '../functions/formValidation'
-import { start42OAuth } from '../functions/start42OAuth'
 import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
+import {
+	setupAllFieldValidation,
+	hasInvalidFields,
+	createLoginFormData
+} from '../functions/formValidation.js'
+import { start42OAuth } from '../functions/start42OAuth.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -15,19 +19,19 @@ import { UserStore } from '../stores/user.store'
 	6: The backend saves the user in DB and then returns the POST request
 */
 
-const $spinner = document.querySelector('span[type="spinner"] img') as HTMLImageElement
+let trackEvent = false
+
 const $menuButtons = document.querySelector('menu-buttons') as HTMLElement
-const $loginForm = document.querySelector('login-form') as HTMLElement
+const $loginForm = document.querySelector('form') as HTMLElement
 const urlParams = new URLSearchParams(window.location.search)
 const codeParam = urlParams.get('code')
-const $oauthContainer = document.querySelector('login-form oauth-container') as HTMLElement
 
 const actions = {
-	selectLoginType: {
+	selectloginType: {
 		min: 0,
 		max: 1,
 		steps: 1,
-		callback: selectLoginType,
+		callback: selectloginType,
 		values: ['42', 'User Form']
 	}
 }
@@ -38,10 +42,7 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-if ($oauthContainer) {
-	const $uri = 'https://localhost/login'
-	start42OAuth($oauthContainer, $uri)
-}
+start42OAuth(document.querySelector('nav-button'), 'https://localhost/login')
 
 if (codeParam) {
 	fetch('https://localhost:443/api/auth/login', {
@@ -50,7 +51,6 @@ if (codeParam) {
 	})
 		.then(res => {
 			if (res.status === 200) return res.json()
-			$spinner.style.display = 'none'
 			$menuButtons.style.display = 'flex'
 			$loginForm.style.display = 'block'
 		})
@@ -59,66 +59,72 @@ if (codeParam) {
 			navigate('')
 		})
 } else {
-	$spinner.style.display = 'none'
 	$menuButtons.style.display = 'flex'
-	$loginForm.style.display = 'block'
 }
 
-function handleLoginForm(self: HTMLElement) {
-	const $el = document.createElement('span') as HTMLSpanElement
-	const $form = document.querySelector('user-form form') as HTMLElement
-	const $submitBtn = document.querySelector('user-form form button[type="submit"]') as HTMLElement
+function handleUserForm(self: HTMLElement) {
+	const $navLeft = document.createElement('nav-left')
+	const $navRight = document.createElement('nav-right')
+	const $span = document.createElement('span')
+	const $submitBtn = document.querySelector('form button[type="submit"]') as HTMLElement
 
-	$form.style.display = 'block'
-	$el.innerText = 'Login Form'
-	self.innerHTML = ''
+	if (trackEvent === false) {
+		trackEvent = true
 
-	const $username = ($form.querySelector('input[name="username"]') as HTMLInputElement).value
-	const $pwd = ($form.querySelector('input[name="pwd"]') as HTMLInputElement).value
-
-	setupUsernameAndPwdFieldsValidation($form)
-	$submitBtn.onclick = (e) => {
-		e.preventDefault()
-
-		if (hasInvalidFields($form)) {
-			alert('Form contains invalid fields.')
-			return
-		}
-
-		const formData = {username: $username, pwd: $pwd}
-		console.log('Submitting register form with FormData:', formData)
-
-		fetch('https://localhost:443/login', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(formData)
-		}).then(res => {
-			console.log("res status:", res.status)
-			if (res.status >= 400)
-			{
-				console.log('statusText:', res.statusText)
-				return {statusText: res.statusText}
+		$submitBtn.onclick = e => {
+			e.preventDefault()
+			const formData = createLoginFormData($loginForm)
+			for (const [key, value] of formData.entries()) {
+				console.log(key, value)
 			}
-			else
-				return res.json()
-		}).then(json => {
-			console.log('json:', json)
-			if (json.status < 400)
-				navigate('')
-		})
+			if (hasInvalidFields($loginForm)) {
+				alert('Form contains invalid fields.')
+				return
+			}
+
+			fetch('https://localhost:443/login', {
+				method: 'POST',
+				body: formData
+			})
+				.then(res => {
+					if (res.status >= 400) {
+						console.log(res)
+						return {
+							status: res.status
+						}
+					}
+					return res.json()
+				})
+				.then(res => {
+					if (res?.status >= 400) {
+						return
+					}
+					console.log('Server response: ', res)
+				})
+		}
 	}
 
-	self.append($el)
+	$span.innerText = 'User Form'
+
+	$navLeft.innerText = ' < '
+	$navRight.innerText = ' > '
+
+	self.innerHTML = ''
+
+	self.appendChild($navLeft)
+	self.appendChild($span)
+	self.appendChild($navRight)
+
+	$loginForm.style.display = 'block'
+
+	setupAllFieldValidation($loginForm)
 }
 
-function selectLoginType(loginType: string, self: HTMLElement) {
+function selectloginType(loginType: string, self: HTMLElement) {
 	if (loginType === '42') {
-		const $uri = 'https://localhost/login'
-		start42OAuth(self, $uri)
+		start42OAuth(self, 'https://localhost/login')
 	} else {
-		handleLoginForm(self)
+		handleUserForm(self)
 	}
 }
 
@@ -126,13 +132,15 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const data = currentButton?.dataset
 		if (data && data?.stateValue) {
+			console.log('data', data)
 			const action = actions[data.action]
 			const current = Number(data.stateValue)
-
+			console.log('action', action)
 			const min = action.min
 			const max = action.max
 			const steps = action.steps
-			let newValue
+			let newValue: number
+
 			if (key.value === 'ArrowLeft') {
 				newValue = current - steps
 				if (newValue < min) newValue = max
@@ -140,6 +148,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 				newValue = current + steps
 				if (newValue > max) newValue = min
 			}
+
 			data.stateValue = String(newValue)
 
 			const index = (newValue - min) / steps
@@ -158,3 +167,21 @@ const cleanPage = () => {
 }
 
 $page.addEventListener('cleanup', cleanPage)
+
+/////////// login ///////////
+// fetch('/login', {
+// 	method: 'POST',
+// 	headers: {
+// 		'Content-Type': 'application/json'
+// 	},
+// 	body: JSON.stringify({
+// 		name: '2',
+// 		pwd: 'password123',
+// 		checkpwd: 'password123',
+// 		email: '2@example.com',
+// 		checkmail: '2@example.com',
+// 		username: '2'
+// 	})
+// })
+// 	.then(res => res.json())
+// 	.then(data => console.log('login response:', data))

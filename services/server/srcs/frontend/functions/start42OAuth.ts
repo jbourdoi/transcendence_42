@@ -2,10 +2,10 @@ import { v4 as uuidv4 } from 'uuid'
 
 export async function start42OAuth(self: HTMLElement, uri: string) {
 	const $el = document.createElement('a') as HTMLAnchorElement
-	const $form = document.querySelector('page[type="register"] form') as HTMLFormElement
+	const $form = document.querySelector('form') as HTMLFormElement
 
 	let client_id
-	
+
 	try {
 		const res = await fetch('https://localhost:443/api/auth/client_id', { method: 'GET' })
 		const data = await res.json()

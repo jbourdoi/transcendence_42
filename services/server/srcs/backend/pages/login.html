@@ -1,11 +1,11 @@
 <head>
-	<title>Register</title>
+	<title>Login</title>
 	<style module>
 		menu-buttons {
 			display: none;
 		}
 
-		login-form {
+		form {
 			margin-bottom: 1rem;
 			display: none;
 		}
@@ -46,42 +46,27 @@
 
 <page type="login">
 	<page-title>Login</page-title>
-	<span type="spinner"><img src="/images/spinner.svg" alt="Loading" /></span>
-	<login-form>
-		<oauth-container
-			tabindex="1"
-			class="button text-3xl y-nav"
-			data-action="selectLoginType"
-			data-state-value="0"
-			data-selected="true">
-			<a>42</a>
-		</oauth-container>
-		<user-form
-			class="button text-3xl y-nav"
-			data-action="selectLoginType"
-			data-state-value="1">
-			<form
-				class="hidden"
-				>
-				<form-section>
-					<span>Username:</span>
-					<input type="text" name="username" value="username" required tabindex="2"/>
-				</form-section>
-				<form-section>
-					<span>Password:</span>
-					<input type="password" name="pwd" required value="Password1!@" tabindex="5"/>
-				</form-section>
-				<button
-					type="submit"
-					class="button text-3xl"
-					data-action="submitLoginForm" tabindex="8">
-					Login
-				</button>
-			</form>
-		</user-form>
-	</login-form>
+
+	<nav-button tabindex="1" class="y-nav" data-action="selectloginType" data-state-value="0" data-selected="true">
+		<nav-left> &lt; </nav-left>
+		<span>Click to use 42 Auth</span>
+		<nav-right> &gt; </nav-right>
+	</nav-button>
+
+	<form>
+		<form-section>
+			<span>Username:</span>
+			<input type="text" name="username" value="username" required tabindex="2" />
+		</form-section>
+		<form-section>
+			<span>Password:</span>
+			<input type="password" name="pwd" autocomplete="new-password" value="Password1!@" tabindex="5" />
+		</form-section>
+		<button class="button text-3xl" type="submit" tabindex="8">Login</button>
+	</form>
+
 	<menu-buttons>
-		<nav-button data-route="" class="button text-3xl" tabindex="3">Back</nav-button>
+		<nav-button data-route="" class="button text-3xl" tabindex="9">Back</nav-button>
 	</menu-buttons>
 </page>
 
