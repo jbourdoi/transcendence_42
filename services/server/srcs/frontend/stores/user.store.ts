@@ -30,6 +30,7 @@ function createUserStore() {
 	}
 
 	function emit(newUser: UserType) {
+		if (!newUser) return
 		user.email = newUser.email
 		user.firstName = newUser.firstName
 		user.lastName = newUser.lastName
