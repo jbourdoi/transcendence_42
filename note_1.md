@@ -2,12 +2,9 @@ Obligatoire:
 - Microservices (jeu et chat dans leurs propres conteneurs)
 - Tournoi
 - Forms
-    + login: remplace login/register par logout
     + register: css, remplace login/register par logout, fait office de login
     + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
 - Local
-- double submit
-- problemes nav
 
 Grands:
 - Live chat

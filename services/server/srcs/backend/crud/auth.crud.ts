@@ -22,7 +22,7 @@ export async function checkIfAlreadyLoggedIn(request: FastifyRequest): Promise<b
 	return true
 }
 
-export async function fetch42User(url: string, saveToDb: boolean) {
+export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean }) {
 	const token = await fetch(url, { method: 'POST' })
 		.then(res => res.json())
 		.then(res => res?.access_token)
@@ -37,19 +37,17 @@ export async function fetch42User(url: string, saveToDb: boolean) {
 			.then(async res => {
 				const { email, login, first_name, last_name } = res
 				if (saveToDb) {
-						const body = await dbPostQuery({
-							endpoint: 'dbRun',
-							query: {
-								verb: 'create',
-								sql: 'INSERT INTO users (email, username) VALUES (?, ?)',
-								data: [email, login]
-							}
-						})
-						if (body.status >= 400) return {status: body.status, message: body.message }
-						return { email, login, firstName: first_name, lastName: last_name }
+					const body = await dbPostQuery({
+						endpoint: 'dbRun',
+						query: {
+							verb: 'create',
+							sql: 'INSERT INTO users (email, username) VALUES (?, ?)',
+							data: [email, login]
+						}
+					})
+					if (body.status >= 400) return { status: body.status, message: body.message }
 				}
-				else
-					return { email, login, firstName: first_name, lastName: last_name }
+				return { email, login, firstName: first_name, lastName: last_name }
 			})
 		return infoFetch
 	}

@@ -24,7 +24,7 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 			state: uuidv4()
 		})
 
-	const infoFetch = await fetch42User(url, true)
+	const infoFetch = await fetch42User(url, { saveToDb: true })
 	if (!infoFetch) return reply.status(403).send({ error: 'Invalid credentials' })
 	return reply.send(infoFetch)
 }
@@ -43,7 +43,7 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 			state: uuidv4()
 		})
 
-	const infoFetch = await fetch42User(url, false)
+	const infoFetch = await fetch42User(url, { saveToDb: false })
 	if (!infoFetch) return reply.status(403).send({ error: 'Invalid credentials' })
 	return reply.send(infoFetch)
 }

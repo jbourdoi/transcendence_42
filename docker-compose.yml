@@ -118,7 +118,7 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - ./services/database/srcs:/app/services/database/srcs
-      - database-data:/app/services/database/data
+      - ./services/database/data:/app/services/database/data
       - ${LOGS_PATH}:${LOGS_DIR}
     healthcheck:
       test: ["CMD", "curl", "-f", "${DB_HEALTH_URL}"]

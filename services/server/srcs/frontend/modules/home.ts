@@ -27,6 +27,10 @@ const loginButtonValues: LoginButtonValues = {
 }
 
 const $page: HTMLElement = document.querySelector('page[type=index]')!
+const $loginButton: HTMLElement = document.querySelector('nav-button[data-route="login"]')!
+const $logoutButton: HTMLElement = document.querySelector('nav-button[data-route="logout"]')!
+// nav-button data-route="login"
+// nav-button data-route="logout"
 let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
@@ -56,9 +60,9 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 
 const unsubUserStore = UserStore.subscribe((user: UserType) => {
 	if (user.isValid) {
-		// console.log('User is valid')
+		$loginButton.remove()
 	} else {
-		// console.log('User is not valid')
+		$logoutButton.remove()
 	}
 })
 
