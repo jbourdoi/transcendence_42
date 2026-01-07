@@ -84,7 +84,7 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		}
 	})
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
-	return reply.status(201).send({ message: 'User registered', data: { id: body.id } })
+	return reply.status(201).send({ message: 'User registered', data: { username: username, pwd: pwd } })
 }
 
 export async function logUser(req: FastifyRequest, reply: FastifyReply) {
