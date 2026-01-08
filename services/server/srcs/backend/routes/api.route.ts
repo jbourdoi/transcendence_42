@@ -1,38 +1,49 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { v4 as uuidv4 } from 'uuid'
 import { json_parse } from '../../frontend/functions/json_wrapper.js'
+import { fetch42User } from '../crud/auth.crud.js'
 
-export async function handlePOSTApiAuth(req: FastifyRequest, reply: FastifyReply) {
+const CLIENT_ID = process.env.CLIENT_ID || ''
+const CLIENT_SECRET = process.env.CLIENT_SECRET || ''
+
+export async function getClientID(req: FastifyRequest, reply: FastifyReply) {
+	return reply.send({ client_id: CLIENT_ID })
+}
+
+export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: FastifyReply) {
 	const { code } = json_parse(req.body)
 
 	const url =
 		'https://api.intra.42.fr/oauth/token?' +
 		new URLSearchParams({
-			client_id: 'u-s4t2ud-9f30b2430e51c381ae5e38158295eef89230a74b070231a798bd1bcb7a01709c',
+			client_id: CLIENT_ID,
 			grant_type: 'authorization_code',
-			client_secret: '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',
+			client_secret: CLIENT_SECRET,
 			code,
 			redirect_uri: 'https://localhost/register',
 			state: uuidv4()
 		})
 
-	const token = await fetch(url, { method: 'POST' })
-		.then(res => res.json())
-		.then(res => res?.access_token)
+	const infoFetch = await fetch42User(url, { saveToDb: true })
+	if (!infoFetch) return reply.status(403).send({ error: 'Invalid credentials' })
+	return reply.send(infoFetch)
+}
 
-	if (token) {
-		const infoFetch = await fetch('https://api.intra.42.fr/v2/me', {
-			headers: {
-				Authorization: `Bearer ${token}`
-			}
+export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: FastifyReply) {
+	const { code } = json_parse(req.body)
+
+	const url =
+		'https://api.intra.42.fr/oauth/token?' +
+		new URLSearchParams({
+			client_id: CLIENT_ID,
+			grant_type: 'authorization_code',
+			client_secret: CLIENT_SECRET,
+			code,
+			redirect_uri: 'https://localhost/login',
+			state: uuidv4()
 		})
-			.then(res => res.json())
-			.then(res => {
-				const { email, login, first_name, last_name } = res
-				return { email, login, firstName: first_name, lastName: last_name }
-			})
-		return reply.send(infoFetch)
-	} else {
-		return reply.send({ status: 413 }).status(413)
-	}
+
+	const infoFetch = await fetch42User(url, { saveToDb: false })
+	if (!infoFetch) return reply.status(403).send({ error: 'Invalid credentials' })
+	return reply.send(infoFetch)
 }

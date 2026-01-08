@@ -1,11 +1,18 @@
 Obligatoire:
+- Microservices (jeu et chat dans leurs propres conteneurs)
 - Tournoi
 - Forms
+    + register: css, remplace login/register par logout, fait office de login
+    + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
 - Local
+    + css messages d'erreur
+    + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
+- Local
+- problemes nav (fleches, dans login/register entre oauth et back)
 
 Grands:
 - Live chat
-- User Management (login, inscription, match history)
+- User Management (match history, changer son username/avatar, friends)
 
 Petits:
 - 2FA
@@ -15,12 +22,10 @@ Petits:
 
 A la fin:
 - Vault - WAF
+- Normes de securité Docker et conteneurs
 
 Peut etre:
 - Support pc + tel - GDPR
-
-
-
 
 
 

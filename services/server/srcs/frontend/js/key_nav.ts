@@ -26,6 +26,7 @@ TabIndexStore.subscribe(tabIndex => {
 		const elTabIndex = Number($el.getAttribute('tabIndex')) as number | null
 		return tabIndex + 1 === elTabIndex
 	})
+
 	if ($foundEl) {
 		unselectButtons()
 		let currentButton = $foundEl

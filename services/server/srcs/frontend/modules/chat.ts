@@ -93,15 +93,6 @@ function refreshChat() {
 document.querySelector('chat-input button')?.addEventListener('click', evt => {
 	const chatValue = $chatInput?.value
 
-	/* 
-		time: '09:54',
-		user: 'Alice',
-		message: 'Hi Bob!',
-		to: 'Bob',
-		id: uuidv4()
-	
-	*/
-
 	const foo = {
 		time: '20:00',
 		user: 'Alice',
@@ -110,8 +101,16 @@ document.querySelector('chat-input button')?.addEventListener('click', evt => {
 		id: uuidv4()
 	}
 
-	// console.log(foo)
-
 	chats.push(foo)
 	refreshChat()
+})
+
+document.querySelectorAll<HTMLElement>('user-line').forEach(($userLine: HTMLElement) => {
+	if ($userLine.innerText === user) $userLine.classList.add('current-user')
+
+	$userLine.addEventListener('click', evt => {
+		const $target = evt.target as HTMLElement
+
+		console.log($target.innerText)
+	})
 })

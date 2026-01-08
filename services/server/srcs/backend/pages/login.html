@@ -1,14 +1,73 @@
 <head>
 	<title>Login</title>
 	<style module>
-		a {
-			color: rgb(0, 172, 14);
+		menu-buttons {
+			display: none;
+		}
+
+		form {
+			margin: 1rem 0;
+			display: none;
+		}
+
+		form-section {
+			display: flex;
+			margin-bottom: 1rem;
+			align-items: center;
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		form-section span {
+			margin-right: 0.5rem;
+		}
+
+		form-section input {
+			padding: 0.25rem 0.5rem;
+			background-color: rgba(0, 0, 0, 0.75);
+			border-bottom: 2px transparent dashed;
+			/* box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.75); */
+		}
+
+		input:focus {
+			outline: none;
+			border-bottom: 2px white dashed;
+			/* box-shadow: inset 0px -2px 0px yellow; */
+		}
+
+		oauth-container {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: center;
 		}
 	</style>
 </head>
 
 <page type="login">
-	<span data-route="" tabindex="1" class="button text-4xl">Back</span>
+	<page-title>Login</page-title>
+
+	<nav-button tabindex="1" class="y-nav" data-action="selectloginType" data-state-value="0" data-selected="true">
+		<nav-left> &lt; </nav-left>
+		<span>Click to use 42 Auth</span>
+		<nav-right> &gt; </nav-right>
+	</nav-button>
+
+	<form>
+		<form-section>
+			<span>Username:</span>
+			<input type="text" name="username" value="username" required tabindex="2" />
+		</form-section>
+		<form-section>
+			<span>Password:</span>
+			<input type="password" name="pwd" autocomplete="new-password" value="Password1!@" tabindex="5" />
+		</form-section>
+		<button class="button text-3xl" type="submit" tabindex="8">Login</button>
+	</form>
+
+	<menu-buttons>
+		<nav-button data-route="" class="button text-3xl" tabindex="9">Back</nav-button>
+	</menu-buttons>
 </page>
 
 <script type="module" src="modules/login.js"></script>

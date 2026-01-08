@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from 'fs'
 import path from 'path'
 import __dirname from '../functions/dirname.fn.js'
 
-const validRoutes = ['home', 'about', 'login', 'options', 'register', 'dashboard', 'users', 'game', 'lobby', 'chat']
+const validRoutes = ['home', 'about', 'login', 'options', 'register', 'dashboard', 'users', 'game', 'lobby', 'chat', 'new_lobby']
 
 export function routerRoute(fastify: FastifyInstance) {
 	fastify.route({

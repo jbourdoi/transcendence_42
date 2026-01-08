@@ -45,7 +45,7 @@ fastify.register(fastifyStatic, {
 
 fastify.register(multipart, {
 	limits: {
-		fileSize: 10 * 1024 * 1024, // 10 MB
+		fileSize: 100 * 1024, // 100 Ko
 		files: 1,
 		parts: 6
 	}
@@ -56,7 +56,6 @@ await fastify.register(fastifyWebsocket)
 metricsRoutes(fastify)
 authRoutes(fastify)
 userRoutes(fastify)
-// gameRoutes(fastify)
 routerRoute(fastify)
 
 publicWatcher()

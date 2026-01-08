@@ -1,10 +1,16 @@
 import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
-import { v4 as uuidv4 } from 'uuid'
 import { UserStore } from '../stores/user.store'
-import fs from 'fs'
-import path from 'path'
+import {
+	setupAvatarPreview,
+	setupAllFieldValidation,
+	createFormData,
+	hasInvalidFields,
+	resetAvatarButton
+} from '../functions/formValidation.js'
+import { start42OAuth } from '../functions/start42OAuth.js'
+import { fetchRegister } from '../functions/loginRegisterFetch.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -16,12 +22,13 @@ import path from 'path'
 	6: The backend saves the user in DB and then returns the POST request
 */
 
+let trackEvent = false
+
 const $spinner = document.querySelector('span[type="spinner"] img') as HTMLImageElement
 const $menuButtons = document.querySelector('menu-buttons') as HTMLElement
-const $registerForm = document.querySelector('register-form') as HTMLElement
+const $registerForm = document.querySelector('form') as HTMLElement
 const urlParams = new URLSearchParams(window.location.search)
 const codeParam = urlParams.get('code')
-const $oauthContainer = document.querySelector('register-form oauth-container') as HTMLElement
 
 const actions = {
 	selectRegisterType: {
@@ -39,12 +46,10 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-if ($oauthContainer) {
-	start42OAuth($oauthContainer)
-}
+start42OAuth(document.querySelector('nav-button'), 'https://localhost/register')
 
 if (codeParam) {
-	fetch('https://localhost:443/api/auth', {
+	fetch('https://localhost:443/api/auth/register', {
 		method: 'POST',
 		body: JSON.stringify({ code: codeParam })
 	})
@@ -61,98 +66,56 @@ if (codeParam) {
 } else {
 	$spinner.style.display = 'none'
 	$menuButtons.style.display = 'flex'
-	$registerForm.style.display = 'block'
-}
-
-function start42OAuth(self: HTMLElement) {
-	const $el = document.createElement('a') as HTMLAnchorElement
-	const $form = document.querySelector('user-form form') as HTMLElement
-
-	const url =
-		'https://api.intra.42.fr/oauth/authorize?' +
-		new URLSearchParams({
-			client_id: 'u-s4t2ud-9f30b2430e51c381ae5e38158295eef89230a74b070231a798bd1bcb7a01709c',
-			redirect_uri: 'https://localhost/register',
-			response_type: 'code',
-			state: uuidv4()
-		})
-
-	$el.setAttribute('href', url)
-	$el.innerText = '42'
-
-	$form.style.display = 'none'
-
-	self.innerHTML = ''
-	self.append($el)
 }
 
 function handleUserForm(self: HTMLElement) {
-	const $el = document.createElement('span') as HTMLSpanElement
-	const $form = document.querySelector('user-form form') as HTMLElement
-	const $submitBtn = document.querySelector('user-form form button[type="submit"]') as HTMLElement
+	const $navLeft = document.createElement('nav-left')
+	const $navRight = document.createElement('nav-right')
+	const $span = document.createElement('span')
+	const $submitBtn = document.querySelector('form button[type="submit"]') as HTMLElement
+	const $avatarInput = $registerForm.querySelector('input[name="avatar"]') as HTMLInputElement
+	const $avatarPreview = $registerForm.querySelector('#avatarPreview') as HTMLImageElement
+	const $resetAvatarBtn = $registerForm.querySelector('#resetAvatarButton') as HTMLButtonElement
+	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
 
-	$form.style.display = 'block'
+	if (trackEvent === false) {
+		trackEvent = true
 
-	$el.innerText = 'User Form'
+		$submitBtn.onclick = e => {
+			e.preventDefault()
+			const formData = createFormData($registerForm, $avatarInput)
+			for (const [key, value] of formData.entries()) {
+				console.log(key, value)
+			}
+			if (hasInvalidFields($registerForm)) {
+				alert('Form contains invalid fields.')
+				return
+			}
+
+			fetchRegister(formData, $registerForm)
+		}
+	}
+
+	$span.innerText = 'User Form'
+
+	$navLeft.innerText = ' < '
+	$navRight.innerText = ' > '
+
 	self.innerHTML = ''
 
-	$submitBtn.addEventListener('click', e => { {
-		e.preventDefault()
+	self.appendChild($navLeft)
+	self.appendChild($span)
+	self.appendChild($navRight)
 
-		const $username = ($form.querySelector('input[name="username"]') as HTMLInputElement).value
-		const $email = ($form.querySelector('input[name="email"]') as HTMLInputElement).value
-		const $confirmEmail = ($form.querySelector('input[name="confirmEmail"]') as HTMLInputElement).value
-		const $password = ($form.querySelector('input[name="password"]') as HTMLInputElement).value
-		const $confirmPassword = ($form.querySelector('input[name="confirmPassword"]') as HTMLInputElement).value
-		const $avatarInput = $form.querySelector('input[name="avatar"]') as HTMLInputElement
-		// TODO: img format + size
-		let avatarFile: File | null = null
-		if ($avatarInput && $avatarInput.files && $avatarInput.files.length > 0)
-			avatarFile = $avatarInput.files[$avatarInput.files.length - 1]
-		if ($email !== $confirmEmail) {
-			alert('Emails do not match')
-			return
-		}
-		if ($password !== $confirmPassword) {
-			alert('Passwords do not match')
-			return
-		}
+	$registerForm.style.display = 'block'
 
-		const formData = new FormData()
-		formData.append('username', $username)
-		formData.append('email', $email)
-		formData.append('checkmail', $confirmEmail)
-		formData.append('pwd', $password)
-		formData.append('checkpwd', $confirmPassword)
-		if (avatarFile)
-			formData.append('avatar', avatarFile)
-		else
-			formData.append("avatar", "")
-		console.log('Submitting register form with data:', {
-			username: $username,
-			email: $email,
-			confirmEmail: $confirmEmail,
-			password: $password,
-			confirmPassword: $confirmPassword,
-			avatar: avatarFile
-		})
-		fetch('https://localhost:443/register', {
-			method: 'POST',
-			body: formData
-		}).then(res => {
-			console.log("res status:", res.status)
-			return res.json()
-		}).then(json => {
-			console.log('json:', json)
-		})
-	} })
-
-	self.append($el)
+	setupAvatarPreview($avatarInput, $avatarPreview)
+	setupAllFieldValidation($registerForm)
 }
 
 function selectRegisterType(registerType: string, self: HTMLElement) {
 	if (registerType === '42') {
-		start42OAuth(self)
+		start42OAuth(self, 'https://localhost/register')
 	} else {
 		handleUserForm(self)
 	}
@@ -164,11 +127,11 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 		if (data && data?.stateValue) {
 			const action = actions[data.action]
 			const current = Number(data.stateValue)
-
 			const min = action.min
 			const max = action.max
 			const steps = action.steps
-			let newValue
+			let newValue: number
+
 			if (key.value === 'ArrowLeft') {
 				newValue = current - steps
 				if (newValue < min) newValue = max
@@ -176,6 +139,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 				newValue = current + steps
 				if (newValue > max) newValue = min
 			}
+
 			data.stateValue = String(newValue)
 
 			const index = (newValue - min) / steps

@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', _ => {
 	document.body.addEventListener('click', e => {
 		if (e?.target) {
 			const target: HTMLElement = e.target as HTMLElement
+			if (target.tagName === 'NAV-RIGHT' || target.tagName === 'NAV-LEFT') return
 			const $a: HTMLAnchorElement | null = target.closest('*[data-route]')
 			if ($a) {
 				const newRoute = $a.getAttribute('data-route')

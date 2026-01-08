@@ -87,6 +87,21 @@
 		chat-user::after {
 			content: ': ';
 		}
+
+		.current-user {
+			color: chartreuse;
+		}
+
+		user-line {
+			display: flex;
+			cursor: pointer;
+		}
+
+		user-line img {
+			display: inline-block;
+			width: 4px;
+			height: auto;
+		}
 	</style>
 </head>
 
@@ -95,8 +110,22 @@
 	<chat-container>
 		<chat-window></chat-window>
 		<chat-users>
-			<user-line>Alice</user-line>
-			<user-line>Bob</user-line>
+			<user-line>
+				<user-name>Alice</user-name>
+				<user-duel>
+					<img src="/images/duel.svg" alt="" />
+				</user-duel>
+				<user-mp>
+					<img src="/images/mp.svg" alt="" />
+				</user-mp>
+				<user-block>
+					<img src="/images/block.svg" alt="" />
+				</user-block>
+				<user-add-friend>
+					<img src="/images/add_friend.svg" alt="" />
+				</user-add-friend>
+			</user-line>
+			<user-line> Bob </user-line>
 			<user-line>Pedro</user-line>
 			<user-line>Maria</user-line>
 		</chat-users>

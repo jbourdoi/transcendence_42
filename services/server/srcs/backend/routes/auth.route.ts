@@ -6,6 +6,7 @@ import { dbPostQuery } from '../crud/dbQuery.crud.js'
 import { vaultPostQuery } from '../crud/vaultQuery.crud.js'
 import { createToken } from '../crud/jwt.crud.js'
 import { pipeline } from 'stream/promises'
+import { isUsernameFormatInvalid, isEmailFormatInvalid, isPwdFormatInvalid, isAvatarFileFormatInvalid} from '../../frontend/functions/formValidation.js'
 import fs from 'fs'
 
 /* body to send for updateUser:
@@ -38,8 +39,11 @@ async function getMultipartFormData(req: FastifyRequest) {
 	const data: any = {};
 	for await (const part of parts) {
 		if (part.type === 'file') {
+			console.log('--BACK-- Received file:', part)
+			if (!part.mimetype.startsWith('image/'))
+				return {"error": 'Invalid file type'}
 			const filePath = `/app/srcs/frontend/images/avatars/${part.filename}`
-			await pipeline(part.file, fs.createWriteStream(filePath))
+			await pipeline(part.file, fs.createWriteStream(filePath)) // TODO after form is validated
 			data[part.fieldname] = filePath
 		} else
 			data[part.fieldname] = part.value
@@ -62,13 +66,10 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		checkpwd: checkpwd,
 		avatar: avatar
 	})
-	/**
-	 * TODO:
-	 * - email format
-	 * - pwd format
-	 * - img format + size
-	 */
+	if (isUsernameFormatInvalid(username)) return reply.status(400).send({ message: 'Invalid username format' })
+	if (isEmailFormatInvalid(email)) return reply.status(400).send({ message: 'Invalid email format' })
 	if (email !== checkmail) return reply.status(400).send({ message: 'Emails do not match' })
+	if (isPwdFormatInvalid(pwd)) return reply.status(400).send({ message: 'Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number and one special character' })
 	if (pwd !== checkpwd) return reply.status(400).send({ message: 'Passwords do not match' })
 	let body = await vaultPostQuery('getSecret', { name: 'bcrypt_salt' })
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
@@ -83,11 +84,13 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		}
 	})
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
-	return reply.status(201).send({ message: 'User registered', data: { id: body.id } })
+	return reply.status(201).send({ message: 'User registered', data: { username: username, pwd: pwd } })
 }
 
 export async function logUser(req: FastifyRequest, reply: FastifyReply) {
-	const { username, pwd } = req.body as userLoginType
+	const data = await getMultipartFormData(req)
+	const { username, pwd } = await data as userLoginType
+	console.log('--BACK-- Logging in user with data:', { username: username, pwd: pwd })
 	const alreadyLoggedInResponse = await checkIfAlreadyLoggedIn(req)
 	if (alreadyLoggedInResponse) return reply.status(200).send({ message: 'Already logged in' })
 	const body = await dbPostQuery({
@@ -101,8 +104,6 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 	return reply
 		.status(200)
 		.setCookie('token', token, {
-			// httpOnly: true,
-			// secure: true,
 			// sameSite: 'strict',
 			// signed: true
 			path: '/',

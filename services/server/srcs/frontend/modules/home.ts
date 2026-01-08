@@ -7,32 +7,51 @@ type LoginButtonValues = {
 		id: string
 		inner: string
 		route: string
+		next: string
 	}
 }
 
 const loginButtonValues: LoginButtonValues = {
-	loginButton: {
+	registerButton: {
 		id: 'registerButton',
 		inner: 'Register',
-		route: 'register'
+		route: 'register',
+		next: 'loginButton'
 	},
-	registerButton: {
+	loginButton: {
 		id: 'loginButton',
 		inner: 'Login',
-		route: 'login'
+		route: 'login',
+		next: 'registerButton'
 	}
 }
 
 const $page: HTMLElement = document.querySelector('page[type=index]')!
+const $loginButton: HTMLElement = document.querySelector('nav-button[data-route="login"]')!
+const $logoutButton: HTMLElement = document.querySelector('nav-button[data-route="logout"]')!
+// nav-button data-route="login"
+// nav-button data-route="logout"
 let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
 const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
-		const nextValue = loginButtonValues[currentButton.id]
+		const nextValue = loginButtonValues[loginButtonValues[currentButton.id].next]
 		if (nextValue) {
-			currentButton.innerText = nextValue.inner
+			const $navLeft = document.createElement('nav-left')
+			const $navRight = document.createElement('nav-right')
+			const $span = document.createElement('span')
+
+			$navLeft.innerText = ' < '
+			$navRight.innerText = ' > '
+			$span.innerText = nextValue.inner
+			currentButton.innerText = ''
+
+			currentButton.appendChild($navLeft)
+			currentButton.appendChild($span)
+			currentButton.appendChild($navRight)
+
 			currentButton.id = nextValue.id
 			currentButton.dataset.route = nextValue.route
 		}
@@ -41,9 +60,9 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 
 const unsubUserStore = UserStore.subscribe((user: UserType) => {
 	if (user.isValid) {
-		// console.log('User is valid')
+		$loginButton.remove()
 	} else {
-		// console.log('User is not valid')
+		$logoutButton.remove()
 	}
 })
 
