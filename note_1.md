@@ -1,3 +1,7 @@
+Christella: Kibana, user management (changer username/avatar), vault, 2fa
+Paco: Register, Login, Lobby, user management (visu)
+Jacques: Tournament
+
 Obligatoire:
 - Microservices (chat dans son propre conteneur)
 - Tournoi
@@ -8,7 +12,7 @@ Obligatoire:
 	+ Identifier d'où viens l'erreur de SQL constraint (email?, username?)
     + css messages d'erreur bouge tout
 	
-- Local 1v1
+- Remote 1v1
 - problemes nav (fleches, dans login/register entre oauth et back)
 
 Grands:
@@ -22,7 +26,7 @@ Petits:
 - Languages
 
 A la fin:
-- Vault - WAF
+- Vault (.env.tpl -> copie-colle-modif .env -> script pour bouger les secrets importants dans vault -> conteneurs qui call vault directement) - WAF
 - Normes de securité Docker et conteneurs
 
 Peut etre:
