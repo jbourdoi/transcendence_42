@@ -1,6 +1,6 @@
 import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
-import { KeyboardStore } from '../stores/keyboard.store'
+import { KeyboardKeyEvent, KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
 import {
 	setupAvatarPreview,
@@ -43,6 +43,7 @@ const actions = {
 const $page: HTMLElement = document.querySelector('page[type=register]')!
 
 let currentButton: HTMLElement
+let keyboardKey: KeyboardKeyEvent
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
@@ -72,7 +73,7 @@ function handleUserForm(self: HTMLElement) {
 	const $navLeft = document.createElement('nav-left')
 	const $navRight = document.createElement('nav-right')
 	const $span = document.createElement('span')
-	const $submitBtn = document.querySelector('form button[type="submit"]') as HTMLElement
+	const $submitBtn = document.querySelector('form span[type="submit"]') as HTMLElement
 	const $avatarInput = $registerForm.querySelector('input[name="avatar"]') as HTMLInputElement
 	const $avatarPreview = $registerForm.querySelector('#avatarPreview') as HTMLImageElement
 	const $resetAvatarBtn = $registerForm.querySelector('#resetAvatarButton') as HTMLButtonElement
@@ -80,7 +81,6 @@ function handleUserForm(self: HTMLElement) {
 
 	if (trackEvent === false) {
 		trackEvent = true
-
 		$submitBtn.onclick = e => {
 			e.preventDefault()
 			const formData = createFormData($registerForm, $avatarInput)
@@ -122,6 +122,7 @@ function selectRegisterType(registerType: string, self: HTMLElement) {
 }
 
 const unsubKeyStore = KeyboardStore.subscribe(key => {
+	keyboardKey = key
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const data = currentButton?.dataset
 		if (data && data?.stateValue) {

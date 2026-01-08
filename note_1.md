@@ -1,13 +1,13 @@
 Obligatoire:
-- Microservices (jeu et chat dans leurs propres conteneurs)
+- Microservices (chat dans son propre conteneur)
 - Tournoi
 - Forms
     + register: css, remplace login/register par logout, fait office de login
     + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
-- Local
+	+ Identifier d'où viens l'erreur de SQL constraint (email?, username?)
     + css messages d'erreur
-    + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
-- Local
+	
+- Local 1v1
 - problemes nav (fleches, dans login/register entre oauth et back)
 
 Grands:

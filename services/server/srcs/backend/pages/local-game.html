@@ -1,0 +1,63 @@
+<head>
+	<title>Local-Game</title>
+	<style module>
+		:root {
+			font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+			line-height: 1.5;
+			font-weight: 400;
+
+			color-scheme: light dark;
+			color: rgba(255, 255, 255, 0.87);
+			background-color: #242424;
+
+			font-synthesis: none;
+			text-rendering: optimizeLegibility;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		local-game-container {
+			display: block;
+			height: 50%;
+			width: 80%;
+			background-color: rgba(0, 0, 0, 0.25);
+			padding: 1rem;
+			margin-bottom: 1rem;
+		}
+
+		body {
+			margin: 0;
+			display: flex;
+			place-items: center;
+			min-width: 320px;
+			min-height: 100vh;
+		}
+
+		page
+		{
+			display: flex;
+			flex-direction: row;
+		}
+	</style>
+</head>
+
+<page type="local-game">
+	<page-title>Local-Game</page-title>
+	<local-game-container>
+		<div id="game-container">
+			<div id="score"></div>
+			<div id="debug"></div>
+		</div>
+		<canvas id="canvas2D"></canvas>
+		<canvas id="canvas3D"></canvas>
+	</local-game-container>
+
+
+	<play class="localGameCreate" tabindex="1">Play</play>
+
+	<menu-buttons>
+		<nav-button data-route="" tabindex="2" class="button text-3xl">Back</nav-button>
+	</menu-buttons>
+</page>
+
+<script type="module" src="modules/local-game.js"></script>

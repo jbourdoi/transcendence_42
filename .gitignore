@@ -12,3 +12,4 @@ services/vault/conf/config.hcl
 diff.txt
 services/server/srcs/frontend/images/avatars/*
 !services/server/srcs/frontend/images/avatars/baseAvatar.jpg
+db.sqlite

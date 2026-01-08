@@ -5,14 +5,23 @@ import { cleanHistory, handleIncomingMessage, loadChatHistory } from '../functio
 
 const $page: HTMLElement = document.querySelector('page[type=game]')!
 
-let user: {
-	userId: string
-	pseudo: string
-	websocket?: WebSocket
-} = {
+const gamehost = "localhost:3333"
+
+type UserType = {
+	userId: string,
+	pseudo: string,
+	websocket: WebSocket | undefined
+}
+
+let user: UserType = {
 	userId: '',
 	pseudo: '',
 	websocket: undefined
+}
+
+export function getUser()
+{
+	return user
 }
 
 let lobby: any = undefined
@@ -42,7 +51,7 @@ const host = location.host
 lobbyDiv.addEventListener('mouseenter', async () => {
 	try {
 		// const res = await fetch(`${origin}/api/lobby`)
-		const res = await fetch(`https://localhost:3333/api/lobby`)
+		const res = await fetch(`https://${gamehost}/api/lobby`)
 		const lobby = await res.json()
 		updateUserList(lobby.users)
 		// Positionner la liste juste sous la lobby
@@ -237,7 +246,7 @@ function sendMPMessage(targetPseudo: string, text: string) {
 async function refreshLobbyId() {
 	try {
 		// const res = await fetch(`${origin}/api/lobby`)
-		const res = await fetch(`https://localhost:3333/api/lobby`)
+		const res = await fetch(`https://${gamehost}/api/lobby`)
 		if (!res.ok) throw new Error(`https ${res.status}: ${res.statusText}`)
 		lobby = await res.json()
 		console.log('lobby: ', json_stringify(lobby))
@@ -249,7 +258,7 @@ async function refreshLobbyId() {
 
 async function refreshUser() {
 	try {
-		const res = await fetch(`${origin}/api/user?userId=${user.userId}`)
+		const res = await fetch(`https://${gamehost}/api/user?userId=${user.userId}`)
 		if (!res.ok) throw new Error(`https ${res.status}: ${res.statusText}`)
 		const json = await res.json()
 		user.pseudo = json.pseudo
@@ -327,17 +336,18 @@ function handleSend(key: KeyboardEvent) {
 }
 
 // --- 🔌 WebSocket ---
-async function refreshWebSocket() {
+function refreshWebSocket() : boolean
+{
 	loadChatHistory(displayMessage)
-	if (user.websocket?.readyState === WebSocket.OPEN) return
+	if (user?.websocket?.readyState === WebSocket.OPEN) return true
 
-	if (user.websocket && user.websocket.readyState !== WebSocket.CLOSED) user.websocket.close()
+	if (user?.websocket && user.websocket?.readyState !== WebSocket.CLOSED) user.websocket.close()
 
-	if (!user.userId) return console.warn('Lobby ou user non défini, impossible d’ouvrir WebSocket.')
+	if (!user?.userId) {console.warn('Lobby ou user non défini, impossible d’ouvrir WebSocket.'); return false}
 
-	console.log('WEBSOCKET: ', `wss://${host}/api/ws?userId=${user.userId}`)
-	// const ws = new WebSocket(`wss://${host}/api/ws?userId=${user.userId}`)
-	const ws = new WebSocket(`wss://localhost:3333/api/ws?userId=${user.userId}`)
+	console.log('WEBSOCKET: ', `wss://${gamehost}/api/ws?userId=${user.userId}`)
+	const ws = new WebSocket(`wss://${gamehost}/api/ws?userId=${user.userId}`)
+	if (!ws || ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) return false
 	user.websocket = ws
 
 	ws.addEventListener('open', () => {
@@ -377,13 +387,16 @@ async function refreshWebSocket() {
 				}
 			}
 			case 'chat':
-				return handleIncomingMessage(message, displayMessage)
+				{
+					return handleIncomingMessage(message, displayMessage)
+				}
 			case 'mp-from':
 				return handleIncomingMessage(message, displayMessage)
 			case 'mp-to':
 				return handleIncomingMessage(message, displayMessage)
 		}
 	})
+	return true
 }
 
 function updateStatus(state: 'logged' | 'connected' | 'disconnected') {
@@ -392,7 +405,9 @@ function updateStatus(state: 'logged' | 'connected' | 'disconnected') {
 }
 
 // --- 🧠 Initialisation ---
-export default async function chat(element: HTMLDivElement) {
+export default async function chat(element: HTMLDivElement)
+{
+	if (refreshWebSocket()) return
 	console.log('Init?')
 	element.classList.add('chat-container')
 	element.append(lobbyDiv, pseudoDiv, statusDiv, userListDiv, messagesDiv, messageInput)
@@ -403,7 +418,7 @@ export default async function chat(element: HTMLDivElement) {
 	}
 	await refreshLobbyId()
 
-	if (!user.userId) {
+	if (!user?.userId) {
 		const inputPseudo = document.createElement('input')
 		const buttonPseudo = document.createElement('button')
 		const errorPseudo = document.createElement('div')
@@ -417,7 +432,7 @@ export default async function chat(element: HTMLDivElement) {
 			let status
 			try {
 				// const res = await fetch(`${origin}/api/lobby`, {
-				const res = await fetch(`https://localhost:3333/api/lobby`, {
+				const res = await fetch(`https://${gamehost}/api/lobby`, {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: json_stringify({ pseudo: inputPseudo.value })
@@ -435,7 +450,7 @@ export default async function chat(element: HTMLDivElement) {
 				buttonPseudo.remove()
 				errorPseudo.remove()
 
-				await refreshWebSocket()
+				refreshWebSocket()
 				console.log('👤 User connected', user)
 			} catch (e: any) {
 				pseudoDiv.innerText = ''
@@ -445,7 +460,7 @@ export default async function chat(element: HTMLDivElement) {
 			}
 		})
 	} else {
-		await refreshWebSocket()
+		refreshWebSocket()
 	}
 }
 

@@ -28,7 +28,7 @@ const fastify: FastifyInstance = Fastify({
 })
 
 await fastify.register(cors, {
-	origin: ['https://localhost:443', 'https://localhost']
+	origin: ['https://localhost']
 })
 
 fastify.addHook('onResponse', (request: FastifyRequest, reply: FastifyReply) => {
