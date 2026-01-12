@@ -45,7 +45,7 @@ export async function userRoutes(fastify: FastifyInstance) {
 		}),
 		fastify.route({
 			method: 'PUT',
-			url: '/users/:id',
+			url: '/update_user',
 			handler: updateUser
 		}),
 		fastify.route({

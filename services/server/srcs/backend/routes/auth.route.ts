@@ -6,14 +6,13 @@ import { checkIfAlreadyLoggedIn } from '../crud/auth.crud.js'
 import { dbPostQuery } from '../crud/dbQuery.crud.js'
 import { vaultPostQuery } from '../crud/vaultQuery.crud.js'
 import { createToken } from '../crud/jwt.crud.js'
-import { pipeline } from 'stream/promises'
 import {
 	isUsernameFormatInvalid,
 	isEmailFormatInvalid,
 	isPwdFormatInvalid,
 	isAvatarFileFormatInvalid
 } from '../../frontend/functions/formValidation.js'
-import fs from 'fs'
+import { getMultipartFormData } from '../crud/multipartForm.js'
 
 /* body to send for updateUser:
 	PUT /user/1
@@ -39,21 +38,6 @@ import fs from 'fs'
 		params: id
 	}
 */
-
-async function getMultipartFormData(req: FastifyRequest) {
-	const parts = req.parts()
-	const data: any = {}
-	for await (const part of parts) {
-		if (part.type === 'file') {
-			console.log('--BACK-- Received file:', part)
-			if (!part.mimetype.startsWith('image/')) return { error: 'Invalid file type' }
-			const filePath = `/app/srcs/frontend/images/avatars/${part.filename}`
-			await pipeline(part.file, fs.createWriteStream(filePath)) // TODO after form is validated
-			data[part.fieldname] = filePath
-		} else data[part.fieldname] = part.value
-	}
-	return data
-}
 
 export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 	const data = await getMultipartFormData(req)

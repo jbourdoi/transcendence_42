@@ -2,6 +2,8 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { dbPostQuery } from '../crud/dbQuery.crud.js'
 import { validateToken } from '../crud/auth.crud.js'
 import { userUpdateType } from '../../types/user.type.js'
+import { getMultipartFormData } from '../crud/multipartForm.js'
+import { isUsernameFormatInvalid } from '../../frontend/functions/formValidation.js'
 
 export async function userDashboard(req: FastifyRequest, reply: FastifyReply) {
 	const token = await validateToken(req)
@@ -18,19 +20,36 @@ export async function getUsers(req: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
-	// do with token and token.id instead of id
-	const reqBody = (await req.body) as { query: { update: userUpdateType } }
-	const updateQuery = reqBody?.query?.update
-	if (!updateQuery) {
-		return reply.status(400).send({ message: 'Query badly formatted' })
+	const data = await getMultipartFormData(req)
+
+	const token = await validateToken(req)
+	if (!token) return reply.status(401).send('Invalid or missing token')
+	const id = token.id
+
+	const username = data['username']
+	const avatar = data['avatar']
+
+	console.log(username, avatar)
+	if (!username && !avatar)
+		return reply.status(400).send({ message: 'No fields to update' })
+	
+	let updateQuery: userUpdateType = {}
+	if (username)
+	{
+		if (isUsernameFormatInvalid(username))
+			return reply.status(400).send({ message: 'Invalid username format' })
+		updateQuery.username = username
 	}
-	const params = req.params as any
-	const id = params.id
+	if (avatar) updateQuery.avatar = avatar
+
+	console.log('updateQuery', updateQuery)
+
 	let body = await dbPostQuery({endpoint: 'dbGet', query: { verb: 'read', sql: 'SELECT * FROM users WHERE id = ?', data: [id] } })
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
-	// hash pwd before query (bcrypt)
-	console.log(updateQuery)
+	console.log('body from dbGet', body.data)
 
+	if (username && username == body.data.username)
+		return reply.status(200).send({ message: 'No changes made' })
 	let query = 'UPDATE users SET'
 	let paramsValue = []
 	let entries = Object.entries(updateQuery)
@@ -45,7 +64,7 @@ export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	paramsValue.push(id)
 	query += 'WHERE id = ?'
 
-	console.log(query)
+	console.log('query', query)
 	body = await dbPostQuery({ endpoint: 'dbRun', query: { verb: 'update', sql: query, data: paramsValue } })
 	if (body.data?.changes === 0) return reply.status(200).send({ message: 'No changes made' })
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })

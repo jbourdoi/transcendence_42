@@ -14,7 +14,6 @@ export type userLoginType = {
 
 export type userUpdateType = {
     username?: string,
-    email?: string,
-    pwd?: string
+    avatar?: string
 }
 
