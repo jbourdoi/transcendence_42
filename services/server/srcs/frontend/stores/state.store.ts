@@ -5,7 +5,9 @@ type Subscriber = (config: any) => void
 
 let config = {
 	textSize: 20,
-	username: undefined
+	username: undefined,
+	email: undefined,
+	id: undefined
 }
 
 document.addEventListener('DOMContentLoaded', () => {

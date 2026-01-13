@@ -2,11 +2,7 @@ import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
-import {
-	hasInvalidFields,
-	createLoginFormData,
-	setupUsernameAndPwdFieldsValidation
-} from '../functions/formValidation.js'
+import { hasInvalidFields, createLoginFormData, setupUsernameAndPwdFieldsValidation } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchLogin } from '../functions/loginRegisterFetch.js'
 
@@ -57,10 +53,8 @@ if (codeParam) {
 			return
 		})
 		.then(res => {
-			console.log("Backend response: ", res)
-			if (res.status >= 400)
-				return
-			UserStore.emit(res)
+			if (res.status >= 400) return
+			UserStore.emit(res.infoFetch)
 			navigate('')
 		})
 } else {
@@ -86,7 +80,6 @@ function handleUserForm(self: HTMLElement) {
 			for (const [key, value] of formData.entries()) {
 				console.log(key, value)
 			}
-
 			fetchLogin(formData)
 		}
 	}
