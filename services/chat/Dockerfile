@@ -6,20 +6,17 @@ WORKDIR /app
 
 RUN apt-get update
 
-RUN apt-get install -y curl build-essential ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y build-essential ca-certificates curl unzip && rm -rf /var/lib/apt/lists/*
 
-RUN curl -fsSL https://deb.nodesource.com/setup_25.x | bash -
-
-RUN apt-get install -y nodejs
-
-RUN npm i -g pnpm
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
 
 COPY package.json ./
 COPY srcs ./srcs
 COPY certs ./certs
 COPY tsconfig.json ./
 
-RUN pnpm install
-
 # CMD ["sleep", "infinity"]
-CMD ["npm", "run", "dev"]
+RUN bun install
+
+CMD ["bun", "--watch", "./srcs/chat.ts"]

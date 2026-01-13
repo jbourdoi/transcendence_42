@@ -1,4 +1,9 @@
 import { v4 as uuidv4 } from 'uuid'
+import { ChatStore } from '../stores/chat.store'
+import { StateStore } from '../stores/state.store'
+import { UserStore } from '../stores/user.store'
+
+const $page: HTMLElement = document.querySelector('page[type=chat]')!
 
 let chats = [
 	{
@@ -56,6 +61,12 @@ const $chatWindow = document.querySelector('chat-window') as HTMLElement
 const $chatInput = document.querySelector('chat-input input')
 const user = 'Bob'
 
+const unsubChatStore = ChatStore.subscribe(message => {
+	// console.log(message)
+	chats.push(message)
+	refreshChat()
+})
+
 refreshChat()
 
 function refreshChat() {
@@ -66,22 +77,22 @@ function refreshChat() {
 		let $user = document.createElement('chat-user')
 		let $message = document.createElement('chat-message')
 
-		if (chat.to === undefined) {
-			$line.classList.add('g')
-			$user.innerText = `${chat.user}`
-		} else {
-			$line.classList.add('mp')
-			if (chat.user === user) {
-				$user.innerText = `To ${chat.to}`
-			} else {
-				$user.innerText = `From ${chat.user}`
-			}
-		}
+		// if (chat.to === undefined) {
+		// 	$line.classList.add('g')
+		// 	$user.innerText = `${chat.user}`
+		// } else {
+		// 	$line.classList.add('mp')
+		// 	if (chat.user === user) {
+		// 		$user.innerText = `To ${chat.to}`
+		// 	} else {
+		// 		$user.innerText = `From ${chat.user}`
+		// 	}
+		// }
 
-		$time.innerText = chat.time
-		$message.innerText = chat.message
+		// $time.innerText = chat.time
+		$message.innerText = chat.msg
 
-		$line.appendChild($time)
+		// $line.appendChild($time)
 		$line.appendChild($user)
 		$line.appendChild($message)
 
@@ -93,16 +104,19 @@ function refreshChat() {
 document.querySelector('chat-input button')?.addEventListener('click', evt => {
 	const chatValue = $chatInput?.value
 
-	const foo = {
-		time: '20:00',
-		user: 'Alice',
-		message: chatValue,
-		to: undefined,
-		id: uuidv4()
-	}
+	// const foo = {
+	// 	time: '20:00',
+	// 	user: 'Alice',
+	// 	message: chatValue,
+	// 	to: undefined,
+	// 	id: uuidv4()
+	// }
 
-	chats.push(foo)
-	refreshChat()
+	// chats.push(foo)
+	ChatStore.send({
+		msg: chatValue,
+		type: 'global'
+	})
 })
 
 document.querySelectorAll<HTMLElement>('user-line').forEach(($userLine: HTMLElement) => {
@@ -114,3 +128,10 @@ document.querySelectorAll<HTMLElement>('user-line').forEach(($userLine: HTMLElem
 		console.log($target.innerText)
 	})
 })
+
+const cleanPage = () => {
+	$page.removeEventListener('cleanup', cleanPage)
+	unsubChatStore()
+}
+
+$page.addEventListener('cleanup', cleanPage)

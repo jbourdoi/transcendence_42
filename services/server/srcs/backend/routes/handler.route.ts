@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { logUser, registerUser } from './auth.route.js'
+import { logUser, registerUser, validateToken } from './auth.route.js'
 import { deleteUser, getUsers, updateUser, userDashboard } from './user.route.js'
 import { getMetrics } from './metrics.route.js'
 import { handlePOSTApiAuthRegister, handlePOSTApiAuthLogin, getClientID } from './api.route.js'
@@ -25,7 +25,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 		method: 'POST',
 		url: '/api/auth/login',
 		handler: handlePOSTApiAuthLogin
-	}),
+	})
 	fastify.route({
 		method: 'GET',
 		url: '/api/auth/client_id',
@@ -35,6 +35,11 @@ export async function authRoutes(fastify: FastifyInstance) {
 		method: 'GET',
 		url: '/get_payload',
 		handler: getPayload
+	})
+	fastify.route({
+		method: 'GET',
+		url: '/validateToken',
+		handler: validateToken
 	})
 }
 

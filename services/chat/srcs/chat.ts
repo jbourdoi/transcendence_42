@@ -1,48 +1,59 @@
-/********************** Fastify **********************/
-import Fastify, { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
-import fastifyWebsocket from '@fastify/websocket'
-import cors from '@fastify/cors'
+const clients = new Set<WebSocket>()
 
-/********************** Libs **********************/
-import fs from 'fs'
-import path from 'path'
-
-/********************** Functions **********************/
-import __dirname, { setDirName } from './functions/dirname.fn.js'
-
-/********************** Services **********************/
-import { log } from './logs.js'
-
-/********************** Routes **********************/
-// import { gameRoutes } from './routes/game.route.js'
-
-setDirName(path.resolve())
-
-const fastify: FastifyInstance = Fastify({
-	https: {
-		key: fs.readFileSync(path.join(__dirname(), 'certs/key.pem')),
-		cert: fs.readFileSync(path.join(__dirname(), 'certs/cert.pem'))
-	}
-})
-
-await fastify.register(cors, {
-	origin: ['https://localhost']
-})
-
-await fastify.register(fastifyWebsocket)
-
-// publicWatcher()
-
-const start = async () => {
-	try {
-		await fastify.listen({ host: '0.0.0.0', port: 4444 })
-		console.log('Server running on http://localhost:4444')
-		log('Server running on http://localhost:4444', 'info')
-	} catch (err) {
-		fastify.log.error(err)
-		log(`Server failed to start: ${err}`, 'error')
-		process.exit(1)
-	}
+type MessageType = {
+	type: 'global' | 'mp' | 'auth'
+	to?: string
+	msg: string
 }
 
-start()
+const clientsList = new Set()
+
+const server = Bun.serve({
+	port: 4444,
+	fetch(req, server) {
+		if (server.upgrade(req)) {
+			return
+		}
+		return new Response('WebSocket chat server running', {
+			status: 200
+		})
+	},
+	websocket: {
+		open(ws) {
+			clients.add(ws)
+			console.log('Client connected')
+
+			ws.send(
+				JSON.stringify({
+					type: 'system',
+					message: 'Welcome to the chat!'
+				})
+			)
+		},
+		message(ws, message) {
+			const data = JSON.parse(message)
+
+			console.log(data)
+			if (data.type === 'auth') {
+				clientsList.add({
+					socket: ws,
+					id: data.userId
+				})
+			}
+
+			if (data.type === 'global') {
+				for (const client of clients) {
+					if (client.readyState === WebSocket.OPEN) {
+						client.send(message)
+					}
+				}
+			}
+		},
+		close(ws) {
+			clients.delete(ws)
+			console.log('Client disconnected')
+		}
+	}
+})
+
+console.log(`Chat server running on ws://localhost:${server.port}`)
