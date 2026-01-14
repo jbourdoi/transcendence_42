@@ -1,9 +1,12 @@
 import { ChatStore } from '../stores/chat.store'
 import { UserStore } from '../stores/user.store'
 import { MessageType } from '../../types/chat.type'
+import { redirectIfNotAuthenticated } from '../functions/authGuard'
 
 const $page: HTMLElement = document.querySelector('page[type=chat]')!
 const $chatInput: HTMLInputElement = document.getElementById('chatInput') as HTMLInputElement
+
+redirectIfNotAuthenticated()
 
 function sendMessage() {
 	const chatValue = $chatInput?.value
