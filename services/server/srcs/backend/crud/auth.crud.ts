@@ -86,7 +86,7 @@ export async function generateAndSendToken(infoFetch: any, reply: any) {
 			path: '/',
 			httpOnly: true,
 			secure: true,
-			sameSite: 'lax',
+			sameSite: 'strict',
 			signed: false
 			})
 			.send({ infoFetch })

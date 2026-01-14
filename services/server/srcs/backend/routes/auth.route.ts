@@ -134,7 +134,7 @@ export async function logoutUser(req: FastifyRequest, reply: FastifyReply) {
 			path: '/',
 			httpOnly: true,
 			secure: true,
-			sameSite: 'lax',
+			sameSite: 'strict',
 			signed: false
 		})
 		.send({ message: 'User logged out' })

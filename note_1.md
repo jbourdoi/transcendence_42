@@ -3,12 +3,11 @@ Paco: Register, Login, Lobby, user management (visu)
 Jacques: Tournament
 
 Obligatoire:
-- Microservices (chat dans son propre conteneur)
 - Tournoi
 - Forms
     + login:
-        - affichage immediat au refresh apres login
-    + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log
+        - affichage immediat au refresh apres login/logout (actuellement: s'affiche apres etre allé sur une autre page puis revenu à /home)
+    + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log -> faire avec token (voir logout) a check au debut des fichier ts coté front
 	+ Identifier d'où viens l'erreur de SQL constraint (email?, username?)
     + css messages d'erreur bouge tout
 
@@ -26,7 +25,7 @@ Petits:
 - Languages
 
 A la fin:
-- Vault (.env.tpl -> copie-colle-modif .env -> script pour bouger les secrets importants dans vault -> conteneurs qui call vault directement) - WAF
+- Vault (.env.tpl -> copie-colle-modif .env -> script pour bouger les secrets importants dans vault -> supprimer ces secrets bougés à vault de .env -> conteneurs qui call vault directement) - WAF
 - Normes de securité Docker et conteneurs
 
 Peut etre:
