@@ -1,0 +1,49 @@
+<head>
+	<title>tournament_tree</title>
+	<style module>
+	a {
+		color: navajowhite;
+	}
+	/* tournament_match.css */
+	page[type="tournament_match"] {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+		font-family: Arial, sans-serif;
+		color: white;
+		overflow: hidden;
+	}
+
+	#canvas2D {
+		background: #000; /* noir pur */
+		border: 2px solid #fff; /* cadre blanc autour */
+		border-radius: 12px;
+		display: block;
+		margin: 0 auto;
+		box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+	}
+
+	@media (max-width: 800px) {
+	#canvas2D {
+		border-width: 1px;
+		box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+	}
+	}
+
+	</style>
+</head>
+
+<page type="tournament_match">
+	<nav>
+		<a data-route="" class="text-xs">/index</a>
+	</nav>
+	<h2>tournament_tree</h2>
+	<section id="tournament-match">
+		<canvas id="canvas2D"></canvas>
+	</section>
+</page>
+
+<script type="module" src="modules/tournament_match.js"></script>

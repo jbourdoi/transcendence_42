@@ -1,5 +1,6 @@
 import { updateDomState } from '../functions/updateDomState.fn'
 import { PageUpdateStore } from './page_state'
+import { v4 as uuidv4 } from 'uuid'
 
 type Subscriber = (config: any) => void
 
@@ -7,7 +8,8 @@ let config = {
 	textSize: 20,
 	username: undefined,
 	email: undefined,
-	id: undefined
+	id: undefined,
+	uuid: uuidv4()
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,7 +40,11 @@ function createStateStore() {
 		for (const fn of subscribers) fn(config)
 	}
 
-	return { subscribe, emit, update }
+	function getStateUUID() {
+		return config.uuid
+	}
+
+	return { subscribe, emit, update, getStateUUID }
 }
 
 declare global {

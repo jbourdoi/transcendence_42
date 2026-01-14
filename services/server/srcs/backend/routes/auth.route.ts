@@ -97,12 +97,18 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		.send({ message: 'User registered', data: { username: username, email, firstName: '', lastName: '', login: username } })
 }
 
+export async function validateToken(req: FastifyRequest, reply: FastifyReply) {
+	const alreadyLoggedInResponse = await checkIfAlreadyLoggedIn(req)
+
+	console.log(alreadyLoggedInResponse)
+}
+
 export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 	const data = await getMultipartFormData(req)
 	const { username, pwd } = (await data) as userLoginType
-	
+
 	console.log('--BACK-- Logging in user with data:', { username: username, pwd: pwd })
-	
+
 	const alreadyLoggedInResponse = await checkIfAlreadyLoggedIn(req)
 	if (alreadyLoggedInResponse) return reply.status(200).send({ message: 'Already logged in' })
 
@@ -110,9 +116,9 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 		endpoint: 'dbGet',
 		query: { verb: 'read', sql: 'SELECT * FROM users WHERE username = ?', data: [username] }
 	})
-	
+
 	if (body.status >= 400) return reply.status(body.status).send(body.message)
-		
+
 	const matchPwd = await bcrypt.compare(pwd, body.data.pwd)
 
 	if (!matchPwd) return reply.status(401).send({ message: 'Invalid password' })

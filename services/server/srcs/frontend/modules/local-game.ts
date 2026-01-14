@@ -1,8 +1,4 @@
-document.querySelector('play')?.addEventListener('click', ()=>{
-	alert("Play a local game");
-})
-
-enum GameState
+export enum GameState
 {
     NEW_GAME,
     PLAYING,
@@ -10,7 +6,7 @@ enum GameState
     GAME_OVER
 }
 
-class Arena {
+export class Arena {
     // Dimensions logiques (ratio 16/9)
     readonly width = 16;
     readonly height = 9;
@@ -27,7 +23,7 @@ class Arena {
 }
 
 
-class Vector2
+export class Vector2
 {
     constructor(public x: number, public y: number) {}
 
@@ -37,7 +33,7 @@ class Vector2
     }
 }
 
-class Paddle
+export class Paddle
 {
     position: Vector2;
     width: number;
@@ -72,7 +68,7 @@ class Paddle
     }
 }
 
-class Ball
+export class Ball
 {
     readonly radius: number;
     position: Vector2;
@@ -106,20 +102,25 @@ class Ball
     }
 }
 
-class GameModel
+export class GameModel
 {
     state = GameState.NEW_GAME;
+    isTournament: boolean = false;
     leftScore = 0;
     rightScore = 0;
     readonly maxScore = 5;
-
+    leftPlayerName = ''
+    rightPlayerName = ''
     leftPaddle!: Paddle;
     rightPaddle!: Paddle;
     ball!: Ball;
 
     constructor(readonly arena: Arena) {}
 
-    init(): void {
+    init(leftPlayerName:string = 'left', rightPlayerName:string = 'right', isTournament = false): void {
+        this.leftPlayerName = leftPlayerName;
+        this.rightPlayerName = rightPlayerName;
+        this.isTournament = isTournament;
         this.leftScore = 0;
         this.rightScore = 0;
         this.state = GameState.NEW_GAME;
@@ -131,7 +132,7 @@ class GameModel
     }
 }
 
-class GameView
+export class GameView
 {
     private scale = 1;
     private offsetX = 0;
@@ -148,14 +149,6 @@ class GameView
 
         this.offsetX = (canvas.width - width * this.scale) / 2;
         this.offsetY = (canvas.height - height * this.scale) / 2;
-    }
-
-    private lx(x: number): number {
-        return this.offsetX + x * this.scale;
-    }
-
-    private ly(y: number): number {
-        return this.offsetY + y * this.scale;
     }
 
     render(model: GameModel): void {
@@ -200,7 +193,7 @@ class GameView
 
         ctx.restore();
 
-        // UI (score, texte) hors scaling
+        // UI (score, playersname) hors scaling
         ctx.fillStyle = "white";
         ctx.font = `${0.64 * this.scale}px Arial`;
         ctx.textAlign = "center";
@@ -209,7 +202,11 @@ class GameView
             width / 2,
             40
         );
-
+        ctx.textAlign = 'left'
+        ctx.fillText(model.leftPlayerName, 20, 40)
+        ctx.textAlign = 'right'
+        ctx.fillText(model.rightPlayerName, width - 20, 40)
+        ctx.textAlign = 'center'
 		switch (model.state)
 		{
 			case (GameState.NEW_GAME):
@@ -227,10 +224,12 @@ class GameView
     }
 }
 
-class GameController
+export class GameController
 {
     private keys = new Set<string>();
     private lastTime = 0;
+    private onGameOver = ()=>{};
+    private stop = false;
 
     constructor(
         private model: GameModel,
@@ -241,6 +240,7 @@ class GameController
     }
 
     start(time: number): void {
+        if (this.stop) return;
         const dt = (time - this.lastTime) / 1000;
         this.lastTime = time;
 
@@ -283,6 +283,23 @@ class GameController
         this.handleCollisions();
     }
 
+    public setGameOver(gameOver:()=>void)
+    {
+        this.onGameOver=gameOver
+    }
+
+    public getCurrentScore()
+    {
+        return [this.model.leftScore, this.model.rightScore]
+    }
+    private handleGameOver():void
+    {
+        this.model.state = GameState.GAME_OVER;
+        this.stop = true;
+        if (!this.model.isTournament) return;
+        this.onGameOver()
+    }
+
     private handleCollisions(): void {
         const ball = this.model.ball;
 
@@ -301,6 +318,7 @@ class GameController
             ball.reset(1);
 			this.model.leftPaddle.init();
 			this.model.rightPaddle.init();
+            console.log('player1 missed the ball')
         }
 
         if (ball.position.x > this.model.arena.width) {
@@ -308,13 +326,14 @@ class GameController
             ball.reset(-1);
 			this.model.leftPaddle.init();
 			this.model.rightPaddle.init();
+            console.log('player2 missed the ball')
         }
 
         if (
             this.model.leftScore >= this.model.maxScore ||
             this.model.rightScore >= this.model.maxScore
         ) {
-            this.model.state = GameState.GAME_OVER;
+            this.handleGameOver()
         }
     }
 }

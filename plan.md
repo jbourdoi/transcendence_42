@@ -11,9 +11,7 @@ Lobby:
 			Host goes to waiting list
 
 Tournament:
-	0: Choose all 3-4 (Host is registered or not) client players aliases. The host uses registered alias if registered. Add Id to each player
-	1: Tournament tree, shuffle all 4 players and show the tree.
-	2: Match starts
+	Paufiner
 
 Remote 1v1
 
@@ -28,7 +26,6 @@ Player Stats:
 	Shows other players' match history
 
 Chat:
-	Extract sockets connection to another docker container
 	Block users, prevent from seeing messages
 	Access other player information
 

@@ -1,0 +1,45 @@
+<head>
+	<title>tournament_tree</title>
+	<style module>
+		a {
+			color: navajowhite;
+		}
+	.match {
+	padding: 8px;
+	margin: 6px 0;
+	border: 1px solid #444;
+	border-radius: 6px;
+	}
+
+	.match.current {
+		border-color: gold;
+		background: rgba(255,215,0,0.1);
+	}
+
+	.placeholder {
+		opacity: 0.5;
+		font-style: italic;
+	}
+
+	.winner {
+		font-size: 1.2em;
+		font-weight: bold;
+	}
+
+	.actions {
+		margin-top: 16px;
+}
+
+
+	</style>
+</head>
+
+<page type="tournament_tree">
+	<nav>
+		<a data-route="" class="text-xs">/index</a>
+	</nav>
+	<h2>tournament_tree</h2>
+	<section id="tournament-tree"></section>
+</page>
+
+<script type="module" src="modules/tournament_tree.js"></script>
