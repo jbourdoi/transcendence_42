@@ -39,3 +39,10 @@ Database:
 	Database -> Return either a value or an error -> Backend
 	Backend  -> Returns error or value -> Frontend
 	Frontend -> Shows error message
+
+
+BLOQUER ACCES USER (a faire):
+- pas registered:
+	+ friends
+	+ others' match history
++ fonction: redirectIfNotAuthenticated()

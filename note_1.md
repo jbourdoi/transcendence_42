@@ -6,7 +6,7 @@ Obligatoire:
 - Tournoi
 - Forms
     + login:
-        - affichage immediat au refresh apres login/logout (actuellement: s'affiche apres etre allé sur une autre page puis revenu à /home)
+        - affichage immediat au refresh apres login (actuellement: s'affiche apres etre allé sur une autre page puis revenu à /home)
     + coté front: bloquer /login et /register si deja log || bloquer /logout si pas log -> faire avec token (voir logout) a check au debut des fichier ts coté front
 	+ Identifier d'où viens l'erreur de SQL constraint (email?, username?)
     + css messages d'erreur bouge tout
