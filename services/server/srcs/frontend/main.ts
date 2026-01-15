@@ -1,3 +1,4 @@
+import { ChatStore } from './stores/chat.store'
 import { CurrentButtonStore } from './stores/current_button.store'
 import { PageUpdateStore } from './stores/page_state'
 import { UserStore } from './stores/user.store'
@@ -46,3 +47,5 @@ fetch('/get_payload', {
 		isValid: true
 	})
 })
+
+ChatStore.subscribe(_ => {})

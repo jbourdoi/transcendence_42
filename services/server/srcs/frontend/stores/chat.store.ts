@@ -1,9 +1,11 @@
 import { v4 as uuidv4 } from 'uuid'
 import { type MessageType } from '../../types/chat.type'
 
-type Subscriber = (message: MessageEvent<any>) => void
+type Subscriber = (message: MessageType[]) => void
 
 const ws = new WebSocket('ws://localhost:4444')
+
+const chats: MessageType[] = []
 
 ws.addEventListener('open', () => {
 	ws.send(
@@ -18,7 +20,10 @@ function createChatStore() {
 	const subscribers = new Set<Subscriber>()
 
 	ws.onmessage = event => {
-		emit(JSON.parse(event.data))
+		const msg = JSON.parse(event.data)
+		if (msg.type === 'system') return
+		chats.push(msg)
+		emit(chats)
 	}
 
 	function subscribe(fn: Subscriber) {
@@ -26,15 +31,19 @@ function createChatStore() {
 		return () => subscribers.delete(fn)
 	}
 
-	function emit(message: MessageEvent<any>) {
-		for (const fn of subscribers) fn(message)
+	function emit(chat: MessageType[]) {
+		for (const fn of subscribers) fn(chat)
 	}
 
 	function send(message: MessageType) {
 		ws.send(JSON.stringify(message))
 	}
 
-	return { subscribe, emit, send }
+	function getChats() {
+		return chats
+	}
+
+	return { subscribe, emit, send, getChats }
 }
 
 declare global {

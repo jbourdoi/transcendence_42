@@ -26,75 +26,12 @@ $chatInput.addEventListener('keydown', evt => {
 
 document.querySelector('chat-input button')?.addEventListener('click', sendMessage)
 
-let chats: MessageType[] = [
-	{
-		timestamp: Date.now() - 60000 * 10,
-		user: 'Bob',
-		msg: 'Hello Alice!',
-		to: 'Alice',
-		type: 'global'
-	},
-	{
-		timestamp: Date.now() - 60000 * 9,
-		user: 'Alice',
-		msg: 'General message',
-		to: undefined,
-		type: 'global'
-	},
-	{
-		timestamp: Date.now() - 60000 * 8,
-		user: 'Bob',
-		msg: 'General message',
-		to: undefined,
-		type: 'global'
-	},
-	{
-		timestamp: Date.now() - 60000 * 8,
-		user: 'Alice',
-		msg: 'Hi Bob!',
-		to: 'Bob',
-		type: 'global'
-	},
-	{
-		timestamp: Date.now() - 60000 * 6,
-		user: 'Pedro',
-		msg: 'General message',
-		to: undefined,
-		type: 'global'
-	},
-	{
-		timestamp: Date.now() - 60000 * 5,
-		user: 'Maria',
-		msg: 'General message',
-		to: undefined,
-		type: 'global'
-	},
-	{
-		timestamp: Date.now() - 60000 * 4,
-		user: 'Alice',
-		msg: 'General message',
-		to: undefined,
-		type: 'global'
-	}
-]
-
 const $chatWindow = document.querySelector('chat-window') as HTMLElement
 const user = 'Bob'
 
-const unsubChatStore = ChatStore.subscribe(message => {
-	console.log('New Upcoming message: ', message)
-
-	if (message.type === 'system') return
-
-	chats.push(message)
-	refreshChat()
-})
-
-refreshChat()
-
-function refreshChat() {
+function refreshChat(newChat: MessageType[]) {
 	$chatWindow.innerText = ''
-	chats.forEach(chat => {
+	newChat.forEach(chat => {
 		let $line = document.createElement('chat-line')
 		let $time = document.createElement('chat-time')
 		let $user = document.createElement('chat-user')
@@ -128,6 +65,12 @@ function refreshChat() {
 		$chatWindow.scrollTop = $chatWindow.scrollHeight
 	})
 }
+
+const unsubChatStore = ChatStore.subscribe(chat => {
+	refreshChat(chat)
+})
+
+refreshChat(ChatStore.getChats())
 
 document.querySelectorAll<HTMLElement>('user-line').forEach(($userLine: HTMLElement) => {
 	if ($userLine.innerText === user) $userLine.classList.add('current-user')
