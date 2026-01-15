@@ -6,28 +6,30 @@ services:
     container_name: grafana
     restart: unless-stopped
     ports:
-      - "${GRAFANA_PORT}:${GRAFANA_PORT}"
+      - "${GF_PORT}:${GF_PORT}"
     volumes:
       - ./services/metrics/grafana/provisioning/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
       - ./services/metrics/grafana/provisioning/datasources/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
-      - ./services/metrics/grafana/dashboards:${GRAFANA_DASHBOARDS_PATH}
+      - ./services/metrics/grafana/dashboards:${GF_DASHBOARDS_PATH}
     environment:
       - GF_LOG_LEVEL=error
-      - GF_SERVER_HTTP_PORT=${GRAFANA_PORT}
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PWD}
+      - GF_SERVER_HTTP_PORT=${GF_PORT}
+      - GF_SECURITY_ADMIN_USER=${GF_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_ADMIN_PWD}
       - GF_SERVER_PROTOCOL=https
       - GF_USERS_HOME_PAGE=/dashboards
-      - GF_ROOT_URL=${GRAFANA_ADDR}
-      - GF_SERVER_CERT_FILE=${GRAFANA_CERT_PATH}
-      - GF_SERVER_CERT_KEY=${GRAFANA_KEY_PATH}
-      - GRAFANA_DASHBOARDS_PATH=${GRAFANA_DASHBOARDS_PATH}
-      - GRAFANA_URL_HEALTH=${GRAFANA_URL_HEALTH}
-      - GRAFANA_ADDR=${GRAFANA_ADDR}
-      - GRAFANA_USER_NAME=${GRAFANA_USER_NAME}
-      - GRAFANA_USER_MAIL=${GRAFANA_USER_MAIL}
-      - GRAFANA_USER_LOGIN=${GRAFANA_USER_LOGIN}
-      - GRAFANA_USER_PWD=${GRAFANA_USER_PWD}
+      - GF_ROOT_URL=${GF_ADDR}
+      - GF_SERVER_CERT_FILE=${GF_CERT_PATH}
+      - GF_SERVER_CERT_KEY=${GF_KEY_PATH}
+      - GRAFANA_DASHBOARDS_PATH=${GF_DASHBOARDS_PATH}
+      - GRAFANA_URL_HEALTH=${GF_URL_HEALTH}
+      - GRAFANA_ADDR=${GF_ADDR}
+      - VAULT_TOKEN=${VAULT_TOKEN}
+      - VAULT_ADDR=${VAULT_ADDR}
+      - GRAFANA_USER_NAME=${GF_USER_NAME}
+      - GRAFANA_USER_MAIL=${GF_USER_MAIL}
+      - GRAFANA_USER_LOGIN=${GF_USER_NAME}
+      - GRAFANA_USER_PWD=${GF_USER_PWD}
     networks:
       - metrics
     labels:
@@ -63,7 +65,7 @@ services:
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    entrypoint: /bin/sh -c
+    entrypoint: /bin/bash -c
     command:
       - |
         mc alias set localminio http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} && \
