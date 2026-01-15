@@ -1,14 +1,14 @@
 const clients = new Set<WebSocket>()
 
 type MessageType = {
-	type: 'global' | 'mp' | 'auth'
+	type: 'global' | 'mp' | 'auth' | 'info' | 'error'
 	to?: string
 	msg: string
 }
 
 type ClientType = { username: string; socket: WebSocket }
 
-const clientsList: Set<ClientType> = new Set<ClientType>()
+let clientsList: Set<ClientType> = new Set<ClientType>()
 
 const server = Bun.serve({
 	port: 4444,
@@ -23,8 +23,6 @@ const server = Bun.serve({
 	websocket: {
 		open(ws) {
 			clients.add(ws)
-			console.log('Client connected')
-
 			ws.send(
 				JSON.stringify({
 					type: 'system',
@@ -37,6 +35,13 @@ const server = Bun.serve({
 
 			console.log('New Message: ', data)
 			if (data.type === 'auth') {
+				ws.username = data.username
+				for (let client of clientsList) {
+					data.msg = `Player ${data.username} has connected`
+					data.type = 'info'
+					client.socket.send(JSON.stringify(data))
+				}
+
 				clientsList.add({
 					socket: ws,
 					username: data.username
@@ -51,25 +56,33 @@ const server = Bun.serve({
 				let clientFound
 				for (let client of clientsList) {
 					if (client.username === data.to) {
-						console.log('Client: ', client)
 						clientFound = client
 					}
 				}
 				if (clientFound) {
 					clientFound.socket.send(message)
 					ws.send(message)
-					console.log(data)
 				} else {
-					console.log(data)
-					data.msg = 'Client not found'
+					data.msg = 'Player not found'
 					data.type = 'Error'
 					ws.send(JSON.stringify(data))
 				}
 			}
 		},
 		close(ws) {
+			const message = {
+				type: 'info',
+				msg: `Player ${ws.username} has disconnected`
+			}
+			for (const client of clientsList) {
+				if (client.socket !== ws && client.socket.readyState === WebSocket.OPEN) {
+					client.socket.send(JSON.stringify(message))
+				}
+				if (client.socket === ws) {
+					clientsList.delete(client)
+				}
+			}
 			clients.delete(ws)
-			console.log('Client disconnected')
 		}
 	}
 })

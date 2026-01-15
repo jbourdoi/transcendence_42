@@ -22,7 +22,6 @@ function sendMessage() {
 
 	if (splitMsg[0] === '/mp') {
 		if (splitMsg[2]) {
-			console.log('Private message')
 			message.to = splitMsg[1]
 			message.msg = splitMsg[2]
 			message.type = 'mp'
@@ -59,7 +58,6 @@ function refreshChat(newChat: MessageType[]) {
 			$user.innerText = `${chat.user}`
 		} else {
 			$line.classList.add('mp')
-			console.log('Chat: ', chat)
 			if (chat.user === UserStore.getUserName()) {
 				$user.innerText = `To ${chat.to}`
 			} else {
@@ -75,8 +73,10 @@ function refreshChat(newChat: MessageType[]) {
 		$time.innerText = String(time)
 		$message.innerText = chat.msg
 
-		$line.appendChild($time)
-		$line.appendChild($user)
+		if (chat.type !== 'info' && chat.type !== 'error') {
+			$line.appendChild($time)
+			$line.appendChild($user)
+		}
 		$line.appendChild($message)
 
 		$chatWindow?.appendChild($line)
