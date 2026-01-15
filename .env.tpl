@@ -37,18 +37,17 @@ LOGS_DIR=/app/logs
 
 ### METRICS ###
 # GRAFANA #
-GRAFANA_ADMIN_USER=<CHANGE-ME>
-GRAFANA_ADMIN_PWD=<CHANGE-ME>
-GRAFANA_PORT=4000
-GRAFANA_DASHBOARDS_PATH=/var/lib/grafana/dashboards/
-GRAFANA_CERT_PATH=/app/services/grafana/certs/grafana.crt
-GRAFANA_KEY_PATH=/app/services/grafana/certs/grafana.key
-GRAFANA_ADDR=https://localhost:${GRAFANA_PORT}
-GRAFANA_URL_HEALTH=${GRAFANA_ADDR}/api/health
-GRAFANA_USER_NAME=<CHANGE-ME>
-GRAFANA_USER_MAIL=<CHANGE-ME>
-GRAFANA_USER_LOGIN=${GRAFANA_USER_NAME}
-GRAFANA_USER_PWD=<CHANGE-ME>
+GF_ADMIN_USER=<CHANGE-ME>
+GF_ADMIN_PWD=<CHANGE-ME>
+GF_PORT=4000
+GF_DASHBOARDS_PATH=/var/lib/grafana/dashboards/
+GF_CERT_PATH=/app/services/grafana/certs/grafana.crt
+GF_KEY_PATH=/app/services/grafana/certs/grafana.key
+GF_ADDR=https://localhost:${GF_PORT}
+GF_URL_HEALTH=${GF_ADDR}/api/health
+GF_USER_NAME=<CHANGE-ME>
+GF_USER_MAIL=<CHANGE-ME>
+GF_USER_PWD=<CHANGE-ME>
 
 # MINIO #
 MINIO_HEALTH_URL=http://localhost:9000/minio/health/live
