@@ -3,7 +3,7 @@ import { TournamentStore } from "./tournament/tournament.store.js";
 import { TournamentController } from "./tournament/tournament.controller.js";
 import type { TournamentModel } from "./tournament/tournament.model.js";
 import type { TournamentMatch } from "./tournament/tournament.type.js";
-import { Arena, GameModel, GameView, GameController } from "./local-game.js";
+import { Arena, GameModel, GameView, GameController } from "./local_game.js";
 import { navigate } from "../js/routing.js";
 
 const $page = document.querySelector("page[type=tournament_match]")!;

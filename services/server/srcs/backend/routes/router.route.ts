@@ -14,7 +14,7 @@ const validRoutes = [
 	'game',
 	'lobby',
 	'chat',
-	'local-game',
+	'local_game',
 	'tournament_select',
 	'tournament_tree',
 	'tournament_match',
