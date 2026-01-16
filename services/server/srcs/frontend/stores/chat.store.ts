@@ -1,5 +1,6 @@
 import { type MessageType } from '../../types/chat.type'
 import { UserStore } from './user.store'
+import { NotificationStore } from './notification.store'
 
 type Subscriber = (message: MessageType[]) => void
 
@@ -22,6 +23,14 @@ if (ws === null) {
 			ws.onmessage = event => {
 				const msg = JSON.parse(event.data)
 				if (msg.type === 'system') return
+				if (msg.type === 'req-friend') {
+					console.log(event.data)
+					return
+				}
+				if (msg.type === 'notification') {
+					NotificationStore.notify(msg.msg, 'INFO')
+					return
+				}
 				chats.push(msg)
 				ChatStore.emit(chats)
 			}

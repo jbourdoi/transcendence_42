@@ -1,7 +1,7 @@
 const clients = new Set<WebSocket>()
 
 type MessageType = {
-	type: 'global' | 'mp' | 'auth' | 'info' | 'error' | 'users'
+	type: 'global' | 'mp' | 'auth' | 'info' | 'error' | 'users' | 'req-friend' | 'notification'
 	to?: string
 	msg: string
 }
@@ -48,8 +48,7 @@ const server = Bun.serve({
 		},
 		message(ws, message) {
 			const data = JSON.parse(message)
-
-			// console.log('New Message: ', data)
+			console.log('New Incoming message: ', data)
 			if (data.type === 'auth') {
 				ws.username = data.username
 				for (let client of clientsList) {
@@ -78,6 +77,29 @@ const server = Bun.serve({
 				if (clientFound) {
 					clientFound.socket.send(message)
 					ws.send(message)
+				} else {
+					data.msg = 'Player not found'
+					data.type = 'Error'
+					ws.send(JSON.stringify(data))
+				}
+			} else if (data.type === 'req-friend') {
+				let clientFound
+				console.log('Friends request')
+				for (let client of clientsList) {
+					if (client.username === data.msg) {
+						clientFound = client
+					}
+				}
+				console.log('Client Found: ', clientFound)
+				if (clientFound) {
+					//TODO Add to DB the friends req
+					data.msg = clientFound.username
+					data.type = 'req-friend'
+					clientFound.socket.send(JSON.stringify(data))
+
+					data.type = 'notification'
+					data.msg = `User ${ws.username} wants to be friends!`
+					clientFound.socket.send(JSON.stringify(data))
 				} else {
 					data.msg = 'Player not found'
 					data.type = 'Error'

@@ -50,14 +50,22 @@ function mpUser(username: string) {
 	$chatInput.focus()
 }
 
-function addUserAsFriend(username: string)
-{
-	
+function addUserAsFriend(username: string) {
+	const message: MessageType = {
+		user: UserStore.getUserName(),
+		msg: username,
+		type: 'req-friend',
+		timestamp: Date.now()
+	}
+
+	console.log('Message Add User as friends: ', message)
+
+	ChatStore.send(message)
 }
 
 function updateUserList(users: string[]) {
 	$chatUsers.querySelectorAll('user-line').forEach(el => {
-		console.log(el.remove())
+		el.remove()
 	})
 	users.forEach(user => {
 		const $userLine = document.createElement('user-line')
@@ -145,13 +153,11 @@ function updateChat(newChat: MessageType[]) {
 		$time.innerText = String(time)
 		$message.innerText = chat.msg
 
-		console.log(chat)
 		if (chat.type !== 'info' && chat.type !== 'error') {
 			$line.appendChild($time)
 			$line.appendChild($user)
 		}
 		$line.appendChild($message)
-
 		$chatWindow?.appendChild($line)
 		$chatWindow.scrollTop = $chatWindow.scrollHeight
 	})
