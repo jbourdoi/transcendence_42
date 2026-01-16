@@ -85,17 +85,13 @@ ELASTICSEARCH_PWD)
 echo "Creating or empty $ENV_VAULT if already exists"
 > $ENV_VAULT
 
-echo "Extracting sensitive keys to $ENV_VAULT"
+echo "Extracting sensitive keys to $ENV_VAULT and removing them from $ENV"
 for key in "${KEYS[@]}"; do
     if ! grep -q "^${key}=" $ENV; then
         echo "Error: Key ${key} not found in ${ENV}."
         exit 1
     fi
     grep "^${key}=" $ENV >> $ENV_VAULT
-done
-
-echo "Removing sensitive keys from $ENV"
-for key in "${KEYS[@]}"; do
     $SED "/^${key}=/d" $ENV
 done
 
