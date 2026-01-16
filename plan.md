@@ -34,6 +34,13 @@ Friends request:
 	User "A" send a friends request to "B" by clicking the add friend button
 	User "B" gets a notification
 	The friends list shows the request and the user can click it
+	
+	Logic:
+		User clicks on add friends
+		Goes to websocket
+		Save request in DB ⚠️
+		Sends confirmation to requesting user
+		Sends a request to requested friend
 
 Player Stats:
 	Shows other players' match history
