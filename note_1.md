@@ -1,4 +1,4 @@
-Christella: vault, 2fa, Kibana
+Christella: 2fa, Kibana
 Paco: Register, Login, Lobby, user management (visu)
 Jacques: Tournament
 
@@ -25,9 +25,6 @@ Petits:
 - Languages
 
 A la fin:
-- Vault:
-    + .env.tpl -> copie-colle-modif .env -> script pour bouger les secrets importants dans vault -> supprimer ces secrets bougés à vault de .env -> conteneurs qui call vault directement
-    + faire un .env et un .env.vault -> .env.vault ira dans vault + suppr du fichier
 - WAF
 - Normes de securité Docker et conteneurs
 

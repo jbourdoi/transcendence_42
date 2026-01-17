@@ -23,9 +23,6 @@ Tournament:
 
 Remote 1v1
 
-Vault:
-	.env.tpl -> copie-colle-modif .env -> script pour bouger les secrets importants dans vault -> conteneurs qui call vault directement
-
 Friends:
 	Create (current) friends page
 	Create remove and mp buttons (friends page)
