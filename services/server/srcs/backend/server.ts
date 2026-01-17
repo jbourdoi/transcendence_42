@@ -12,6 +12,7 @@ import path from 'path'
 /********************** Functions **********************/
 import __dirname, { setDirName } from './functions/dirname.fn.js'
 import { publicWatcher } from './services/publicWatcher.service.js'
+import { getCertValue } from './crud/certs.crud.js'
 
 /********************** Services **********************/
 import { log } from './logs.js'
@@ -23,10 +24,13 @@ import { routerRoute } from './routes/router.route.js'
 
 setDirName(path.resolve())
 
+const cert_crt = await getCertValue('services_crt')
+const cert_key = await getCertValue('services_key')
+
 const fastify: FastifyInstance = Fastify({
 	https: {
-		key: fs.readFileSync(path.join(__dirname(), 'certs/key.pem')),
-		cert: fs.readFileSync(path.join(__dirname(), 'certs/cert.pem'))
+		key: cert_key,
+		cert: cert_crt
 	}
 })
 

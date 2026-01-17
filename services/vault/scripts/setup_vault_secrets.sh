@@ -4,7 +4,6 @@ set -e
 
 KEYS=(CLIENT_ID
 CLIENT_SECRET
-ROOT_TOKEN_FILE
 GF_ADMIN_USER
 GF_ADMIN_PWD
 GF_CERT_PATH
@@ -20,11 +19,12 @@ ETHEREAL_AUTH_USER
 ETHEREAL_AUTH_PWD
 KIBANA_CERT_PATH
 KIBANA_KEY_PATH
-ELASTICSEARCH_PWD)
+ELASTICSEARCH_PWD
+SERVICES_CRT
+SERVICES_KEY)
 
 KVPATHS=(secret/client_id
 secret/client_secret
-secret/root_token_file
 secret/gf_admin_user
 secret/gf_admin_pwd
 secret/gf_cert_path
@@ -40,7 +40,9 @@ secret/ethereal_auth_user
 secret/ethereal_auth_pwd
 secret/kibana_cert_path
 secret/kibana_key_path
-secret/elasticsearch_pwd)
+secret/elasticsearch_pwd
+secret/services_crt
+secret/services_key)
 
 
 for i in "${!KEYS[@]}"; do

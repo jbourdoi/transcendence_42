@@ -53,6 +53,18 @@ if [ "$FIRST_INIT" = true ]; then
   echo "Setting up AppRole authentication method..."
   bash ./scripts/approle_init.sh
 
+  echo "Create certificates for all services..."
+  openssl req -x509 -nodes \
+    -out ./certs/services.crt \
+    -keyout ./certs/services.key \
+    -days 365 \
+    -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=localhost" \
+    -addext "subjectAltName=DNS:localhost,IP:127.0.0.1"
+  echo "Certificates created."
+
+  export SERVICES_CRT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n", $0;}' ./certs/services.crt)
+  export SERVICES_KEY=$(awk 'NF {sub(/\r/, ""); printf "%s\\n", $0;}' ./certs/services.key)
+
   echo "Setting up Vault secrets..."
   bash ./scripts/setup_vault_secrets.sh
 

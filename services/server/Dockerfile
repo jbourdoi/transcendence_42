@@ -16,7 +16,6 @@ RUN npm i -g pnpm
 
 COPY package.json ./
 COPY srcs ./srcs
-COPY certs ./certs
 COPY pnpm-lock.yaml ./
 COPY tsconfig.json ./
 COPY tailwind.config.js ./
