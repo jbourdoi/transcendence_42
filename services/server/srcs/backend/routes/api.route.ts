@@ -2,9 +2,12 @@ import { FastifyRequest, FastifyReply } from 'fastify'
 import { v4 as uuidv4 } from 'uuid'
 import { json_parse } from '../../frontend/functions/json_wrapper.js'
 import { fetch42User, generateAndSendToken } from '../crud/auth.crud.js'
+import { getVaultSecret } from '../services/vault.service.js'
 
-const CLIENT_ID = process.env.CLIENT_ID || ''
-const CLIENT_SECRET = process.env.CLIENT_SECRET || ''
+const CLIENT_ID = await getVaultSecret<string>('client_id', (value) => value)
+const CLIENT_SECRET = await getVaultSecret<string>('client_secret', (value) => value)
+if (!CLIENT_ID || !CLIENT_SECRET)
+	console.error('Failed to load 42OAuth client credentials from Vault service.')
 
 export async function getClientID(req: FastifyRequest, reply: FastifyReply) {
 	return reply.send({ client_id: CLIENT_ID })
@@ -16,9 +19,9 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 	const url =
 		'https://api.intra.42.fr/oauth/token?' +
 		new URLSearchParams({
-			client_id: CLIENT_ID,
+			client_id: CLIENT_ID as string,
 			grant_type: 'authorization_code',
-			client_secret: CLIENT_SECRET,
+			client_secret: CLIENT_SECRET as string,
 			code,
 			redirect_uri: 'https://localhost/register',
 			state: uuidv4()
@@ -35,9 +38,9 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 	const url =
 		'https://api.intra.42.fr/oauth/token?' +
 		new URLSearchParams({
-			client_id: CLIENT_ID,
+			client_id: CLIENT_ID as string,
 			grant_type: 'authorization_code',
-			client_secret: CLIENT_SECRET,
+			client_secret: CLIENT_SECRET as string,
 			code,
 			redirect_uri: 'https://localhost/login',
 			state: uuidv4()
