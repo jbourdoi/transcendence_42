@@ -121,7 +121,7 @@ services:
       - ./services/vault/conf/config.hcl:/app/services/vault/conf/config.hcl
       - vault-secure:/app/services/vault/secure
       - vault-data:/vault/data
-      - ${LOGS_PATH}:${LOGS_DIR}
+      - ${LOGS_PATH}:/vault/logs
     environment:
       VAULT_ADDR: ${VAULT_ADDR}
       VAULT_API_PORT: ${VAULT_API_PORT}
