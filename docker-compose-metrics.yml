@@ -64,6 +64,7 @@ services:
       - --tsdb.path=/prometheus
       - --objstore.config-file=/etc/thanos/storage.yml
     depends_on:
+      - minio
       - prometheus
     networks:
       - metrics
@@ -103,6 +104,9 @@ services:
       - store
       - "--data-dir=/data"
       - "--objstore.config-file=/etc/thanos/storage.yml"
+    depends_on:
+      - minio
+      - thanosSidecar
     networks:
       - metrics_storage
     labels:

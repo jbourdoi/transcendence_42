@@ -49,8 +49,9 @@ until curl -s $MINIO_HEALTH_URL; do
 done
 
 echo "Configuring MinIO buckets..."
-mc alias set localminio http://localhost:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} && \
-mc mb --ignore-existing localminio/thanos
+mc alias set localminio http://localhost:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD || echo "Alias set failed"
+mc mb --ignore-existing localminio/thanos || echo "Bucket creation failed"
+mc ls localminio || echo "Listing buckets failed"
 
 echo "MinIO setup complete."
 
