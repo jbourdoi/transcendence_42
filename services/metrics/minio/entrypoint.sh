@@ -36,8 +36,22 @@ for i in "${!ENV_VARS[@]}"; do
     export "$ENV_VAR=$VALUE"
     echo "Exported $ENV_VAR from Vault."
 done
-echo "here is MINIO_ROOT_USER=$MINIO_ROOT_USER"
-echo "here is MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD"
+
 echo "Environment variables setup complete."
 
-exec minio server /data --console-address ":9001"
+echo "Starting MinIO server..."
+minio server /data --console-address ":9001" &
+MINIO_PID=$!
+
+echo "Waiting for MinIO..."
+until curl -s $MINIO_HEALTH_URL; do
+    sleep 2
+done
+
+echo "Configuring MinIO buckets..."
+mc alias set localminio http://localhost:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD} && \
+mc mb --ignore-existing localminio/thanos
+
+echo "MinIO setup complete."
+
+wait $MINIO_PID
