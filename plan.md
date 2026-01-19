@@ -1,6 +1,3 @@
-Redirect to 403 instead of returning 403 error
-Fix waf health check spam
-
 Match History:
 	1 vs 1 -> dates, players, score, winner
 
@@ -67,4 +64,4 @@ BLOQUER ACCES USER (a faire):
 - pas registered:
 	+ friends
 	+ others' match history
-+ fonction: redirectIfNotAuthenticated()
++ dans le waf
