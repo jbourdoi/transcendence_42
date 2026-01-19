@@ -41,6 +41,6 @@ for i in "${!KEYS[@]}"; do
     KEY=${KEYS[$i]}
     KVPATH=${KVPATHS[$i]}
     VALUE=${!KEY}
-    echo "Storing ${KVPATH}=${VALUE} in Vault..."
+    echo "Storing ${KVPATH} in Vault..."
     vault kv put $KVPATH value="${VALUE}"
 done
