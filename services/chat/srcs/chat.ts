@@ -41,7 +41,7 @@ const server = Bun.serve({
 			if (data.type === 'auth') {
 				authChannel(ws, data)
 			} else if (data.type === 'global') {
-				globalChannel(message)
+				globalChannel(ws, message)
 			} else if (data.type === 'mp') {
 				mpChannel(ws, data, message)
 			} else if (data.type === 'req-friend') {
