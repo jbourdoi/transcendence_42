@@ -1,37 +1,22 @@
-const clients = new Set<WebSocket>()
-
-type MessageType = {
-	type: 'global' | 'mp' | 'auth' | 'info' | 'error' | 'users' | 'req-friend' | 'notification'
-	to?: string
-	msg: string
-}
-
-type ClientType = { username: string; socket: WebSocket }
-
-let clientsList: Set<ClientType> = new Set<ClientType>()
-
-function sendUserList() {
-	const clients = []
-	clientsList.forEach(client => {
-		clients.push(client.username)
-	})
-
-	const message: MessageType = {
-		msg: JSON.stringify(clients),
-		type: 'users'
-	}
-
-	clientsList.forEach(client => {
-		client.socket.send(JSON.stringify(message))
-	})
-}
+import { authChannel } from './channels/auth.channel'
+import { globalChannel } from './channels/global.channel'
+import { mpChannel } from './channels/mp.channel'
+import { reqFriendChannel } from './channels/req_friend.channel'
+import JSONParser from './functions/json_parser.fn'
+import { clientsList, clientsSocket } from './state/clients.state'
+import { SocketDataType } from './types/socketData.type'
+import { BunSocketType } from './types/bunSocket.type'
+import { sendUserList } from './functions/sendUserList.fn'
 
 const server = Bun.serve({
 	port: 4444,
 	fetch(req, server) {
-		if (req.url === '/health')
-			return new Response('OK', { status: 200 })
-		if (server.upgrade(req)) {
+		if (req.url === '/health') return new Response('OK', { status: 200 })
+		if (
+			server.upgrade(req, {
+				data: { username: '' }
+			})
+		) {
 			return
 		}
 		return new Response('WebSocket chat server running', {
@@ -40,7 +25,7 @@ const server = Bun.serve({
 	},
 	websocket: {
 		open(ws) {
-			clients.add(ws)
+			clientsSocket.add(ws)
 			ws.send(
 				JSON.stringify({
 					type: 'system',
@@ -48,71 +33,24 @@ const server = Bun.serve({
 				})
 			)
 		},
-		message(ws, message) {
-			const data = JSON.parse(message)
+		message(ws: BunSocketType, message) {
+			const data: SocketDataType = JSONParser(message)
+			if (data === undefined) return
 			console.log('New Incoming message: ', data)
 			if (data.type === 'auth') {
-				ws.username = data.username
-				for (let client of clientsList) {
-					data.msg = `Player ${data.username} has connected`
-					data.type = 'info'
-					client.socket.send(JSON.stringify(data))
-				}
-				clientsList.add({
-					socket: ws,
-					username: data.username
-				})
-				sendUserList()
+				authChannel(ws, data)
 			} else if (data.type === 'global') {
-				for (const client of clients) {
-					if (client.readyState === WebSocket.OPEN) {
-						client.send(message)
-					}
-				}
+				globalChannel(message)
 			} else if (data.type === 'mp') {
-				let clientFound
-				for (let client of clientsList) {
-					if (client.username === data.to) {
-						clientFound = client
-					}
-				}
-				if (clientFound) {
-					clientFound.socket.send(message)
-					ws.send(message)
-				} else {
-					data.msg = 'Player not found'
-					data.type = 'Error'
-					ws.send(JSON.stringify(data))
-				}
+				mpChannel(ws, data, message)
 			} else if (data.type === 'req-friend') {
-				let clientFound
-				console.log('Friends request')
-				for (let client of clientsList) {
-					if (client.username === data.msg) {
-						clientFound = client
-					}
-				}
-				console.log('Client Found: ', clientFound)
-				if (clientFound) {
-					//TODO Add to DB the friends req
-					data.msg = clientFound.username
-					data.type = 'req-friend'
-					clientFound.socket.send(JSON.stringify(data))
-
-					data.type = 'notification'
-					data.msg = `User ${ws.username} wants to be friends!`
-					clientFound.socket.send(JSON.stringify(data))
-				} else {
-					data.msg = 'Player not found'
-					data.type = 'Error'
-					ws.send(JSON.stringify(data))
-				}
+				reqFriendChannel(ws, data)
 			}
 		},
-		close(ws) {
+		close(ws: BunSocketType) {
 			const message = {
 				type: 'info',
-				msg: `Player ${ws.username} has disconnected`
+				msg: `Player ${ws.data.username} has disconnected`
 			}
 			for (const client of clientsList) {
 				if (client.socket !== ws && client.socket.readyState === WebSocket.OPEN) {
@@ -122,7 +60,7 @@ const server = Bun.serve({
 					clientsList.delete(client)
 				}
 			}
-			clients.delete(ws)
+			clientsSocket.delete(ws)
 			sendUserList()
 		}
 	}

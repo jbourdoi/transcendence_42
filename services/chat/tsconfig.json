@@ -1,30 +1,10 @@
 {
-	// Visit https://aka.ms/tsconfig to read more about this file
 	"compilerOptions": {
-		"rootDir": "./srcs",
-		"outDir": "./dist",
-		"module": "nodenext",
-		"target": "esnext",
-		"types": [],
-		"sourceMap": false,
-		"declaration": true,
-		"declarationMap": false,
-		"noUncheckedIndexedAccess": true,
-		"exactOptionalPropertyTypes": true,
-		"strict": true,
-		"moduleResolution": "nodenext",
-		"esModuleInterop": true,
-		"verbatimModuleSyntax": false,
-		"isolatedModules": true,
-		"noUncheckedSideEffectImports": true,
-		"moduleDetection": "force",
-		"skipLibCheck": true
-	},
-	"include": [
-		"srcs/chat.ts",
-		"srcs/logs.ts"
-	],
-	"exclude": [
-		"srcs/public/**"
-	]
+		"target": "ESNext",
+		"module": "ESNext",
+		"moduleResolution": "Bundler",
+		"types": [
+			"bun"
+		]
+	}
 }
