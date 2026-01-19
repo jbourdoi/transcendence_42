@@ -3,9 +3,9 @@ import { BunSocketType } from '../types/bunSocket.type'
 import { ClientType } from '../types/client.type'
 import { SocketDataType } from '../types/socketData.type'
 
-export function reqFriendChannel(ws: BunSocketType, data: SocketDataType) {
+export function blockUserChannel(ws: BunSocketType, data: SocketDataType) {
 	let clientFound: ClientType
-	console.log('Friends request')
+	console.log('Block user')
 	for (let client of clientsList) {
 		if (client.username === data.msg) {
 			clientFound = client
@@ -13,17 +13,11 @@ export function reqFriendChannel(ws: BunSocketType, data: SocketDataType) {
 	}
 	console.log('Client Found: ', clientFound)
 	if (clientFound) {
-		//TODO Add to DB the friends req
-		data.msg = clientFound.username
-		data.type = 'req-friend'
-		clientFound.socket.send(JSON.stringify(data))
-
+		//TODO Add to DB the blocked user
+		// If client is blocked properly
+		data.msg = `User ${clientFound.username} has been blocked`
 		data.type = 'notification'
-		data.notificationLevel = 'info'
-		data.msg = `User ${ws.data.username} wants to be friends!`
-		clientFound.socket.send(JSON.stringify(data))
-		
-		data.msg = `Friend request sent to ${ws.data.username}!`
+		data.notificationLevel = 'error'
 		ws.send(JSON.stringify(data))
 	} else {
 		data.msg = 'Player not found'

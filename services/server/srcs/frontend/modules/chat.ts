@@ -57,9 +57,16 @@ function addUserAsFriend(username: string) {
 		type: 'req-friend',
 		timestamp: Date.now()
 	}
+	ChatStore.send(message)
+}
 
-	console.log('Message Add User as friends: ', message)
-
+function blockUser(username: string) {
+	const message: MessageType = {
+		user: UserStore.getUserName(),
+		msg: username,
+		type: 'block-user',
+		timestamp: Date.now()
+	}
 	ChatStore.send(message)
 }
 
@@ -114,6 +121,10 @@ function updateUserList(users: string[]) {
 
 			$userAddFriend.addEventListener('click', _ => {
 				addUserAsFriend(user)
+			})
+
+			$userBlock.addEventListener('click', _ => {
+				blockUser(user)
 			})
 		}
 		$chatUsers.appendChild($userLine)

@@ -1,8 +1,9 @@
-import { MessageOptionType } from "./messageOption.type"
+import { MessageOptionType } from './messageOption.type'
 
 export type SocketDataType = {
-	username:string
-	msg:string
+	username: string
+	msg: string
 	to: string
-	type:MessageOptionType
+	type: MessageOptionType
+	notificationLevel?: 'info' | 'warning' | 'error'
 }
