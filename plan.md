@@ -6,8 +6,10 @@ Match History:
 Login:
 	When login in with 42 auth and not in db -> Interface is messed up and error in terminal
 	After trying to login in with 42 auth and fail and reload the page, we get a forbidden error
+	When pressing login with the form and not registered, add a notification stating that the user isn't registered
 
 Register:
+	Registering doesn't set the token cookie
 	First ever register (after empty db) no id is returned and no token is set
 	When registering with 42 Auth after being already registered, goes back to home
 
