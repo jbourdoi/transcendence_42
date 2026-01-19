@@ -15,7 +15,6 @@ echo "Starting Kibana..."
 /usr/local/bin/kibana-docker &
 KIBANA_PID=$!
 
-echo "Importing Kibana dashboards..."
 bash ./import_dashboards.sh
 
 wait $KIBANA_PID

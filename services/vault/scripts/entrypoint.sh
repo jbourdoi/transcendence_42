@@ -60,7 +60,7 @@ if [ "$FIRST_INIT" = true ]; then
     -keyout ./certs/services.key \
     -days 365 \
     -subj "/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=services" \
-    -addext "subjectAltName=DNS:localhost,DNS:waf,IP:127.0.0.1"
+    -addext "subjectAltName=DNS:localhost,DNS:waf,DNS:kibana,IP:127.0.0.1"
   echo "Certificates created."
 
   export SERVICES_CRT=$(awk 'NF {sub(/\r/, ""); printf "%s\\n", $0;}' ./certs/services.crt)

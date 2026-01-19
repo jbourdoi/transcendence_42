@@ -7,6 +7,7 @@ import { clientsList, clientsSocket } from './state/clients.state'
 import { SocketDataType } from './types/socketData.type'
 import { BunSocketType } from './types/bunSocket.type'
 import { sendUserList } from './functions/sendUserList.fn'
+import { blockUserChannel } from './channels/block_user.channel'
 
 const server = Bun.serve({
 	port: 4444,
@@ -40,11 +41,13 @@ const server = Bun.serve({
 			if (data.type === 'auth') {
 				authChannel(ws, data)
 			} else if (data.type === 'global') {
-				globalChannel(message)
+				globalChannel(ws, message)
 			} else if (data.type === 'mp') {
 				mpChannel(ws, data, message)
 			} else if (data.type === 'req-friend') {
 				reqFriendChannel(ws, data)
+			} else if (data.type === 'block-user') {
+				blockUserChannel(ws, data)
 			}
 		},
 		close(ws: BunSocketType) {

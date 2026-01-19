@@ -12,7 +12,9 @@ if (ws === null) {
 	UserStore.subscribe(userStore => {
 		if (userStore.isValid) {
 			ws = new WebSocket('ws://localhost:4444')
+			if (ws === null) return
 			ws.addEventListener('open', () => {
+				if (ws === null) return
 				ws.send(
 					JSON.stringify({
 						type: 'auth',
@@ -51,6 +53,7 @@ function createChatStore() {
 	}
 
 	function send(message: MessageType) {
+		if (ws === null) return
 		ws.send(JSON.stringify(message))
 	}
 

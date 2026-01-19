@@ -2,9 +2,6 @@
 
 set -e
 
-echo "Waiting for WAF to be healthy..."
-WAF_HEALTH_URL="https://waf:443/health"
-
 VAULT_API_ADDR=http://vault:6988
 
 echo "Waiting for Vault API to be healthy..."
@@ -33,6 +30,7 @@ echo "Exported CA_CERT=$CA_CERT from Vault."
 echo "Environment variables setup complete."
 
 echo "Waiting for WAF..."
+WAF_HEALTH_URL="https://waf:443/health"
 until curl -s --cacert "$CA_CERT" "$WAF_HEALTH_URL" | grep "OK" > /dev/null; do
   sleep 2
 done

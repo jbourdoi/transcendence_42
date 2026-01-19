@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { dbPostQuery } from '../crud/dbQuery.crud.js'
+import { dbPostQuery } from '../services/db.service.js'
 import { getPayload } from '../crud/auth.crud.js'
 import { userUpdateType } from '../../types/user.type.js'
 import { getMultipartFormData } from '../crud/multipartForm.js'

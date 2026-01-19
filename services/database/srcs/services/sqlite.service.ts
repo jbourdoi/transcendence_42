@@ -6,29 +6,27 @@ export default function initDb() {
 		if (err) return log(`Could not connect to database: ${err}`, 'error')
 		else log('Connected to database', 'info')
 	})
-	db.run(`
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY NOT NULL,
-            username TEXT NOT NULL UNIQUE,
-            email TEXT NOT NULL UNIQUE,
-            pwd TEXT,
-            avatar TEXT,
-            is_oauth INTEGER NOT NULL DEFAULT 0
-        )
-    `)
-	db.run(`
-        CREATE TABLE IF NOT EXISTS queries_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            query_type TEXT,
-            query TEXT NOT NULL,
-            status TEXT CHECK( status IN ('success','failure') ) NOT NULL,
-            error_code TEXT,
-            error_message TEXT,
-            latency_seconds REAL,
-            executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    `)
 	db.exec(`
+			CREATE TABLE IF NOT EXISTS users (
+				id INTEGER PRIMARY KEY NOT NULL,
+				username TEXT NOT NULL UNIQUE,
+				email TEXT NOT NULL UNIQUE,
+				pwd TEXT,
+				avatar TEXT,
+				is_oauth INTEGER NOT NULL DEFAULT 0
+        	);
+
+			CREATE TABLE IF NOT EXISTS queries_log (
+				id INTEGER PRIMARY KEY AUTOINCREMENT,
+				query_type TEXT,
+				query TEXT NOT NULL,
+				status TEXT CHECK( status IN ('success','failure') ) NOT NULL,
+				error_code TEXT,
+				error_message TEXT,
+				latency_seconds REAL,
+				executed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        	);
+
 			CREATE TABLE IF NOT EXISTS friend_requests (
 				from_username TEXT NOT NULL,
 				to_username   TEXT NOT NULL,
@@ -41,8 +39,8 @@ export default function initDb() {
 			);
 
 			CREATE TABLE IF NOT EXISTS friendships (
-				username_1 INTEGER NOT NULL,
-				username_2 INTEGER NOT NULL,
+				username_1 TEXT NOT NULL,
+				username_2 TEXT NOT NULL,
 				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 				PRIMARY KEY (username_1, username_2),
@@ -52,8 +50,8 @@ export default function initDb() {
 			);
 
 			CREATE TABLE IF NOT EXISTS blocks (
-				blocker_username INTEGER NOT NULL,
-				blocked_username INTEGER NOT NULL,
+				blocker_username TEXT NOT NULL,
+				blocked_username TEXT NOT NULL,
 				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
 				PRIMARY KEY (blocker_username, blocked_username),

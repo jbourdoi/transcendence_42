@@ -1,7 +1,7 @@
 import { FastifyRequest } from 'fastify'
 import { createToken, verifyToken } from './jwt.crud.js'
 import { JWTPayload } from 'jose'
-import { dbPostQuery } from './dbQuery.crud.js'
+import { dbPostQuery } from '../services/db.service.js'
 import type { CookieSerializeOptions } from '@fastify/cookie'
 
 export async function getPayload(request: FastifyRequest): Promise<any | null | undefined> {
