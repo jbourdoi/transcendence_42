@@ -15,6 +15,7 @@ services/server/srcs/frontend/images/avatars/*
 !services/server/srcs/frontend/images/avatars/baseAvatar.jpg
 db.sqlite
 *_old*
+package-lock.json
 .env
 services/metrics/thanosSidecar/thanos-storage.yml
 services/vault/.env.vault

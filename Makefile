@@ -5,9 +5,9 @@ FILEPATH_METRICS = docker-compose-metrics.yml
 up:
 	chmod +x ./scripts/setup_project.sh
 	./scripts/setup_project.sh
-	docker compose -f $(FILEPATH) build
-	docker compose -f $(FILEPATH) up -d
-	docker compose -f $(FILEPATH) logs -f
+	COMPOSE_BAKE=true docker compose -f $(FILEPATH) build
+	COMPOSE_BAKE=true docker compose -f $(FILEPATH) up -d
+	COMPOSE_BAKE=true docker compose -f $(FILEPATH) logs -f
 
 elk:
 	make -C . up FILEPATH=$(FILEPATH_ELK)
@@ -19,7 +19,7 @@ all:
 	make -C . up  FILEPATH=$(FILEPATH)
 	make -C . up  FILEPATH=$(FILEPATH_ELK)
 	make -C . up  FILEPATH=$(FILEPATH_METRICS)
-	
+
 re: down up
 
 docker-required:
