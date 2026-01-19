@@ -16,8 +16,6 @@ services:
         condition: service_healthy
       chat:
         condition: service_healthy
-      waf:
-        condition: service_healthy
     volumes:
       - "./services/server/srcs:/app/srcs"
       - "./services/server/build.ts:/app/build.ts"
@@ -94,11 +92,6 @@ services:
       - ${LOGS_PATH}:${LOGS_DIR}
     ports:
       - "${WAF_PORT}:${WAF_PORT}"
-    healthcheck:
-      test: ["CMD", "curl", "-kf", "${WAF_HEALTH_URL}"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
     depends_on:
       vault:
         condition: service_healthy
