@@ -9,7 +9,7 @@ WORKDIR /app
 
 RUN apt-get update
 
-RUN apt-get -y install build-essential file git curl tar gzip unzip bash ca-certificates && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y install build-essential file git curl tar gzip unzip bash && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://bun.com/install | bash
 

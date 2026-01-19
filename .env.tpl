@@ -14,7 +14,6 @@ CHAT_HEALTH_URL=http://localhost:${CHAT_PORT}/health
 
 # WAF #
 WAF_PORT=443
-WAF_HEALTH_URL=https://localhost:${WAF_PORT}/health
 
 # VAULT #
 VAULT_API_PORT=6988

@@ -188,7 +188,7 @@ Bun.serve({
 		}
 	},
 	fetch: async (req, server) => {
-		// console.log(`from bun: ${new Date().toLocaleString()} ${req.method} ${req.url} ${server.url.protocol}`)
+		console.log(`from bun: ${new Date().toLocaleString()} ${req.method} ${req.url} ${server.url.protocol}`)
 
 		const url = new URL(req.url)
 		let isAuthenticated = false
