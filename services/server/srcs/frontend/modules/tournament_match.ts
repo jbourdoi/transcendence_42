@@ -3,23 +3,11 @@ import { TournamentStore } from "./tournament/tournament.store.js";
 import { TournamentController } from "./tournament/tournament.controller.js";
 import type { TournamentModel } from "./tournament/tournament.model.js";
 import type { TournamentMatch } from "./tournament/tournament.type.js";
-import { Arena, GameModel, GameView, GameController } from "./local_game.js";
+import { GameModel, GameView, GameController } from "../classes/OriginalPong2D.js";
 import { navigate } from "../js/routing.js";
 
-const $page = document.querySelector("page[type=tournament_match]")!;
+const $pageTournamentMatch = document.querySelector("page[tournament_match]")!;
 const $canvas = document.querySelector("#canvas2D") as HTMLCanvasElement;
-const ctx = $canvas.getContext("2d")!;
-document.body.style.margin = "0";
-
-// Création de l'arène et du Pong
-const arena = new Arena();
-const gameModel = new GameModel(arena);
-const gameView = new GameView(ctx);
-const gameController = new GameController(gameModel, gameView);
-
-// Pour gérer le jeu en cours
-let lastMatchIndex = -1;
-let gameStarted = false;
 
 // Abonnement au store
 const unsub = TournamentStore.subscribe((tournament: TournamentModel | null) => {
@@ -28,6 +16,15 @@ const unsub = TournamentStore.subscribe((tournament: TournamentModel | null) => 
 		navigate("tournament_select");
 		return;
 	}
+
+	// Création de l'arène et du Pong
+	const gameModel = new GameModel();
+	const gameView = new GameView($canvas);
+	const gameController = new GameController(gameModel, gameView);
+
+	// Pour gérer le jeu en cours
+	let lastMatchIndex = -1;
+	let gameStarted = false;
 
 	const matchIndex = tournament.currentMatch;
 	if (matchIndex === lastMatchIndex) return; // Même match, rien à faire
@@ -42,40 +39,35 @@ const unsub = TournamentStore.subscribe((tournament: TournamentModel | null) => 
 	// Callback quand le match se termine
 	gameController.setGameOver(() => {
 		const score = gameController.getCurrentScore();
-		const controller = new TournamentController(tournament, TournamentStore);
-		controller.finishMatch(score);
-
+		const tournamentController = new TournamentController(tournament, TournamentStore);
+		tournamentController.finishMatch(score);
+		gameController.cleanup();
 		// Naviguer vers l'arbre du tournoi
 		navigate("tournament_tree");
 	});
 
-	if (!gameStarted) {
+	if (!gameStarted)
+	{
 		gameStarted = true;
-		window.addEventListener("resize", resize);
-		requestAnimationFrame((t) => gameController.start(t));
+		window.onresize = gameView.resize;
+		gameController.start();
 	}
-	resize();
+	gameView.resize();
+	$pageTournamentMatch?.addEventListener("cleanup", () => {
+		gameController.cleanup();
+		unsub();
+		window.removeEventListener("beforeunload", beforeunload)
+	});
 });
 
-// Nettoyage lors du changement de page SPA
-$page.addEventListener("cleanup", () => {
-	unsub();
-	window.removeEventListener("resize", resize);
-});
+document.addEventListener("DOMContentLoaded", ()=>{
+    console.log("tournament_match loaded..")
+})
 
-// Mise à l'échelle du canvas
-function resize() {
-	const w = Math.max(arena.minPixelWidth, window.innerWidth);
-	const h = Math.max(arena.minPixelHeight, window.innerHeight);
-	const targetRatio = 16 / 9;
-	let width = w;
-	let height = w / targetRatio;
-	if (height > h) {
-		height = h;
-		width = h * targetRatio;
-	}
-	$canvas.width = width / 2;
-	$canvas.height = height / 2;
-
-	gameView.resize($canvas, gameModel);
+function beforeunload(event : any){
+    console.log("tournament_match unload")
+    event.preventDefault()
+    window.removeEventListener("beforeunload", beforeunload)
 }
+
+window.addEventListener("beforeunload", beforeunload)
