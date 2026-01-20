@@ -14,7 +14,7 @@ export async function executeMethod(method: methodType, res: any, db: Database, 
 			res = await dbGet(db, query.sql, query?.data)
 			break
 		case 'all':
-			res = await dbAll(db, query.sql)
+			res = await dbAll(db, query.sql, query.data)
 			break
 	}
 	return res
@@ -56,15 +56,18 @@ export async function dbGet(db: Database, sql: string, data: any[]): Promise<Res
 	}
 }
 
-export async function dbAll(db: Database, sql: string): Promise<Response> {
-	console.log('DB ALL - sql:', sql)
+export async function dbAll(db: Database, sql: string, data: any[]): Promise<Response> {
 	try {
 		const res = await new Promise((resolve, reject) => {
-			db.all(sql, (err: ErrorResponseType, rows: any[]) => {
-				console.log('INSIDE DB ALL - sql:', sql, 'err:', err, 'rows:', rows)
+			db.all(sql, data, (err: ErrorResponseType, rows: any[]) => {
+				console.log('INSIDE DB ALL - sql:', sql)
+				console.log('INSIDE DB ALL - data:', data)
+				console.log('INSIDE DB ALL - err:', err)
+				console.log('INSIDE DB ALL - rows:', rows)
 				err ? reject(err) : resolve({ status: 200, data: rows })
 			})
 		})
+		console.log('DB ALL - res:', res)
 		return Response.json(res)
 	} catch (error: unknown) {
 		return Response.json({ status: 500, message: String(error) })

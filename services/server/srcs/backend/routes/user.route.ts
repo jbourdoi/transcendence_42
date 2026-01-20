@@ -14,7 +14,7 @@ export async function userDashboard(req: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function getUsers(req: FastifyRequest, reply: FastifyReply) {
-	const body = await dbPostQuery({ endpoint: 'dbAll', query: { verb: 'read', sql: 'SELECT * FROM users' } })
+	const body = await dbPostQuery({ endpoint: 'dbAll', query: { verb: 'read', sql: 'SELECT * FROM users' }, data: [] })
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
 	return reply.status(200).send(body.data)
 }
