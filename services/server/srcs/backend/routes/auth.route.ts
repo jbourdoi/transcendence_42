@@ -90,9 +90,9 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		throw httpErrors(body.status, body.message.code)
 	}
 
-	return reply
-		.status(201)
-		.send({ message: 'User registered', data: { username: username, email, firstName: '', lastName: '', login: username } })
+	const infoFetch = {  email: email, username: username, id: body.data.lastID }
+	console.log('REGISTER FORM --- infoFetch:', infoFetch)
+	await generateAndSendToken(infoFetch, reply)
 }
 
 export async function logUser(req: FastifyRequest, reply: FastifyReply) {

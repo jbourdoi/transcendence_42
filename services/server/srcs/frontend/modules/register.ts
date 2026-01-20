@@ -64,7 +64,9 @@ if (codeParam) {
 			$registerForm.style.display = 'flex'
 		})
 		.then(res => {
-			UserStore.emit(res)
+			console.log('FRONTEND --- register form response:', res)
+			console.log('FRONTEND --- res infoFetch register form:', res.infoFetch)
+			UserStore.emit(res.infoFetch)
 			navigate('')
 		})
 } else {
