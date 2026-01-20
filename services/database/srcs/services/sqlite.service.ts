@@ -46,7 +46,6 @@ export default function initDb() {
 				PRIMARY KEY (username_1, username_2),
 				FOREIGN KEY (username_1) REFERENCES users(username) ON DELETE CASCADE,
 				FOREIGN KEY (username_2) REFERENCES users(username) ON DELETE CASCADE,
-				CHECK (username_1 < username_2)
 			);
 
 			CREATE TABLE IF NOT EXISTS blocks (
