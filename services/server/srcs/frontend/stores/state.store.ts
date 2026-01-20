@@ -9,7 +9,8 @@ let config = {
 	username: undefined,
 	email: undefined,
 	id: undefined,
-	uuid: uuidv4()
+	uuid: uuidv4(),
+	selectedProfile: undefined
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,8 +44,12 @@ function createStateStore() {
 	function getStateUUID() {
 		return config.uuid
 	}
+	
+	// function getSelectedProfile() {
+	// 	return config.selectedProfile
+	// }
 
-	return { subscribe, emit, update, getStateUUID }
+	return { subscribe, emit, update, getStateUUID, /*getSelectedProfile*/ }
 }
 
 declare global {

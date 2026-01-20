@@ -19,7 +19,8 @@ const validRoutes = [
 	'tournament_select',
 	'tournament_tree',
 	'tournament_match',
-	'forbidden'
+	'forbidden',
+	'profile'
 ]
 
 export function routerRoute(fastify: FastifyInstance) {
