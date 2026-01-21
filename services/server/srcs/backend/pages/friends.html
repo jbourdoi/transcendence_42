@@ -1,0 +1,50 @@
+<head>
+	<title>Friends</title>
+	<style module>
+		friends {
+			width: 500px;
+			display: flex;
+			flex-direction: row;
+			justify-content: space-evenly;
+			margin: 1rem 0;
+		}
+
+		table {
+			width: 500px;
+			text-align: center;
+			border: 2px solid #fff;
+			background-color: rgba(255, 255, 255, 0.1);
+		}
+
+		table thead tr,
+		table tbody tr {
+			border-bottom: 2px solid #fff;
+		}
+
+		table tbody tr:last-of-type {
+			border-bottom: 0px solid #fff;
+		}
+	</style>
+</head>
+
+<page type="friends">
+	<page-title>Friends</page-title>
+	<friends>
+		<table>
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Profile</th>
+					<th>Status</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</friends>
+	
+	<menu-buttons>
+		<nav-button data-route="" tabindex="2" class="button text-3xl">Back</nav-button>
+	</menu-buttons>
+</page>
+
+<script type="module" src="modules/friends.js"></script>

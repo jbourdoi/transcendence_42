@@ -63,6 +63,21 @@ ORDER BY m.created_at DESC;
 	return reply.status(200).send(res.data)
 }
 
+export async function getUserFriends(req: FastifyRequest, reply: FastifyReply) {
+	const { name } = req.body as { name: string }
+	const res = await dbPostQuery({
+		endpoint: 'dbAll',
+		query: {
+			verb: 'SELECT',
+			sql: `SELECT * FROM friendships WHERE username_1 = ? OR username_2 = ?;`,
+			data: [name, name]
+		}
+	})
+	console.log("Response: ", res)
+	if (res.status >= 400) return reply.status(res.status).send({ message: res.message })
+	return reply.status(200).send(res.data)
+}
+
 export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	const data = await getMultipartFormData(req)
 
