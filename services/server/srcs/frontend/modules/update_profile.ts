@@ -50,7 +50,7 @@ handleUpdateProfile()
 
 const unsubUserStore = UserStore.subscribe(value => {
 	console.log(value)
-	console.log(($usernameInput.placeholder = value.login))
+	console.log(($usernameInput.placeholder = value.username))
 })
 
 const cleanPage = () => {
