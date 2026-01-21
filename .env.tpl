@@ -6,7 +6,7 @@ CLIENT_SECRET=<CHANGE-ME>
 
 # GAME #
 GAME_PORT=3333
-GAME_HEALTH_URL=https://localhost:${GAME_PORT}/api/health
+GAME_HEALTH_URL=http://localhost:${GAME_PORT}/health
 
 # CHAT #
 CHAT_PORT=4444

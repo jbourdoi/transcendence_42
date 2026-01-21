@@ -2,9 +2,10 @@ import { FrontType } from '../../types/message.type.ts'
 import { launchGame } from '../functions/GameClientBab'
 import { json_parse, json_stringify } from '../functions/json_wrapper'
 import { cleanHistory, handleIncomingMessage, loadChatHistory } from '../functions/messagesLocalStorage'
+import { GameStore } from '../stores/game.store.ts'
 
 const $page: HTMLElement = document.querySelector('page[type=game]')!
-
+GameStore.send({type:"global", msg:"", timestamp:454, user:"sdf"})
 const gamehost = "localhost:3333"
 
 type UserType = {
