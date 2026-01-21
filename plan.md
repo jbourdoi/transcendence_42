@@ -32,10 +32,43 @@ Friends:
 	Create remove and mp buttons (friends page)
 	Access other player information
 
-2FA:
-	Implement email based 2FA
-	5 numbers random from base of 0-9
-	expiration 2 minutes
+2FA: Implement email based 2FA
+	- 5 numbers random from base of 0-9
+	- expiration 5 minutes
+	- fail limit / send mail limit => 3
+	- code regeneration invalidates the old one
+
+	logic (=> ON CHANGE pas ON SUBMIT):
+		click on checkbox to enabled 2fa (user on website)
+		email envoyé au mail du user
+		validation de l'user sur son mail (lien, numbers) + expiration 2 minutes
+		voir logic pour accepter la validation
+		mettre 2fa dans db table users a true (has_2fa)
+	logic si disable 2fa (=> ON CHANGE pas ON SUBMIT):
+		click on checkbox to disable 2fa (user on website)
+		email envoyé au mail du user
+		validation de l'user sur son mail (lien, numbers) + expiration 2 minutes
+		voir logic pour accepter la validation
+		mettre 2fa dans db table users a false (has_2fa)
+	logic au login si 2fa enabled:
+		username + password OU 42OAuth
+		validation with 2fa
+	
+	Table:
+	PRIMARY KEY id
+	FOREIGN KEY user_id
+	TEXT NOT NULL code_hash => hash du code a envoyer par mail (eg: '482671') -> avec bcrypt
+	STRING? NOT NULL purpose === 'login' | 'enable_2fa' | 'disable_2fa' => empecher un login en parallele d'un disable_2fa avec le meme code
+	TIMESTAMP NOT NULL expires_at
+	TIMESTAMP NULL used_at => empeche reutilisation du code
+	INT attemptes DEFAULT 0 => max 3 avant invalidation
+
+	- user sends incorrect code BEFORE EXPIRATION -> same code but attempts+1
+	- user sends incorrect code AFTER EXPIRATION -> already expired, so either new code or no more attemps
+	- user sends correct code BEFORE EXPIRATION
+	- user sends correct code AFTER EXPIRATION
+	- user sends nothing UNTIL EXPIRATION -> code expires
+	- user wants a new code BEFORE EXPIRATION -> invalidate the old one
 
 BLOQUER ACCES USER (a faire):
 - pas registered:
