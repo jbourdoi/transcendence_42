@@ -23,8 +23,8 @@ export async function getUsers(req: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function getUserProfile(req: FastifyRequest, reply: FastifyReply) {
-	const { name } = (await req.body) as { name: string }
-	console.log("\n\n\n\n\n\nName: ",name, "\n\n\n\n\n\n")
+	const { name } = req.body as { name: string }
+	// console.log('\n\n\n\n\n\nName: ', name, '\n\n\n\n\n\n')
 	const res = await dbPostQuery({
 		endpoint: 'dbAll',
 		query: {
@@ -57,7 +57,7 @@ JOIN match_players mp_all
 GROUP BY m.id
 ORDER BY m.created_at DESC;
 `,
-			data: ['alice']
+			data: [name]
 		}
 	})
 	console.log(res)
