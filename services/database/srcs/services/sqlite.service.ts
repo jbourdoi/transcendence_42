@@ -1,7 +1,59 @@
 import sqlite3 from 'sqlite3'
+import bcrypt from 'bcrypt'
 import { log } from '../logs'
 
+async function vaultPostQuery(endpoint: string, body: object) {
+	const res = await fetch(`http://vault:6988/vault/${endpoint}`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(body)
+	})
+	return res.json()
+}
+
+async function getVaultSecret<T>(name: string, parser: (value: string) => T): Promise<T | null> {
+	const res = await vaultPostQuery('getSecret', { name })
+	try {
+		return parser(res.message.value)
+	} catch (error) {
+		return null
+	}
+}
+
+// const hashedPwd = await bcrypt.hash(pwd, salt)
+
 export default function initDb() {
+	getVaultSecret<string>('bcrypt_salt', value => value).then(salt => {
+		if (!salt) process.exit(1)
+		bcrypt.hash('pwd', salt).then(pass => {
+			db.exec(`
+			INSERT INTO users (id, username, email, pwd, avatar, is_oauth) VALUES
+				(1,  'alice',  'alice@test.com',  '${pass}',  NULL, 0),
+				(2,  'bob',    'bob@test.com',    '${pass}',  NULL, 0),
+				(3,  'carol',  'carol@test.com',  '${pass}',  NULL, 0),
+				(4,  'dave',   'dave@test.com',   '${pass}',  NULL, 0),
+				(5,  'eve',    'eve@test.com',    '${pass}',  NULL, 0),
+				(6,  'frank',  'frank@test.com',  '${pass}',  NULL, 0),
+				(7,  'grace',  'grace@test.com',  '${pass}',  NULL, 0),
+				(8,  'heidi',  'heidi@test.com',  '${pass}',  NULL, 0),
+				(9,  'ivan',   'ivan@test.com',   '${pass}',  NULL, 0),
+				(10, 'judy',   'judy@test.com',   '${pass}', NULL, 0),
+				(11, 'kate',   'kate@test.com',   '${pass}', NULL, 0),
+				(12, 'leo',    'leo@test.com',    '${pass}', NULL, 0),
+				(13, 'mallory','mallory@test.com','${pass}', NULL, 0),
+				(14, 'nancy',  'nancy@test.com',  '${pass}', NULL, 0),
+				(15, 'oscar',  'oscar@test.com',  '${pass}', NULL, 0),
+				(16, 'peggy',  'peggy@test.com',  '${pass}', NULL, 0),
+				(17, 'quentin','quentin@test.com','${pass}', NULL, 0),
+				(18, 'ruth',   'ruth@test.com',   '${pass}', NULL, 0),
+				(19, 'sybil',  'sybil@test.com',  '${pass}', NULL, 0),
+				(20, 'trent',  'trent@test.com',  '${pass}', NULL, 0);
+			`)
+		})
+	})
+
 	const db = new sqlite3.Database('/app/services/database/data/db.sqlite', err => {
 		if (err) return log(`Could not connect to database: ${err}`, 'error')
 		else log('Connected to database', 'info')
@@ -45,7 +97,7 @@ export default function initDb() {
 
 				PRIMARY KEY (username_1, username_2),
 				FOREIGN KEY (username_1) REFERENCES users(username) ON DELETE CASCADE,
-				FOREIGN KEY (username_2) REFERENCES users(username) ON DELETE CASCADE,
+				FOREIGN KEY (username_2) REFERENCES users(username) ON DELETE CASCADE
 			);
 
 			CREATE TABLE IF NOT EXISTS blocks (
@@ -79,81 +131,59 @@ export default function initDb() {
 			CREATE INDEX IF NOT EXISTS idx_blocks_blocked ON blocks(blocked_username);
 			CREATE INDEX IF NOT EXISTS idx_friend_requests_to ON friend_requests(to_username);
 			
-			INSERT INTO users (id, username, email, pwd, avatar, is_oauth) VALUES
-(1,  'alice',  'alice@test.com',  'pwd1',  NULL, 0),
-(2,  'bob',    'bob@test.com',    'pwd2',  NULL, 0),
-(3,  'carol',  'carol@test.com',  'pwd3',  NULL, 0),
-(4,  'dave',   'dave@test.com',   'pwd4',  NULL, 0),
-(5,  'eve',    'eve@test.com',    'pwd5',  NULL, 0),
-(6,  'frank',  'frank@test.com',  'pwd6',  NULL, 0),
-(7,  'grace',  'grace@test.com',  'pwd7',  NULL, 0),
-(8,  'heidi',  'heidi@test.com',  'pwd8',  NULL, 0),
-(9,  'ivan',   'ivan@test.com',   'pwd9',  NULL, 0),
-(10, 'judy',   'judy@test.com',   'pwd10', NULL, 0),
-(11, 'kate',   'kate@test.com',   'pwd11', NULL, 0),
-(12, 'leo',    'leo@test.com',    'pwd12', NULL, 0),
-(13, 'mallory','mallory@test.com','pwd13', NULL, 0),
-(14, 'nancy',  'nancy@test.com',  'pwd14', NULL, 0),
-(15, 'oscar',  'oscar@test.com',  'pwd15', NULL, 0),
-(16, 'peggy',  'peggy@test.com',  'pwd16', NULL, 0),
-(17, 'quentin','quentin@test.com','pwd17', NULL, 0),
-(18, 'ruth',   'ruth@test.com',   'pwd18', NULL, 0),
-(19, 'sybil',  'sybil@test.com',  'pwd19', NULL, 0),
-(20, 'trent',  'trent@test.com',  'pwd20', NULL, 0);
-
-INSERT INTO friend_requests (from_username, to_username) VALUES
-('alice','bob'),
-('bob','carol'),
-('carol','dave'),
-('dave','eve'),
-('eve','frank'),
-('frank','grace'),
-('grace','heidi'),
-('heidi','ivan'),
-('ivan','judy'),
-('judy','kate'),
-('kate','leo'),
-('leo','mallory'),
-('mallory','nancy'),
-('nancy','oscar'),
-('oscar','peggy'),
-('peggy','quentin'),
-('quentin','ruth'),
-('ruth','sybil'),
-('sybil','trent'),
-('trent','alice');
+			
+			INSERT INTO friend_requests (from_username, to_username) VALUES
+			('alice','bob'),
+			('bob','carol'),
+			('carol','dave'),
+			('dave','eve'),
+			('eve','frank'),
+			('frank','grace'),
+			('grace','heidi'),
+			('heidi','ivan'),
+			('ivan','judy'),
+			('judy','kate'),
+			('kate','leo'),
+			('leo','mallory'),
+			('mallory','nancy'),
+			('nancy','oscar'),
+			('oscar','peggy'),
+			('peggy','quentin'),
+			('quentin','ruth'),
+			('ruth','sybil'),
+			('sybil','trent'),
+			('trent','alice');
 
 
-INSERT INTO matches (id) VALUES
-(1),(2),(3),(4),(5),
-(6),(7),(8),(9),(10),
-(11),(12),(13),(14),(15),
-(16),(17),(18),(19),(20);
+			INSERT INTO matches (id) VALUES
+			(1),(2),(3),(4),(5),
+			(6),(7),(8),(9),(10),
+			(11),(12),(13),(14),(15),
+			(16),(17),(18),(19),(20);
 
-INSERT INTO match_players (match_id, username, result) VALUES
-(1,'alice','win'),   (1,'bob','lose'),
-(2,'alice','win'),   (2,'bob','lose'),
-(3,'alice','win'),   (3,'bob','lose'),
-(4,'carol','lose'),   (4,'dave','lose'), (4,'alice','win'),
-(5,'ivan','win'),    (5,'judy','lose'),
-(6,'kate','win'),    (6,'leo','lose'),
-(7,'mallory','win'), (7,'nancy','lose'),
-(8,'oscar','win'),   (8,'peggy','lose'),
-(9,'quentin','win'), (9,'ruth','lose'),
-(10,'sybil','win'),  (10,'trent','lose'),
-(11,'bob','win'),    (11,'alice','lose'),
-(12,'dave','win'),   (12,'carol','lose'),
-(13,'frank','win'),  (13,'eve','lose'),
-(14,'heidi','win'),  (14,'grace','lose'),
-(15,'judy','win'),   (15,'ivan','lose'),
-(16,'leo','win'),    (16,'kate','lose'),
-(17,'nancy','win'),  (17,'mallory','lose'),
-(18,'peggy','win'),  (18,'oscar','lose'),
-(19,'ruth','win'),   (19,'quentin','lose'),
-(20,'trent','win'),  (20,'sybil','lose');
-`)
-		
-		
+			INSERT INTO match_players (match_id, username, result) VALUES
+			(1,'alice','win'),   (1,'bob','lose'),
+			(2,'alice','win'),   (2,'bob','lose'),
+			(3,'alice','win'),   (3,'bob','lose'),
+			(4,'carol','lose'),   (4,'dave','lose'), (4,'alice','win'),
+			(5,'ivan','win'),    (5,'judy','lose'),
+			(6,'kate','win'),    (6,'leo','lose'),
+			(7,'mallory','win'), (7,'nancy','lose'),
+			(8,'oscar','win'),   (8,'peggy','lose'),
+			(9,'quentin','win'), (9,'ruth','lose'),
+			(10,'sybil','win'),  (10,'trent','lose'),
+			(11,'bob','win'),    (11,'alice','lose'),
+			(12,'dave','win'),   (12,'carol','lose'),
+			(13,'frank','win'),  (13,'eve','lose'),
+			(14,'heidi','win'),  (14,'grace','lose'),
+			(15,'judy','win'),   (15,'ivan','lose'),
+			(16,'leo','win'),    (16,'kate','lose'),
+			(17,'nancy','win'),  (17,'mallory','lose'),
+			(18,'peggy','win'),  (18,'oscar','lose'),
+			(19,'ruth','win'),   (19,'quentin','lose'),
+			(20,'trent','win'),  (20,'sybil','lose');
+			`)
+
 	console.log('\x1b[32m%s\x1b[0m', 'Tables created if not already exists')
 	return db
 }
