@@ -17,7 +17,7 @@ export async function isAtLeastOneBlocked(ws: BunSocketType, blocked_user: strin
 			data: [ws.data.username, blocked_user, blocked_user, ws.data.username]
 		}
 	})
-	console.log('INSERT FRIEND REQUEST --- isAtLeastOneBlocked: ', res)
+	console.log('BLOCK --- isAtLeastOneBlocked: ', res)
 	if (res.status >= 400 && res.status !== 404)
 	{
 		data.msg = res.message

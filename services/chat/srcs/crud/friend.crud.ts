@@ -45,7 +45,7 @@ export async function insertFriendship(ws: BunSocketType, new_friend: ClientType
 		ws.send(JSON.stringify(data))
 		return false
 	}
-			data.type = 'notification'
+		data.type = 'notification'
 		data.notificationLevel = 'info'
 		data.msg = `User ${ws.data.username} wants to be friends!`
 		new_friend.socket.send(JSON.stringify(data))
