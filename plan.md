@@ -1,3 +1,6 @@
+150 POINTS!!!!! 🥳🥳🥳🥳
+Add responsive
+Add SEO
 menu button Profile : error console when press left or right navigation
 Chat Click Block User:
 	User blocking is notified if user properly blocked or error
