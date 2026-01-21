@@ -1,6 +1,7 @@
 import { ChatStore } from '../stores/chat.store'
 import { UserStore } from '../stores/user.store'
 import { MessageType } from '../../types/chat.type'
+import { GameStore } from '../stores/game.store.ts'
 
 const $page: HTMLElement = document.querySelector('page[type=chat]')!
 const $chatInput: HTMLInputElement = document.getElementById('chatInput') as HTMLInputElement
@@ -71,9 +72,12 @@ function blockUser(username: string) {
 }
 
 function duelUser(username: string) {
-	confirm(
+
+	const choice = confirm(
 `${UserStore.getUserName()}
 Do you want to duel ${username}?`)
+
+if (choice) GameStore.send({type: 'duel', to: username, action: 'propose'})
 }
 
 function updateUserList(users: string[]) {

@@ -1,4 +1,5 @@
 import { ChatStore } from './stores/chat.store'
+import { GameStore } from './stores/game.store.ts'
 import { CurrentButtonStore } from './stores/current_button.store'
 import { NotificationStore } from './stores/notification.store'
 import { PageUpdateStore } from './stores/page_state'
@@ -51,3 +52,4 @@ fetch('/get_payload', {
 })
 
 ChatStore.subscribe(_ => {})
+GameStore.subscribe(_ => {})

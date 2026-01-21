@@ -1,10 +1,14 @@
 import { authChannel } from './channels/auth.channel'
+import { duelChannel } from './channels/duel.channel.js'
+import { inputChannel } from './channels/input.channel.js'
 import JSONParser from './functions/json_parser.fn'
 import { clientsList, clientsSocket } from './state/clients.state'
 import { SocketDataType } from './types/socketData.type'
 import { BunSocketType } from './types/bunSocket.type'
 import { sendUserList } from './functions/sendUserList.fn'
 import { getVaultSecret } from './services/vault.service.js'
+import Lobby from './classes/Lobby.js'
+import { MessageType } from './types/message.type.js'
 
 const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
 	value.replace(/\\n/g, '\n').trim()
@@ -14,6 +18,8 @@ const cert_key = await getVaultSecret<string>('services_key', (value) =>
 )
 if (!cert_crt || !cert_key)
 	console.error('Failed to load TLS certificates from Vault service.')
+
+const lobby = new Lobby()
 
 const server = Bun.serve({
 	port: 3333,
@@ -43,38 +49,23 @@ const server = Bun.serve({
 			)
 		},
 		message(ws: BunSocketType, message) {
-			const data: SocketDataType = JSONParser(message)
+			const data: MessageType = JSONParser(message)
 			if (data === undefined) return
-			console.log('New Incoming message: ', data)
-			if (data.type === 'auth')
+			switch (data.type)
 			{
-				authChannel(ws, data)
+				case 'auth' : return authChannel(ws, data, lobby);
+				case 'duel' : return duelChannel(ws, data, lobby);
+				case 'input' : return inputChannel(ws, data, lobby);
 			}
-			// else if (data.type === 'global')
-			// {
-			// 	globalChannel(ws, message)
-			// }
-			// else if (data.type === 'mp')
-			// {
-			// 	mpChannel(ws, data, message)
-			// }
-			// else if (data.type === 'req-friend')
-			// {
-			// 	reqFriendChannel(ws, data)
-			// }
-			// else if (data.type === 'block-user')
-			// {
-			// 	blockUserChannel(ws, data)
-			// }
 		},
 		close(ws: BunSocketType) {
-			const message = {
+			const info = {
 				type: 'info',
 				msg: `Player ${ws.data.username} has disconnected`
 			}
 			for (const client of clientsList) {
 				if (client.socket !== ws && client.socket.readyState === WebSocket.OPEN) {
-					client.socket.send(JSON.stringify(message))
+					client.socket.send(JSON.stringify(info))
 				}
 				if (client.socket === ws) {
 					clientsList.delete(client)

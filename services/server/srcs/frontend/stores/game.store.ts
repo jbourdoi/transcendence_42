@@ -1,4 +1,4 @@
-import { type MessageType } from '../../types/chat.type'
+import { type MessageType } from '../../types/message.type.ts'
 import { UserStore } from './user.store'
 import { NotificationStore } from './notification.store'
 

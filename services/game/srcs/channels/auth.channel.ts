@@ -1,14 +1,19 @@
+import Lobby from '../classes/Lobby.js'
 import { sendUserList } from '../functions/sendUserList.fn'
 import { clientsList } from '../state/clients.state'
 import { BunSocketType } from '../types/bunSocket.type'
-import { SocketDataType } from '../types/socketData.type'
+import { AuthType, InfoType, MessageType } from '../types/message.type.js'
 
-export function authChannel(ws: BunSocketType, data: SocketDataType) {
+export function authChannel(ws: BunSocketType, data: AuthType, lobby : Lobby) {
 	ws.data.username = data.username
+	const user = lobby.createUser(data.username)
+	ws.data.user = user
+	const info : InfoType = {
+		msg : `Player ${data.username} has connected`,
+		type: 'info'
+	}
 	for (let client of clientsList) {
-		data.msg = `Player ${data.username} has connected`
-		data.type = 'info'
-		client.socket.send(JSON.stringify(data))
+		client.socket.send(JSON.stringify(info))
 	}
 	clientsList.add({
 		socket: ws,
