@@ -75,13 +75,39 @@ async function isFriend(ws: BunSocketType, friend: string, data: SocketDataType)
 	return false
 }
 
+async function isDoubleFriendRequest(ws: BunSocketType, friend: string, data: SocketDataType): Promise<string> {
+	const res = await dbPostQuery({
+		endpoint: 'dbGet',
+		query: {
+			verb: 'SELECT',
+			sql: 'SELECT * FROM friend_requests WHERE from_username = ? AND to_username = ?',
+			data: [ws.data.username, friend]
+		}
+	})
+	console.log('INSERT FRIEND REQUEST --- isDoubleFriendRequest: ', res)
+	if (res.status >= 400 && res.status !== 404)
+	{
+		data.msg = res.message
+		data.type = 'error'
+		ws.send(JSON.stringify(data))
+		return 'error'
+	}
+	else if (res.data) {
+		data.msg = 'Cannot send friend request as you have already sent one to this user.'
+		data.type = 'info'
+		ws.send(JSON.stringify(data))
+		return 'true'
+	}
+	return 'false'
+}
+
 async function isInFriendRequests(ws: BunSocketType, friend: string, data: SocketDataType): Promise<string> {
 	const res = await dbPostQuery({
 		endpoint: 'dbGet',
 		query: {
 			verb: 'SELECT',
-			sql: 'SELECT * FROM friend_requests WHERE (from_username = ? AND to_username = ?) OR (from_username = ? AND to_username = ?)',
-			data: [ws.data.username, friend, friend, ws.data.username]
+			sql: 'SELECT * FROM friend_requests WHERE from_username = ? AND to_username = ?',
+			data: [friend, ws.data.username]
 		}
 	})
 	console.log('INSERT FRIEND REQUEST --- isInFriendRequests: ', res)
@@ -157,15 +183,15 @@ export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) 
 	}
 	console.log('Client Found: ', clientFound)
 	if (clientFound) {
-		// TODO:
-		// - if user A double send friend request -> it should not go into insertFriendship
-		// - check if both columns of users are removed from friend_requests after insert into friendships
 		if (await isClientBlocked(ws, clientFound.username, data)) return
-		console.log('User not blocked, send friend request')
+		console.log('User not blocked, check if friends')
 
 		if (await isFriend(ws, clientFound.username, data)) return
-		console.log('Users are not friends, send friend request')
+		console.log('Users are not friends, check if double friend request')
 
+		const doubleFriendRequest = await isDoubleFriendRequest(ws, clientFound.username, data)
+		if (doubleFriendRequest === 'error' || doubleFriendRequest === 'true') return
+		console.log('No double friend request, check if the other user has sent a friend request')
 		const inFriendRequests = await isInFriendRequests(ws, clientFound.username, data)
 		if (inFriendRequests === 'error') return
 		else if (inFriendRequests === 'true')
@@ -176,6 +202,7 @@ export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) 
 			console.log('Friendship added to DB')
 
 			await removeFromFriendRequests(ws, clientFound.username, data)
+			console.log('Friend request removed from DB')
 			return
 		}
 
