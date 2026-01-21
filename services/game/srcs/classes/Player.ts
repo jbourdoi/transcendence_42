@@ -1,5 +1,3 @@
-import { WebSocket } from "ws"
-
 import User from "./User.js"
 import type { Impact } from "../types/game.type.js"
 
@@ -40,7 +38,6 @@ export class Player
 		console.log(`created player${index} angle ${this.angle} min ${this.minAngle} max ${this.maxAngle}`)
 		user.status = "game"
 	}
-
 
 	handleIA(predictionIA:Impact[])
 	{

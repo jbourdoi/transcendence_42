@@ -14,8 +14,8 @@ export class Game
 private players: Player[]
 private ball: Ball
 private predictions : Impact[]
-private intervalId : NodeJS.Timeout | undefined
-private IAinterval : NodeJS.Timeout | undefined
+private intervalId : number | undefined
+private IAinterval : number | undefined
 private status : 'state' | 'end' = 'state'
 private nbFrame : number = 0
 
@@ -44,6 +44,7 @@ constructor (player0: User, player1: User)
 	];
 	this.setupSockets();
 	this.startGameLoop();
+	console.log(`server run a new game ${player0.pseudo} vs ${player1.pseudo}`)
 }//constructor()
 
 public destroy()
@@ -109,7 +110,7 @@ private async startCountdown(): Promise<void>
 private setupSockets()
 {
 	this.players.forEach((p: Player) => {
-		p.user.socket?.on("close", () => this.destroy())
+		// p.user.socket?.on("close", () => this.destroy())
 	})
 }//setupSockets()
 

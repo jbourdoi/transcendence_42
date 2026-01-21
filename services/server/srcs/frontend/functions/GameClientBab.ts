@@ -3,6 +3,8 @@ import { json_parse, json_stringify } from './json_wrapper.js'
 import { color } from './pickerColor.js'
 import { Renderer2D } from '../classes/Renderer2D.js'
 import { Renderer3D } from '../classes/Renderer3D.js'
+import { GameStore } from '../stores/game.store.js'
+import { UserStore } from '../stores/user.store.js'
 
 const score = document.getElementById('score') as HTMLDivElement
 const debug = document.getElementById('debug') as HTMLDivElement
@@ -23,6 +25,15 @@ let end: boolean = false
 let pseudo: string = ''
 let anglePlayer: number = -1
 
+export function playRemote()
+{
+	const ws = GameStore.getSocket()
+	if (!ws) return
+	const pseudo = UserStore.getUserName()
+	launchGame(ws, pseudo);
+}
+playRemote()
+
 export function launchGame(webSocket: WebSocket, pseu: string)
 {
 	console.log('start a new game')
@@ -34,12 +45,12 @@ export function launchGame(webSocket: WebSocket, pseu: string)
 		getAnglePlayer: () => anglePlayer,
 		getEnd: () => end
 	})
-	const renderer3D = new Renderer3D(canvas3D, {
-		color,
-		getState: () => state,
-		getAnglePlayer: () => anglePlayer,
-		getEnd: () => end
-	})
+	// const renderer3D = new Renderer3D(canvas3D, {
+	// 	color,
+	// 	getState: () => state,
+	// 	getAnglePlayer: () => anglePlayer,
+	// 	getEnd: () => end
+	// })
 	webSocket.onmessage = (e: any) => {
 		const data = json_parse(e.data) as GameState | GamePause | Countdown
 		if (!data) return
@@ -48,7 +59,7 @@ export function launchGame(webSocket: WebSocket, pseu: string)
 			case 'state':
 				{
 					state = data
-					// renderer2D.resume()
+					renderer2D.resume()
 					if (anglePlayer === -1)
 					{
 						anglePlayer = initAnglePlayer(state.players)
@@ -59,7 +70,7 @@ export function launchGame(webSocket: WebSocket, pseu: string)
 				}
 			case 'pause':
 				{
-					// renderer2D.pause()
+					renderer2D.pause()
 					break
 				}
 			case 'end':
@@ -80,7 +91,7 @@ export function launchGame(webSocket: WebSocket, pseu: string)
 	end = false
 	handlePlayerInput(webSocket)
 	renderer2D.start()
-	renderer3D.start()
+	// renderer3D.start()
 } //launchGame
 
 function handlePlayerInput(webSocket: WebSocket)

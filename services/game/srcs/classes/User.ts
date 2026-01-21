@@ -1,10 +1,10 @@
-import { WebSocket } from 'ws'
 import { json_stringify } from '../functions/json_wrapper.js'
 import { KeyType, StatusType } from '../types/message.type.js'
+import { BunSocketType } from '../types/bunSocket.type.js'
 
 export default class User {
 	public pseudo: string
-	public socket: WebSocket | undefined
+	public socket: BunSocketType | undefined
 	public status: StatusType = 'chat'
 	public key: KeyType = 'none'
 	constructor(public readonly id: string, pseudo: string | undefined) {
