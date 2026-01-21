@@ -151,6 +151,29 @@ export default function initDb() {
 			('ruth','sybil'),
 			('sybil','trent'),
 			('trent','alice');
+			
+			INSERT OR IGNORE INTO friendships (username_1, username_2) VALUES
+			('alice','bob'),
+			('bob','carol'),
+			('carol','dave'),
+			('dave','eve'),
+			('eve','frank'),
+			('frank','grace'),
+			('grace','heidi'),
+			('heidi','ivan'),
+			('ivan','judy'),
+			('judy','kate'),
+			('kate','leo'),
+			('leo','mallory'),
+			('mallory','nancy'),
+			('nancy','oscar'),
+			('oscar','peggy'),
+			('peggy','quentin'),
+			('quentin','ruth'),
+			('ruth','sybil'),
+			('sybil','trent'),
+			('alice','trent');
+
 
 
 			INSERT OR IGNORE INTO matches (id) VALUES

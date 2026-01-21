@@ -8,7 +8,9 @@
 			width: 24px;
 			user-select: none;
 			color: hsl(196, 100%, 65%);
-			animation: bounce 2000ms ease-in-out infinite, rainbow 2000ms linear infinite;
+			animation:
+				bounce 2000ms ease-in-out infinite,
+				rainbow 2000ms linear infinite;
 		}
 
 		.wave span:nth-child(1) {
@@ -73,11 +75,11 @@
 
 	<menu-buttons>
 		<nav-button data-route="lobby" tabindex="1" class="button text-5xl mb-4" data-selected="true">Start Game</nav-button>
-		
+
 		<nav-button data-route="chat" tabindex="2" class="button text-3xl mb-4">Chat</nav-button>
-		
+
 		<nav-button data-route="update_profile" tabindex="3" class="button text-3xl mb-4">Update Profile</nav-button>
-		
+
 		<nav-button data-route="options" tabindex="4" class="button text-3xl">Options</nav-button>
 		<nav-button data-route="login" tabindex="5" class="y-nav button text-3xl" id="loginButton">
 			<nav-left> &lt; </nav-left>
@@ -86,6 +88,7 @@
 		</nav-button>
 		<nav-button id="logout_btn" tabindex="5" class="button text-3xl">Logout</nav-button>
 		<nav-button data-route="profile" tabindex="6" class="button text-3xl">Profile</nav-button>
+		<nav-button data-route="friends" tabindex="7" class="button text-3xl">Friends</nav-button>
 	</menu-buttons>
 </page>
 
