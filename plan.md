@@ -10,7 +10,6 @@ Chat Click Unblock User:
 	User unblocking is notified if user properly unblocked or error
 
 Chat click remove friend:
-	Remove friendship row in DB
 	Notify user requesting that friendship is now removed
 
 Login:
