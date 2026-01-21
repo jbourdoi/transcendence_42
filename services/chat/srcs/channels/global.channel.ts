@@ -8,7 +8,7 @@ export async function globalChannel(ws: BunSocketType, message: string | Buffer<
 		endpoint: 'dbAll',
 		query: {
 			verb: 'SELECT',
-			sql: 'SELECT blocked_username FROM blocks WHERE blocker_username = ?',
+			sql: 'SELECT blocker_username FROM blocks WHERE blocked_username = ?',
 			data: [ws.data.username]
 		}
 	})
@@ -16,10 +16,10 @@ export async function globalChannel(ws: BunSocketType, message: string | Buffer<
 		console.log('status: ', res.status, 'message: ', res.message)
 		return
 	}
-	const clients = res.data as { blocked_username: string }[]
-	console.log('Clients blocked: ', clients)
+	const blockers = res.data as { blocker_username: string }[]
+	console.log('Clients blockers: ', blockers)
 	for (const client of clientsSocket) {
-		if (client.readyState === WebSocket.OPEN && !isCurrentClientBlocked(clients, client.data.username)) {
+		if (client.readyState === WebSocket.OPEN && !isCurrentClientBlocked(blockers, client.data.username)) {
 			client.send(message)
 		}
 	}

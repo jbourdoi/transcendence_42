@@ -2,8 +2,8 @@ import { dbPostQuery } from '../services/db.service'
 import { BunSocketType } from '../types/bunSocket.type'
 import { SocketDataType } from '../types/socketData.type'
 
-export function isCurrentClientBlocked(blockedClients: { blocked_username: string }[], username: string): boolean {
-	const isBlocked = blockedClients.findIndex(c => c.blocked_username === username) !== -1
+export function isCurrentClientBlocked(blockers: { blocker_username: string }[], username: string): boolean {
+	const isBlocked = blockers.findIndex(c => c.blocker_username === username) !== -1
 	console.log(`Is ${username} blocked: `, isBlocked)
 	return isBlocked
 }
