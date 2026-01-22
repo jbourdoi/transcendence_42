@@ -35,7 +35,6 @@ constructor(canvas: HTMLCanvasElement, deps: {
 
 	canvas.width = board.width
 	canvas.height = board.height
-	canvas.style.position = "fixed"
 }
 
 pause() { this.paused = true; }
@@ -71,9 +70,6 @@ private initScene ()
 {
 	this.canvas.width = board.width
 	this.canvas.height = board.height
-	this.canvas.style.position = "fixed"
-	this.canvas.style.top = "100px"
-	this.canvas.style.left = "100px"
 	const state = this.getState()
 	const radius = arena.radius * this.worldScale
 

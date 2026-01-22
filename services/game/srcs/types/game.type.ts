@@ -12,6 +12,11 @@ export type GamePause = {
 	type: 'pause'
 }
 
+export type GameDisconnect = {
+	type: 'disconnect',
+	text: string
+}
+
 export type GameState = {
 	type: 'state'| 'end',
 	ball: {dist:number, theta:number, x:number, y:number},

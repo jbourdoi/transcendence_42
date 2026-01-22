@@ -2,6 +2,8 @@ import { ChatStore } from '../stores/chat.store'
 import { UserStore } from '../stores/user.store'
 import { MessageType } from '../../types/chat.type'
 import { GameStore } from '../stores/game.store.ts'
+import { NotificationStore } from '../stores/notification.store.ts'
+import { LobbyStore } from '../stores/lobby.store.ts'
 
 const $page: HTMLElement = document.querySelector('page[type=chat]')!
 const $chatInput: HTMLInputElement = document.getElementById('chatInput') as HTMLInputElement
@@ -72,12 +74,15 @@ function blockUser(username: string) {
 }
 
 function duelUser(username: string) {
-
+	// NotificationStore.notify(`Do you want to duel ${UserStore.getUserName()}`, "INFO")
 	const choice = confirm(
-`${UserStore.getUserName()}
-Do you want to duel ${username}?`)
-
-if (choice) GameStore.send({type: 'duel', to: username, action: 'propose'})
+		`${UserStore.getUserName()}
+		Do you want to duel ${username}?`)
+	if (choice)
+	{
+		LobbyStore.addDuel({type: 'duel', to: username, action: 'propose'})
+		GameStore.send({type: 'duel', to: username, action: 'propose'})
+	}
 }
 
 function updateUserList(users: string[]) {

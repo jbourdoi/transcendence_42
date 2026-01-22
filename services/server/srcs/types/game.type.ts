@@ -26,6 +26,11 @@ export type Countdown = {
 	value: string
 }
 
+export type GameDisconnect = {
+	type: 'disconnect',
+	text: string
+}
+
 export type Impact = {
     tImpact: number;      // temps depuis le départ du segment
     impactX: number;      // position X de l'impact

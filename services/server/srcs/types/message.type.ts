@@ -88,7 +88,12 @@ export type InfoType = {
 	msg : string
 }
 
-export type MessageType = InputType | DuelType | AuthType | InfoType
+export type NavigateType = {
+	type : 'navigate',
+	navigate : string
+}
+
+export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType
 
 export type FrontType = FrontErrorType | DuelResponse
 

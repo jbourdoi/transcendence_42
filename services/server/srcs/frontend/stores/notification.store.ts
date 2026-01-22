@@ -3,8 +3,8 @@ let $notifications: HTMLElement | null = null
 type Subscriber = (key: HTMLElement) => void
 
 function updateNotificationsPosition() {
-	const $notificationWrapper = document.querySelector('notification-wrapper')
-	const $containers = $notificationWrapper.querySelectorAll('notification-container')
+	const $notificationWrapper = document.querySelector('notification-wrapper')!
+	const $containers : NodeListOf<HTMLElement> = $notificationWrapper.querySelectorAll('notification-container')
 	const list = Array.from($containers).reverse()
 
 	list.forEach(($container, index) => {

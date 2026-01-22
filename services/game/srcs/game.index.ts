@@ -1,9 +1,9 @@
 import { authChannel } from './channels/auth.channel'
 import { duelChannel } from './channels/duel.channel.js'
 import { inputChannel } from './channels/input.channel.js'
+import { navigateChannel } from './channels/navigate.channel.js'
 import JSONParser from './functions/json_parser.fn'
 import { clientsList, clientsSocket } from './state/clients.state'
-import { SocketDataType } from './types/socketData.type'
 import { BunSocketType } from './types/bunSocket.type'
 import { sendUserList } from './functions/sendUserList.fn'
 import { getVaultSecret } from './services/vault.service.js'
@@ -54,6 +54,7 @@ const server = Bun.serve({
 			switch (data.type)
 			{
 				case 'auth' : return authChannel(ws, data, lobby);
+				case 'navigate' : return navigateChannel(ws, data)
 				case 'duel' : return duelChannel(ws, data, lobby);
 				case 'input' : return inputChannel(ws, data, lobby);
 			}

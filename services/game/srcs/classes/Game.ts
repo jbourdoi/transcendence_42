@@ -2,7 +2,7 @@ import { Player } from "./Player.js";
 import { Ball } from "./Ball.js";
 import User from "./User.js";
 import { arena, board } from "../functions/game.scale.js"
-import type { Impact, GameState, Countdown, GamePause } from "../types/game.type.js";
+import type { Impact, GameState, Countdown, GamePause, GameDisconnect } from "../types/game.type.js";
 
 const hertz = 60
 const tick_ms = 1000 / hertz
@@ -14,8 +14,8 @@ export class Game
 private players: Player[]
 private ball: Ball
 private predictions : Impact[]
-private intervalId : number | undefined
-private IAinterval : number | undefined
+private intervalId : NodeJS.Timeout | undefined
+private IAinterval : NodeJS.Timeout | undefined
 private status : 'state' | 'end' = 'state'
 private nbFrame : number = 0
 
@@ -44,6 +44,7 @@ constructor (player0: User, player1: User)
 	];
 	this.setupSockets();
 	this.startGameLoop();
+	this.broadcastState()
 	console.log(`server run a new game ${player0.pseudo} vs ${player1.pseudo}`)
 }//constructor()
 
@@ -78,7 +79,7 @@ public destroy()
 	this.predictions = []
 }//destroy()
 
-private broadcast(data: GameState | Countdown | GamePause): void
+private broadcast(data: GameState | Countdown | GamePause | GameDisconnect): void
 {
 	this.players.forEach(p => p.user.send(data))
 }//broadcast
@@ -110,7 +111,7 @@ private async startCountdown(): Promise<void>
 private setupSockets()
 {
 	this.players.forEach((p: Player) => {
-		// p.user.socket?.on("close", () => this.destroy())
+		// p?.user?.socket?.subscribe("close", () => this.destroy())
 	})
 }//setupSockets()
 
@@ -120,6 +121,7 @@ private startGameLoop()
 	this.ball.vx = 0
 	this.ball.vy = 0
 	// 2) Lancer le countdown
+	// this.broadcastState();
 	this.startCountdown().then(() => {
 		if (!this.ball) return
 		// 3) Quand le décompte est fini → vraie remise en jeu
@@ -131,8 +133,25 @@ private startGameLoop()
 	});
 }//startGameLoop()
 
+private checkDisconnection() : boolean
+{
+	let disconnect = false
+	let text = ""
+	this.players.forEach(p=>{
+		if (p.user.id != "" && !p.user.isConnected())
+		{
+			disconnect = true;
+			text += ` | ${p.user.pseudo} has left the game`
+		}
+	})
+	if (text) text.substring(3);
+	if (disconnect)	this.broadcast({type:'disconnect', text});
+	return disconnect;
+}
+
 private gameTick()
 {
+	if (this.checkDisconnection()) return this.destroy()
 	this.players.forEach(p=>p.handleKey(this.predictions))
 
 	if (this.players.some(p => p.pause)) return this.broadcast({ type: "pause" });
@@ -212,6 +231,12 @@ private gameTick()
 		}
 	}
 
+	this.broadcastState(dist, theta, changeColor);
+	if (this.status === "end") this.destroy()
+}//gameTick()
+
+private broadcastState(dist: number = 0, theta: number = 0, changeColor: boolean = false )
+{
 	this.broadcast({
 	type: this.status,
 	ball: { dist, theta, x:this.ball.x, y:this.ball.y },
@@ -228,8 +253,7 @@ private gameTick()
 	changeColor,
 	nbFrame: (++this.nbFrame)
 	});
-	if (this.status === "end") this.destroy()
-}//gameTick()
+}
 
 private getRandomWeightedPlayer(): Player
 {
