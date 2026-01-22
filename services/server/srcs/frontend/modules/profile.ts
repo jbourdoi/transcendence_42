@@ -17,8 +17,6 @@ const unsubStateStore = StateStore.subscribe(async data => {
 	document.title = `${selectedProfile} Profile`
 	$pageTitle.innerText = selectedProfile
 
-	// console.log('Fetching user: ', selectedProfile)
-
 	fetch('https://localhost:443/user_profile', {
 		method: 'POST',
 		headers: {
@@ -36,16 +34,6 @@ const unsubStateStore = StateStore.subscribe(async data => {
 				setMatches(res)
 			}
 		})
-})
-
-document.querySelector('#profileNavWithMockUser')?.addEventListener('click', () => {
-	StateStore.update({ selectedProfile: 'ivan' })
-	navigate('profile')
-})
-
-document.querySelector('#profileNavWithoutMockUser')?.addEventListener('click', () => {
-	StateStore.update({ selectedProfile: undefined })
-	navigate('profile')
 })
 
 type MatchType = {
@@ -92,7 +80,6 @@ function setMatches(matches: MatchType[]) {
 
 const cleanPage = () => {
 	$page.removeEventListener('cleanup', cleanPage)
-	// StateStore.update({ selectedProfile: undefined })
 	unsubStateStore()
 }
 
