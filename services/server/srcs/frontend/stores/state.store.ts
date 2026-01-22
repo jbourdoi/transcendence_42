@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 type Subscriber = (config: any) => void
 
-let config = {
+let state = {
 	textSize: 20,
 	username: undefined,
 	email: undefined,
@@ -14,42 +14,47 @@ let config = {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-	updateDomState(config)
+	updateDomState(state)
 })
 
 PageUpdateStore.subscribe(() => {
-	updateDomState(config)
+	updateDomState(state)
 })
+
+function updateDomWithState(stateKey: string, stateValue: string) {
+	document.querySelectorAll(`state[key='${stateKey}']`).forEach($el => {
+		$el.innerHTML = stateValue
+	})
+}
 
 function createStateStore() {
 	const subscribers = new Set<Subscriber>()
 
 	function subscribe(fn: Subscriber) {
 		subscribers.add(fn)
-		fn(config)
+		fn(state)
 		return () => subscribers.delete(fn)
 	}
 
-	function emit(config: any) {
-		for (const fn of subscribers) fn(config)
+	function emit(state: any) {
+		for (const fn of subscribers) fn(state)
 	}
 
-	function update(newConfig: any) {
-		for (let key in newConfig) {
-			config[key] = newConfig[key]
+	function update(newState: any) {
+		for (let key in newState) {
+			state[key] = newState[key]
+			updateDomWithState(key, newState[key])
 		}
-		for (const fn of subscribers) fn(config)
+		for (const fn of subscribers) fn(state)
+
+		console.log('State: ', state)
 	}
 
 	function getStateUUID() {
-		return config.uuid
+		return state.uuid
 	}
-	
-	// function getSelectedProfile() {
-	// 	return config.selectedProfile
-	// }
 
-	return { subscribe, emit, update, getStateUUID, /*getSelectedProfile*/ }
+	return { subscribe, emit, update, getStateUUID }
 }
 
 declare global {
