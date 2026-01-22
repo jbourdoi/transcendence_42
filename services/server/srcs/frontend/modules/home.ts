@@ -47,7 +47,8 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 
 const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
-		const nextValue = loginButtonValues[loginButtonValues[currentButton.id].next]
+		const nextValue = loginButtonValues[loginButtonValues[currentButton.id]?.next]
+		
 		if (nextValue) {
 			const $navLeft = document.createElement('nav-left')
 			const $navRight = document.createElement('nav-right')
