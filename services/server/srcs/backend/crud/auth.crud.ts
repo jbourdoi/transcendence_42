@@ -69,22 +69,22 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 						return { status: 403, message: 'User registered with form' }
 					userId = body.data.id
 				}
-				return { email, username: login, id: userId }
+				return { status: 200, info: { email, username: login, id: userId } }
 			})
 		return infoFetch
 	}
-	return null
+	return { status: 403, message: 'Invalid credentials' }
 }
 
 export async function generateAndSendToken(infoFetch: any, reply: any) {
-	if (!infoFetch.id) return reply.status(404).send({ message: 'User ID not found' })
-	const userInfo = { email: infoFetch.email, username: infoFetch.username, id: infoFetch.id }
+	if (!infoFetch.info.id) return reply.status(404).send({ message: 'User ID not found' })
+	const userInfo = { email: infoFetch.info.email, username: infoFetch.info.username, id: infoFetch.info.id }
 	const token = await createToken(userInfo)
 	if (!token) return reply.status(500).send({ message: 'Token generation failed' })
 	return reply
 		.status(200)
 		.setCookie('token', token, userTokenCookieOptions())
-		.send({ infoFetch })
+		.send({ ...infoFetch.info })
 }
 export function userTokenCookieOptions(): CookieSerializeOptions {
 	return {

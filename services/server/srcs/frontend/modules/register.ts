@@ -64,9 +64,9 @@ if (codeParam) {
 			$registerForm.style.display = 'flex'
 		})
 		.then(res => {
+			if (!res || res.status >= 400) return
 			console.log('FRONTEND --- register form response:', res)
-			console.log('FRONTEND --- res infoFetch register form:', res.infoFetch)
-			UserStore.emit(res.infoFetch)
+			UserStore.emit(res)
 			navigate('')
 		})
 } else {

@@ -90,7 +90,7 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		throw httpErrors(body.status, body.message.code)
 	}
 
-	const infoFetch = {  email: email, username: username, id: body.data.lastID }
+	const infoFetch = { status: 200, info: { email: email, username: username, id: body.data.lastID } }
 	console.log('REGISTER FORM --- infoFetch:', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
 }
@@ -115,7 +115,7 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 
 	if (!matchPwd) return reply.status(401).send({ message: 'Invalid password' })
 
-	const infoFetch = { email: body.data.email, username: body.data.username, id: body.data.id }
+	const infoFetch = { status: 200, info: { email: body.data.email, username: body.data.username, id: body.data.id } }
 	console.log('LOGIN FORM --- infoFetch:', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
 }

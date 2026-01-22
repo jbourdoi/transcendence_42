@@ -16,8 +16,7 @@ export function fetchLogin(formData: FormData) {
 		.then(res => {
 			if (res?.status >= 400) return
 			console.log('FRONTEND --- login form response: ', res)
-			console.log('FRONTEND --- res infofetch login form: ', res.infoFetch)
-			UserStore.emit(res.infoFetch)
+			UserStore.emit(res)
 			navigate('')
 		})
 }
@@ -44,8 +43,7 @@ export function fetchRegister(formData: FormData, registerForm: HTMLElement) {
 				return
 			}
 			console.log("FRONTEND --- registering form response: ", res)
-			console.log("FRONTEND --- res infofetch register form: ", res.infoFetch)
-			UserStore.emit(res.infoFetch)
+			UserStore.emit(res)
 			navigate('')
 		})
 }

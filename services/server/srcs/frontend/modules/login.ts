@@ -56,8 +56,8 @@ if (codeParam) {
 			return
 		})
 		.then(res => {
-			if (res?.status >= 400 || !res) return
-			UserStore.emit(res.infoFetch)
+			if (!res || res.status >= 400) return
+			UserStore.emit(res)
 			navigate('')
 		})
 } else {
