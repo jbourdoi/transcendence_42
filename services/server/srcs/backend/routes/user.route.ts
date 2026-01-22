@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { dbPostQuery } from '../services/db.service.js'
-import { getPayload } from '../crud/auth.crud.js'
+import { generateAndSendToken, getPayload } from '../crud/auth.crud.js'
 import { userUpdateType } from '../../types/user.type.js'
 import { getMultipartFormData } from '../crud/multipartForm.js'
 import { isUsernameFormatInvalid } from '../../frontend/functions/formValidation.js'
@@ -74,22 +74,23 @@ export async function getUserFriends(req: FastifyRequest, reply: FastifyReply) {
 			data: [name, name]
 		}
 	})
-	console.log("Response: ", res)
+	console.log('Response: ', res)
 	if (res.status >= 400) return reply.status(res.status).send({ message: res.message })
 	return reply.status(200).send(res.data)
 }
 
 export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	const data = await getMultipartFormData(req)
-
 	const token = await getPayload(req)
 	if (!token) return reply.status(401).send('Invalid or missing token')
-	const id = token.id
+	const userInfo = token.userInfo
+	const { id } = userInfo
+
+	console.log('User Info: ', userInfo)
 
 	const username = data['username']
 	const avatar = data['avatar']
 
-	console.log(username, avatar)
 	if (!username && !avatar) return reply.status(400).send({ message: 'No fields to update' })
 
 	let updateQuery: userUpdateType = {}
@@ -99,34 +100,53 @@ export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	}
 	if (avatar) updateQuery.avatar = avatar
 
-	console.log('updateQuery', updateQuery)
-
-	let body = await dbPostQuery({
+	let user = await dbPostQuery({
 		endpoint: 'dbGet',
 		query: { verb: 'read', sql: 'SELECT * FROM users WHERE id = ?', data: [id] }
 	})
-	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
-	console.log('body from dbGet', body.data)
+	if (user.status >= 400) return reply.status(user.status).send({ message: user.message })
 
-	if (username && username == body.data.username) return reply.status(200).send({ message: 'No changes made' })
 	let query = 'UPDATE users SET'
 	let paramsValue = []
 	let entries = Object.entries(updateQuery)
 
 	for (let [index, [key, value]] of entries.entries()) {
-		console.log(index, key, value)
 		query += ` ${key} = ? `
 		if (index < entries.length - 1) query += ','
 		paramsValue.push(value)
 	}
 
-	paramsValue.push(id)
 	query += 'WHERE id = ?'
+	paramsValue.push(id)
 
-	console.log('query', query)
-	body = await dbPostQuery({ endpoint: 'dbRun', query: { verb: 'update', sql: query, data: paramsValue } })
+	query += ' AND ('
+
+	entries.forEach(([key], index) => {
+		query += `${key} <> ?`
+		if (index < entries.length - 1) query += ' OR '
+	})
+
+	entries.forEach(([, value]) => {
+		paramsValue.push(value)
+	})
+
+	query += ')'
+
+	console.log('query', query, '\n\n\n\n')
+	let body = await dbPostQuery({ endpoint: 'dbRun', query: { verb: 'update', sql: query, data: paramsValue } })
 	if (body.data?.changes === 0) return reply.status(200).send({ message: 'No changes made' })
+
+	let newData = await dbPostQuery({
+		endpoint: 'dbGet',
+		query: { verb: 'read', sql: 'SELECT username,avatar,has_2fa FROM users WHERE id = ?', data: [id] }
+	})
+
+	if (user.data.username != newData.data.username) {
+		userInfo.username = username
+	}
+
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
+	await generateAndSendToken(userInfo, reply)
 	return reply.status(200).send({ message: `User updated: ${id} ${paramsValue[0]}` })
 }
 
