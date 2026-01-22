@@ -1,4 +1,3 @@
-import { navigate } from '../js/routing'
 import { StateStore } from '../stores/state.store'
 import { UserStore } from '../stores/user.store'
 
@@ -40,6 +39,7 @@ type MatchType = {
 	created_at: string
 	match_id: number
 	players: string
+	type: 'tournament' | 'classic' | 'duel'
 	winner: string
 }
 
@@ -63,9 +63,11 @@ function setMatches(matches: MatchType[]) {
 		const $tdType = document.createElement('td')
 		const $tdPlayers = document.createElement('td')
 		const $tdWinner = document.createElement('td')
+		
+		console.log(match)
 
 		$tdDate.innerText = match.created_at
-		$tdType.innerText = 'Classic'
+		$tdType.innerText = match.type
 		$tdPlayers.innerText = match.players
 		$tdWinner.innerText = match.winner
 
