@@ -4,6 +4,8 @@ set -e
 
 KEYS=(CLIENT_ID
 CLIENT_SECRET
+SENDER_USER
+SENDER_PWD
 GF_ADMIN_USER
 GF_ADMIN_PWD
 GF_USER_NAME
@@ -21,6 +23,8 @@ SERVICES_KEY)
 
 KVPATHS=(secret/client_id
 secret/client_secret
+secret/sender_user
+secret/sender_pwd
 secret/gf_admin_user
 secret/gf_admin_pwd
 secret/gf_user_name
