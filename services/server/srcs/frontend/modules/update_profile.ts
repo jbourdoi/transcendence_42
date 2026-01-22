@@ -1,5 +1,7 @@
 import { resetAvatarButton, setupAvatarPreview } from '../functions/formValidation'
 import { UserStore } from '../stores/user.store'
+import { NotificationStore } from '../stores/notification.store'
+import { StateStore } from '../stores/state.store'
 
 let trackEvent = false
 
@@ -93,8 +95,15 @@ function toggle2FAState(toggle2FABtn: HTMLInputElement) {
 	console.log('toggle2FABtn checked AFTER CODE VALIDATED (from x2):', toggle2FABtn.checked)
 }
 
-function toggle2FA(toggle2FABtn: HTMLInputElement, closeModalBtn: HTMLButtonElement, modal: HTMLDivElement, overlay: HTMLDivElement, codeInput: HTMLInputElement, modalError: HTMLDivElement) {
-	toggle2FABtn.addEventListener('change', async (e) => {
+function toggle2FA(
+	toggle2FABtn: HTMLInputElement,
+	closeModalBtn: HTMLButtonElement,
+	modal: HTMLDivElement,
+	overlay: HTMLDivElement,
+	codeInput: HTMLInputElement,
+	modalError: HTMLDivElement
+) {
+	toggle2FABtn.addEventListener('change', async e => {
 		e.preventDefault()
 		toggle2FABtn.checked = !toggle2FABtn.checked
 		console.log('toggle2FABtn checked AT START:', toggle2FABtn.checked)
@@ -112,12 +121,8 @@ function toggle2FA(toggle2FABtn: HTMLInputElement, closeModalBtn: HTMLButtonElem
 		// on validate, check code server-side, if ok -> enable/disable 2fa for user in db
 		validate2FACode(codeInput)
 	})
-	closeModalBtn.addEventListener('click', () =>
-		close2FAModal(modal, overlay)
-	)
-	overlay.addEventListener('click', () =>
-		close2FAModal(modal, overlay)
-	)
+	closeModalBtn.addEventListener('click', () => close2FAModal(modal, overlay))
+	overlay.addEventListener('click', () => close2FAModal(modal, overlay))
 }
 
 function handleUpdateProfile() {
@@ -125,7 +130,7 @@ function handleUpdateProfile() {
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement
 	const $avatarPreview = $page.querySelector('#avatarPreview') as HTMLImageElement
 	const $resetAvatarBtn = $page.querySelector('#resetAvatarButton') as HTMLButtonElement
-	
+
 	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
 
 	const $toggle2FABtn = $page.querySelector('#twofa') as HTMLInputElement
@@ -159,16 +164,23 @@ function handleUpdateProfile() {
 			if (avatarFile) formData.append('avatar', avatarFile)
 			fetch('https://localhost:443/update_user', {
 				method: 'PUT',
-				body: formData,
+				body: formData
 			})
 				.then(res => {
-					if (res.status >= 400)
-						return console.log('ERROR updating profile', res.status)
-					console.log('RESPONSE', res)
+					if (res.status >= 400) {
+						NotificationStore.notify('ERROR updating profile', 'ERROR')
+						return
+					}
 					return res.json()
 				})
-				.then (res => {
-					console.log('RESRESRES', res)
+				.then(res => {
+					if (res?.message === 'No changes made') {
+						NotificationStore.notify('No info changed', 'INFO')
+					} else {
+						NotificationStore.notify('User data updated', 'SUCCESS')
+						StateStore.update({ username: res.infoFetch.username })
+						UserStore.emit(res.infoFetch)
+					}
 				})
 		}
 	}

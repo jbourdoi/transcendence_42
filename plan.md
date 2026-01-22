@@ -1,7 +1,13 @@
 150 POINTS!!!!! 🥳🥳🥳🥳
 Add responsive
 Add SEO
-menu button Profile : error console when press left or right navigation
+
+Send proper constraint message from backend
+	auth.route.ts > line 86
+
+When updating profile name, chat gets messed up
+	Fix, close previous socket, and refresh front edn socket
+
 Chat Click Block User:
 	User blocking is notified if user properly blocked or error
 	
@@ -28,7 +34,6 @@ Lobby:
 Remote 1v1
 
 Friends:
-	Create (current) friends page
 	Create remove and mp buttons (friends page)
 	Access other player information
 
