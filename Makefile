@@ -10,16 +10,16 @@ up:
 	COMPOSE_BAKE=true docker compose -f $(FILEPATH) logs -f
 
 down-db:
-	docker stop database && docker rm database
-	rm -rf ./services/database/data/db.sqlite
+	- docker stop database && docker rm database
+	- rm -rf ./services/database/data/db.sqlite
 
 # Usage: make down-container, make down-vault, make down-server
 down-%:
-	docker stop $* && docker rm $*
+	- docker stop $* && docker rm $*
 
 # Usage: make up-container, make up-vault, make up-server
 up-%:
-	docker-compose up -d $*
+	- docker-compose up -d $*
 
 
 elk:
