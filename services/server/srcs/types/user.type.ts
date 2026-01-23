@@ -1,24 +1,25 @@
-export type userRegisterType = {
-    avatar: string,
-    pwd: string,
-    checkpwd: string,
-    email: string,
-    checkmail: string,
-    username: string
+export type UserRegisterType = {
+	avatar: string
+	pwd: string
+	checkpwd: string
+	email: string
+	checkmail: string
+	username: string
 }
 
-export type userLoginType = {
-    username: string,
-    pwd: string
+export type UserLoginType = {
+	username: string
+	pwd: string
 }
 
-export type userUpdateType = {
-    username?: string,
-    avatar?: string
+export type UserUpdateType = {
+	username?: string
+	avatar?: string
 }
 
-export type userInfoType = {
-    email: string
-    username: string
-    id: number
+export type UserInfoType = {
+	email: string
+	username: string
+	id: number
+	has_2fa: boolean
 }
