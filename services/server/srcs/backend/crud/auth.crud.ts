@@ -33,6 +33,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 
 	console.log('TOKEN: ', token)
 	let userId: number
+	let has_2fa: boolean
 	let body
 
 	if (!token)
@@ -69,6 +70,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 			}
 		})
 		userId = body.data?.lastID
+		has_2fa = body.data?.has_2fa === 1 // '=== 1' to convert from integer to boolean
 	} else {
 		body = await dbPostQuery({
 			endpoint: 'dbGet',
@@ -86,7 +88,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 				}
 			}
 		}
-
+		
 		if (body?.data?.is_oauth !== 1) {
 			return {
 				info: {
@@ -96,6 +98,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 			}
 		}
 		userId = body.data.id
+		has_2fa = body.data.has_2fa === 1 // '=== 1' to convert from integer to boolean
 	}
 
 	if (body.status >= 400) {
@@ -110,6 +113,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 		email: user42Info.email,
 		username: user42Info.login,
 		id: userId,
+		has_2fa: has_2fa,
 		info: {
 			status: 200
 		}
@@ -119,7 +123,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 export async function generateAndSendToken(infoFetch: InfoFetchType, reply: any) {
 	if (!infoFetch.id) return reply.status(404).send({ message: 'User ID not found' })
 
-	const userInfo: userInfoType = { email: infoFetch.email!, username: infoFetch.username!, id: infoFetch.id }
+	const userInfo = { email: infoFetch.email, username: infoFetch.username, id: infoFetch.id, has_2fa: infoFetch.has_2fa }
 	const token = await createToken(userInfo)
 	if (!token) return reply.status(500).send({ message: 'Token generation failed' })
 	return reply

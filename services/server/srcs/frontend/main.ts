@@ -47,6 +47,7 @@ fetch('/get_payload', {
 		email: payload.userInfo.email,
 		username: payload.userInfo.username,
 		id: payload.userInfo.id,
+		has_2fa: payload.userInfo.has_2fa,
 		isValid: true
 	})
 })

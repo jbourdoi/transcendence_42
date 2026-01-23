@@ -95,6 +95,7 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 		email,
 		username,
 		id: body.data.lastID,
+		has_2fa: body.data.has_2fa === 1,
 		info: {
 			status: 200
 		}
@@ -127,6 +128,7 @@ export async function logUser(req: FastifyRequest, reply: FastifyReply) {
 		email: body.data.email,
 		username: body.data.username,
 		id: body.data.id,
+		has_2fa: body.data.has_2fa === 1,
 		info: {
 			status: 200
 		}

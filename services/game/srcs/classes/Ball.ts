@@ -21,8 +21,8 @@ export class Ball
 	{
 		this.x = arena.centerX * (6.5 - Math.random()) / 5
 		this.y =  arena.centerY * (6.5 - Math.random()) / 5
-		const minV : number = 2
-		const maxV : number = 3
+		const minV : number = 4
+		const maxV : number = 6
 		const randomV : number = minV + Math.random() * (maxV - minV);
 		const randomNoiseAngle : number = - (Math.PI / 6) + Math.random() * (Math.PI / 3)
 		defaultAngle += randomNoiseAngle

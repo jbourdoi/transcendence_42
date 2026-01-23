@@ -6,6 +6,7 @@ export type UserType = {
 	email: string
 	username: string
 	id?: number
+	has_2fa?: boolean
 	isValid: boolean
 }
 
@@ -32,8 +33,9 @@ function createUserStore() {
 		user.email = newUser.email
 		user.username = newUser.username
 		user.id = newUser.id
+		user.has_2fa = newUser.has_2fa
 
-		StateStore.update({ username: user.username, id: user.id, email: user.email })
+		StateStore.update({ username: user.username, id: user.id, email: user.email, has_2fa: user.has_2fa })
 
 		for (const fn of subscribers) fn(user)
 	}
@@ -43,6 +45,7 @@ function createUserStore() {
 			email: '',
 			username: '',
 			id: undefined,
+			has_2fa: undefined,
 			isValid: false
 		})
 	}

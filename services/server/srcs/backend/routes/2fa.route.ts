@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { sendEmail } from '../services/ethereal.service.js'
-import { getPayload } from '../crud/auth.crud.js'
+import { generateAndSendToken, getPayload } from '../crud/auth.crud.js'
 import { dbPostQuery } from '../services/db.service.js'
 import { getVaultSecret } from '../services/vault.service.js'
 import bcrypt from 'bcrypt'
@@ -96,6 +96,13 @@ export async function validate2FACode(req: FastifyRequest, reply: FastifyReply):
     console.log('Delete challenge from db')
     res = await deleteChallenge(userId)
     if (res.status >= 400) return reply.status(res.status).send({ message: res.message })
+
+    console.log('Generate and send new token with updated 2FA status')
+    const userInfo = token.userInfo
+    if (purpose === 'enable') userInfo.has_2fa = true
+    else if (purpose === 'disable') userInfo.has_2fa = false
+    console.log('Updated userInfo for token:', userInfo)
+    await generateAndSendToken(userInfo, reply)
 
     reply.status(200).send({ message: '2FA code validated successfully' })
 }

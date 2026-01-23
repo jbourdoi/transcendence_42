@@ -30,7 +30,7 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 			state: uuidv4()
 		})
 
-	const infoFetch = await fetch42User(url, { saveToDb: true })
+	const infoFetch: InfoFetchType = await fetch42User(url, { saveToDb: true })
 	if (!infoFetch || infoFetch.info.status >= 400) return reply.status(infoFetch.info.status).send({ ...infoFetch })
 	console.log('REGISTER 42 OAUTH --- infoFetch: ', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
