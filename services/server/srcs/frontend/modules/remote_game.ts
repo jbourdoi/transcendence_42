@@ -7,14 +7,17 @@ import { GameStore } from '../stores/game.store.js'
 import { UserStore } from '../stores/user.store.js'
 import { NotificationStore } from '../stores/notification.store.js'
 
-const $score = document.getElementById('score') as HTMLDivElement
-const $debug = document.getElementById('debug') as HTMLDivElement
-const $canvas2D = document.getElementById('canvas2D') as HTMLCanvasElement
+const $score = document.getElementById('score') as HTMLElement
+const $debug = document.getElementById('debug') as HTMLElement
+const $countdown = document.querySelector('countdown') as HTMLElement
+// const $canvas2D = document.getElementById('canvas2D') as HTMLCanvasElement
 const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
 const $pageGameRemote = document.querySelector("page[type=game]")!
 
 $canvas3D.width = 0
 $canvas3D.height = 0
+$countdown.textContent = ""
+$countdown.classList.remove('visible')
 
 let state : GameState = {
 	type: 'state',
@@ -28,7 +31,7 @@ let end: boolean = false
 let pseudo: string = ''
 let anglePlayer: number = -1
 let ws : WebSocket | undefined;
-let renderer2D : Renderer2D;
+// let renderer2D : Renderer2D;
 let renderer3D : Renderer3D;
 let keyState: any = {}
 
@@ -62,7 +65,7 @@ function onMessage(e:any)
 			if (anglePlayer === -1)
 			{
 				anglePlayer = initAnglePlayer(state.players)
-				console.log('anglePlayer', anglePlayer)
+				// console.log('anglePlayer', anglePlayer)
 			}
 			$debug.textContent = data.nbFrame.toString()
 			break
@@ -76,7 +79,7 @@ function onMessage(e:any)
 		{
 			state = data
 			end = true
-			console.log('data.end', data)
+			// console.log('data.end', data)
 			anglePlayer = -1;
 			$debug.textContent = data.nbFrame.toString()
 			NotificationStore.notify("Game finished", "INFO")
@@ -84,7 +87,16 @@ function onMessage(e:any)
 		}
 		case 'countdown':
 		{
-			$debug.textContent = data.value
+			$countdown.textContent = data.value.toString()
+			if (data.value != "GO")
+			{
+				$countdown.classList.add('visible')
+			}
+			else
+			{
+				$countdown.classList.remove('visible')
+			}
+			break
 		}
 	}
 	$score.innerHTML = formatScore(state.players, end)
@@ -92,7 +104,7 @@ function onMessage(e:any)
 
 function launchGame(webSocket: WebSocket, pseu: string)
 {
-	console.log('start a new game')
+	// console.log('start a new game')
 	pseudo = pseu
 	anglePlayer = -1
 	// renderer2D = new Renderer2D($canvas2D, {
@@ -128,14 +140,14 @@ function handlePlayerInput(webSocket: WebSocket)
 	document.addEventListener('keyup', handleKeyUp)
 	const idInterval = setInterval(async () => {
 		if (end) return clearInterval(idInterval)
-		if (keyState['i']) {
-			keyState['i'] = false
-			return webSocket?.send(json_stringify({ type: 'input', key: 'chatGPT' }))
-		}
-		if (keyState[' ']) {
-			keyState[' '] = false
-			return webSocket?.send(json_stringify({ type: 'input', key: 'space' }))
-		}
+		// if (keyState['i']) {
+		// 	keyState['i'] = false
+		// 	return webSocket?.send(json_stringify({ type: 'input', key: 'chatGPT' }))
+		// }
+		// if (keyState[' ']) {
+		// 	keyState[' '] = false
+		// 	return webSocket?.send(json_stringify({ type: 'input', key: 'space' }))
+		// }
 		if (keyState['s'] && !keyState['d']) webSocket?.send(json_stringify({ type: 'input', key: '-' }))
 		else if (!keyState['s'] && keyState['d']) webSocket?.send(json_stringify({ type: 'input', key: '+' }))
 	}, 10)
@@ -167,7 +179,7 @@ function formatScore(players: any, end: boolean = false): string
 
 function initAnglePlayer(players: any): number
 {
-	console.log('pseudo', pseudo, 'players', players)
+	// console.log('pseudo', pseudo, 'players', players)
 	const nbPlayer: number = players.length
 	for (let index = 0; index < nbPlayer; index++)
 		if (players[index].pseudo === pseudo) return Math.PI * (0.5 - (1 + 2 * index) / nbPlayer)
@@ -175,7 +187,7 @@ function initAnglePlayer(players: any): number
 } //initAnglePlayer
 
 const cleanupGameRemote = () => {
-	console.log("gamepage cleanup")
+	// console.log("gamepage cleanup")
 	end = true
 	ws?.send(json_stringify({type:"navigate", navigate:"quit-game"}))
 	ws?.removeEventListener("message", onMessage)

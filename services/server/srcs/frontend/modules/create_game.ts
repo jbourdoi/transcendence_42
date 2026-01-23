@@ -1,4 +1,5 @@
 import { navigate } from "../js/routing.ts"
+import { GameStore } from "../stores/game.store.ts"
 import { NotificationStore } from "../stores/notification.store.ts"
 import { StateStore } from "../stores/state.store.ts"
 import { UserStore } from "../stores/user.store.ts"
@@ -47,11 +48,16 @@ $createGame.addEventListener('click', () => {
 		$errorMessageEl.innerText = errorMessage
 	}, 300)
 
-	if (isRemote) {
+	if (isRemote)
+	{
 		if (comCount + playersCount < minPlayers) {
 			errorMessage = 'Too few players/com for remote play'
 		} else if (comCount + playersCount > Number(maxRemotePlayers)) {
 			errorMessage = 'Too many players/com for remote play'
+		} else {
+			GameStore.send({type: 'create-game', gameInit : {
+				comCount, playersCount
+			}})
 		}
 	} else {
 		if (comCount + playersCount < minPlayers) {

@@ -1,3 +1,4 @@
+import { randomUUID, UUID } from 'crypto'
 import { Player } from "./Player.js";
 import { Ball } from "./Ball.js";
 import User from "./User.js";
@@ -8,7 +9,7 @@ const hertz = 60
 const tick_ms = 1000 / hertz
 const tick_ai = 1000
 
-export class Game
+export class RemoteGame
 {
 
 private players: Player[]
@@ -18,40 +19,22 @@ private intervalId : NodeJS.Timeout | undefined
 private IAinterval : NodeJS.Timeout | undefined
 private status : 'state' | 'end' = 'state'
 private nbFrame : number = 0
+private gameUUID : UUID
 
-constructor (player0: User, player1: User)
+constructor ( users: User[])
 {
-	if (!player0 || !player1) throw new Error("Deux joueurs sont requis");
-
+	this.gameUUID = randomUUID()
 	this.ball = new Ball()
 	this.predictions = this.ball.predictImpact(hertz)
-	const nbPlayer = 5
-
-	this.players = [
-		new Player(0, nbPlayer, player0),
-		new Player(1, nbPlayer, player1),
-		new Player(2, nbPlayer, new User("", "Neo")),
-		new Player(3, nbPlayer, new User("", "Mia")),
-		new Player(4, nbPlayer, new User("", "Pac")),
-		// new Player(5, nbPlayer, new User("", "Man")),
-		// new Player(6, nbPlayer, new User("", "Wai")),
-		// new Player(7, nbPlayer, new User("", "Tai")),
-		// new Player(8, nbPlayer, new User("", "Boa")),
-		// new Player(9, nbPlayer, new User("", "Noa")),
-		// new Player(10, nbPlayer, new User("", "Nim")),
-		// new Player(11, nbPlayer, new User("", "Wix")),
-		// new Player(12, nbPlayer, new User("", "Rio")),
-	];
-	this.setupSockets();
+	const nbPlayer = users.length
+	this.players = users.map((u:User, index:number) => new Player(index, nbPlayer, u))
 	this.startGameLoop();
-	this.broadcastState()
-	console.log(`server run a new game ${player0.pseudo} vs ${player1.pseudo}`)
+	console.log(`${this.gameUUID} game start`)
 }//constructor()
 
 public destroy()
 {
-	// 1. Stopper la boucle de jeu
-	console.log("game be destroyed")
+	console.log(`${this.gameUUID} game destroy`)
 	if (this.intervalId)
 	{
 		clearInterval(this.intervalId)
@@ -62,20 +45,9 @@ public destroy()
 		clearInterval(this.IAinterval)
 		this.IAinterval = undefined
 	}
-
-	// 2. Débrancher les écouteurs de socket
-	this.players.forEach(p => {
-		p.user.status = "chat";
-	// const socket = p.user.socket;
-	// if (socket) {
-	// 	socket.removeListener("message", this.handleInput);
-	// }
-	// 3. Remettre l'état du joueur à "chat" ou autre
-	});
-
-	// 4. Nettoyage interne (facultatif mais sûr)
+	this.players.forEach(p => { p.user.status = "chat"; });
 	this.players = []
-	this.ball = null as any
+	this.ball = null
 	this.predictions = []
 }//destroy()
 
@@ -87,6 +59,7 @@ private broadcast(data: GameState | Countdown | GamePause | GameDisconnect): voi
 private async startCountdown(): Promise<void>
 {
 	let count = 3;
+	this.broadcastState();
 	this.broadcast({ type: "countdown", value: count.toString() });
 	return new Promise(resolve => {
 		const timer = setInterval(() => {
@@ -96,39 +69,26 @@ private async startCountdown(): Promise<void>
 				this.broadcast({ type: "countdown", value: count.toString() })
 			}
 			else
-				{
+			{
 				clearInterval(timer);
 				this.broadcast({ type: "countdown", value: "GO" })
-				setTimeout(() => {
-					resolve();
-				}, 500);
+				setTimeout(() => { resolve(); }, 500);
 			}
 		}, 1000);
 	});
-}
-
-
-private setupSockets()
-{
-	this.players.forEach((p: Player) => {
-		// p?.user?.socket?.subscribe("close", () => this.destroy())
-	})
-}//setupSockets()
+}//startCountdown
 
 private startGameLoop()
 {
-	// 1) Arrête la balle
 	this.ball.vx = 0
 	this.ball.vy = 0
-	// 2) Lancer le countdown
-	// this.broadcastState();
+	this.intervalId = setInterval(() => this.gameTick(), tick_ms)
 	this.startCountdown().then(() => {
 		if (!this.ball) return
 		// 3) Quand le décompte est fini → vraie remise en jeu
 		this.ball.reset(this.getRandomWeightedPlayer().defaultAngle)
 		this.players.forEach(p => p.resetAngle())
 		this.predictions = this.ball.predictImpact(hertz)
-		this.intervalId = setInterval(() => this.gameTick(), tick_ms)
 		this.IAinterval = setInterval(() => { this.predictions=this.ball.predictImpact(hertz) }, tick_ai)
 	});
 }//startGameLoop()
@@ -136,26 +96,41 @@ private startGameLoop()
 private checkDisconnection() : boolean
 {
 	let disconnect = false
-	let text = ""
+	let text : string = ""
 	this.players.forEach(p=>{
-		if (p.user.id != "" && !p.user.isConnected())
+		if (p.user.id != "" && !p.user.isInGame())
 		{
 			disconnect = true;
 			text += ` | ${p.user.pseudo} has left the game`
 		}
 	})
-	if (text) text.substring(3);
-	if (disconnect)	this.broadcast({type:'disconnect', text});
+	if (text)
+	{
+		text = text.substring(3);
+	}
+	if (disconnect)
+	{
+		this.broadcast({type:'disconnect', text});
+	}
 	return disconnect;
 }
 
 private gameTick()
 {
-	if (this.checkDisconnection()) return this.destroy()
+	if (this.checkDisconnection())
+	{
+		console.log("destroy from checkDisconnection")
+		return this.destroy()
+	}
 	this.players.forEach(p=>p.handleKey(this.predictions))
-
-	if (this.players.some(p => p.pause)) return this.broadcast({ type: "pause" });
-
+	if (this.ball.vx === 0 && this.ball.vy === 0)
+	{
+		return this.broadcastState()
+	}
+	// if (this.players.some(p => p.pause))
+	// {
+	// 	return this.broadcast({ type: "pause" });
+	// }
 	this.ball.x += this.ball.vx
 	this.ball.y += this.ball.vy
 	const dx = this.ball.x - arena.centerX
@@ -172,45 +147,54 @@ private gameTick()
 		let endgame : boolean = false
 		const nx = dx / dist
 		const ny = dy / dist
-		const dot = this.ball.vx * nx + this.ball.vy * ny
 		for (let p of this.players)
 		{
 			if (theta >= p.minAngle && theta <= p.maxAngle)
 			{
 				if (theta >= p.angle - p.paddleSize && theta <= p.angle + p.paddleSize)
 				{
-					// const conv = 57.2957795131;
-					// console.log(`collision ${p.user.pseudo}`, Math.round(angleBall * conv), Math.round(p.minAngle * conv), Math.round(p.maxAngle * conv));
 					playerBounced = p
 				}
 				else
 				{
 					p.score--;
-					if (p.score === 0) endgame = true;
+					if (p.score === 0)
+					{
+						endgame = true;
+					}
 				}
 				break;
 			}
 		}
 		this.status = 'state'
-		if (endgame) this.status = 'end'
+		if (endgame)
+		{
+			this.status = 'end'
+			this.broadcastState(dist, theta, changeColor);
+			return (this.destroy())
+		}
 		if (playerBounced)
 		{
-			let coef = 2
-			if (this.ball.vx*this.ball.vx + this.ball.vy*this.ball.vy < 300) coef = 2.05
-			this.ball.vx -= coef * dot * nx
-			this.ball.vy -= coef * dot * ny
+			const impactOffset = (playerBounced.angle - theta) / playerBounced.paddleSize;
+			const clamped = Math.max(-1, Math.min(1, impactOffset));
 
-			// 1) angle actuel
-			const angle = Math.atan2(this.ball.vy, this.ball.vx)
-			// 2) perturbation en fonction des derniers deplacement du joueur
-			const speed = Math.sqrt(this.ball.vx**2 + this.ball.vy**2)
-			const newAngle = angle + playerBounced.tangenteSpeed
-			this.ball.vx = speed * Math.cos(newAngle)
-			this.ball.vy = speed * Math.sin(newAngle)
-			// 4) repositionnement
-			const margin = 0.5
-			this.ball.x = arena.centerX + nx * (arena.radius - board.ballSize - margin)
-			this.ball.y = arena.centerY + ny * (arena.radius - board.ballSize - margin)
+			const MAX_BOUNCE_ANGLE = Math.PI / 3;
+			const bounceAngle = clamped * MAX_BOUNCE_ANGLE;
+
+			const normalAngle = Math.atan2(ny, nx);
+			const newAngle = normalAngle + Math.PI + bounceAngle;
+
+			let speed = Math.sqrt(this.ball.vx ** 2 + this.ball.vy ** 2);
+			const BOOST = 1.03;
+			const MAX_SPEED = 25;
+			speed = Math.min(speed * BOOST, MAX_SPEED);
+
+			this.ball.vx = speed * Math.cos(newAngle);
+			this.ball.vy = speed * Math.sin(newAngle);
+
+			const margin = 0.5;
+			this.ball.x = arena.centerX + nx * (arena.radius - board.ballSize - margin);
+			this.ball.y = arena.centerY + ny * (arena.radius - board.ballSize - margin);
 		}
 		else // one player missed
 		{
@@ -219,20 +203,19 @@ private gameTick()
 			this.ball.vy = 0
 			this.ball.x = arena.centerX
 			this.ball.y = arena.centerY
+			// recentrer les paddles des joueurs?
 			// this.players.forEach(p => p.resetAngle());
 			// 2) Lancer le countdown
 			this.startCountdown().then(() => {
 				if (!this.ball) return
 				// 3) Quand le décompte est fini → vraie remise en jeu
 				this.ball.reset(this.getRandomWeightedPlayer().defaultAngle);
-				// 4) Recalcul de trajectoire IA
+				// 4) Recalcul de trajectoire IA au relancement de la balle
 				this.predictions = this.ball.predictImpact(hertz);
 			});
 		}
 	}
-
 	this.broadcastState(dist, theta, changeColor);
-	if (this.status === "end") this.destroy()
 }//gameTick()
 
 private broadcastState(dist: number = 0, theta: number = 0, changeColor: boolean = false )
@@ -258,12 +241,18 @@ private broadcastState(dist: number = 0, theta: number = 0, changeColor: boolean
 private getRandomWeightedPlayer(): Player
 {
 	const total = this.players.reduce((sum, p) => sum + p.score, 0);
-	if (total === 0) return this.players[Math.floor(Math.random() * this.players.length)] as Player;
-
+	if (total === 0)
+	{
+		return this.players[Math.floor(Math.random() * this.players.length)] as Player;
+	}
 	let r = Math.random() * total;
-	for (const p of this.players) {
-	if (r < p.score) return p;
-	r -= p.score;
+	for (const p of this.players)
+	{
+		if (r < p.score)
+		{
+			return p;
+		}
+		r -= p.score;
 	}
 	return this.players[this.players.length - 1] as Player;
 }//getRandomWeightedPlayer

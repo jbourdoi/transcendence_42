@@ -13,7 +13,6 @@ export default class User {
 		this.navigate = "game"
 		this.pseudo = pseudo?.trim() || `Player-${Math.floor(Math.random() * 1000)}`
 		this.socket = undefined
-		console.log(`new user ${this.id} ${this.pseudo}`)
 	}
 
 	send(data: any) {

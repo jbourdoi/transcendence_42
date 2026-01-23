@@ -9,6 +9,7 @@ import { sendUserList } from './functions/sendUserList.fn'
 import { getVaultSecret } from './services/vault.service.js'
 import Lobby from './classes/Lobby.js'
 import { MessageType } from './types/message.type.js'
+import { createGameChannel } from './channels/create.game.channel.js'
 
 const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
 	value.replace(/\\n/g, '\n').trim()
@@ -39,7 +40,8 @@ const server = Bun.serve({
 		})
 	},
 	websocket: {
-		open(ws) {
+		open(ws)
+		{
 			clientsSocket.add(ws)
 			ws.send(
 				JSON.stringify({
@@ -48,18 +50,21 @@ const server = Bun.serve({
 				})
 			)
 		},
-		message(ws: BunSocketType, message) {
+		message(ws: BunSocketType, message)
+		{
 			const data: MessageType = JSONParser(message)
 			if (data === undefined) return
 			switch (data.type)
 			{
 				case 'auth' : return authChannel(ws, data, lobby);
-				case 'navigate' : return navigateChannel(ws, data)
+				case 'navigate' : return navigateChannel(ws, data);
 				case 'duel' : return duelChannel(ws, data, lobby);
 				case 'input' : return inputChannel(ws, data, lobby);
+				case 'create-game' : return createGameChannel(ws, data, lobby);
 			}
 		},
-		close(ws: BunSocketType) {
+		close(ws: BunSocketType)
+		{
 			const info = {
 				type: 'info',
 				msg: `Player ${ws.data.username} has disconnected`

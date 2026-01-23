@@ -93,12 +93,20 @@ export type NavigateType = {
 	navigate : string
 }
 
-export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType
+export type CreateGameType = {
+	type : 'create-game',
+	gameInit : {
+		comCount: number,
+		playersCount: number
+	}
+}
+
+export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType | CreateGameType
 
 export type FrontType = FrontErrorType | DuelResponse
 
 export type FrontErrorType = {
-	type: 'error' | 'system',
+	type: 'error' | 'system' | 'start-game'
 	text: string
 }
 

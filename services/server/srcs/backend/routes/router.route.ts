@@ -11,7 +11,7 @@ const validRoutes = [
 	'options',
 	'register',
 	'users',
-	'game',
+	'remote_game',
 	'lobby',
 	'chat',
 	'local_game',

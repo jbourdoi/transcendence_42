@@ -10,16 +10,52 @@
 			min-height: 100vh;
 		}
 
+		canvas
+		{
+			cursor: none;
+		}
+
 		page
 		{
 			display: flex;
 			width: 100vw;
 			flex-direction: column;
 		}
+
+		countdown
+		{
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100vw;
+			height: 100vh;
+
+			display: flex;
+			justify-content: center;
+			align-items: center;
+
+			font-size: 15vw;           /* énorme */
+			font-weight: bold;
+			color: white;
+
+			background: rgba(0, 0, 0, 0.4); /* léger voile */
+			z-index: 1000;
+
+			pointer-events: none;      /* ne bloque pas les inputs */
+			opacity: 0;
+			transition: opacity 0.3s ease;
+		}
+
+		countdown.visible
+		{
+			opacity: 1;
+		}
+
 	</style>
 </head>
 
 <page type="game">
+	<countdown></countdown>
 	<div id="game-container">
 		<div id="score"></div>
 		<div id="debug"></div>
@@ -30,4 +66,4 @@
 	<!-- <span data-route="" tabindex="1" class="button text-4xl">Back</span> -->
 </page>
 
-<script type="module" src="modules/game.js"></script>
+<script type="module" src="modules/remote_game.js"></script>

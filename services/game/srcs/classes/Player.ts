@@ -14,7 +14,7 @@ export class Player
 	paddleSize: number
 	angle: number
 	score: number
-	pause: boolean
+	// pause: boolean
 	ai: boolean
 	pseudo: string
 	tangenteSpeed: number
@@ -26,16 +26,23 @@ export class Player
 		this.paddleSize = 0.25 * Math.PI / nbPlayer
 		this.user = user
 		this.tangenteSpeed = 0
-		this.pause = false
-		this.ai = true
+		// this.pause = false
+		if (user.id === "")
+		{
+			this.pseudo = "🤖" + this.user.pseudo
+			this.ai = true;
+		}
+		else
+		{
+			this.pseudo = this.user.pseudo
+			this.ai = false;
+		}
 		this.score = Math.round(10 / nbPlayer)
-		this.pseudo = ""
 		const twoPiOverPlayers = (2 * Math.PI) / this.nbPlayer
 		this.minAngle = this.index * twoPiOverPlayers
 		this.maxAngle = (this.index + 1) * twoPiOverPlayers
 		this.defaultAngle = this.minAngle + (twoPiOverPlayers / 2)
 		this.angle = this.defaultAngle
-		console.log(`created player${index} angle ${this.angle} min ${this.minAngle} max ${this.maxAngle}`)
 		user.status = "game"
 	}
 
@@ -43,7 +50,8 @@ export class Player
 	{
 		this.pseudo = "🤖" + this.user.pseudo
 		let theta = this.defaultAngle
-		for (const pr of predictionIA) {
+		for (const pr of predictionIA)
+		{
 			if (pr.theta > this.minAngle && pr.theta < this.maxAngle)
 			{
 				theta = pr.theta
@@ -58,22 +66,23 @@ export class Player
 	{
 		const lastKey = this.user.key
 		this.user.key = "none"
-		if (lastKey === "space") return this.togglePause()
-		if (lastKey === "chatGPT") this.ai = !this.ai
-		if (this.ai)  return this.handleIA(predictionIA)
-		this.pseudo = this.user.pseudo
-		if (this.user.socket && this.user.socket.readyState !== WebSocket.OPEN) return this.togglePause()
-
+		// if (lastKey === "space") return this.togglePause()
+		// if (lastKey === "chatGPT") this.ai = !this.ai
+		if (this.ai)
+		{
+			return this.handleIA(predictionIA)
+		}
+		// if (this.user.socket && this.user.socket.readyState !== WebSocket.OPEN) return this.togglePause()
 		if (lastKey === "none") this.decreaseTangenteSpeed()
 		else if (lastKey === "-") this.incrementAngle()
 		else if (lastKey === "+") this.decrementAngle()
 	}
 
-	togglePause()
-	{
-		this.pause = !this.pause
-		if (this.pause) console.log(`⏸️ Joueur ${this.pseudo} toggle pause`)
-	}
+	// togglePause()
+	// {
+	// 	this.pause = !this.pause
+	// 	if (this.pause) console.log(`⏸️ Joueur ${this.pseudo} toggle pause`)
+	// }
 
 	resetAngle()
 	{

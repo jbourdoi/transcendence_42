@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto'
 
 import User from './User.js'
-import { Game } from './Game.js'
+import { RemoteGame } from './RemoteGame.js'
 import type { DuelType, FrontType, InputType, MessageType } from '../types/message.type.js'
 
 export default class Lobby {
@@ -21,7 +21,8 @@ export default class Lobby {
 
 	nb_active(): number {
 		let nb = 0
-		for (const user of this.users.values()) {
+		for (const user of this.users.values())
+		{
 			if (user.socket?.readyState === WebSocket.OPEN) nb++
 		}
 		return nb
@@ -49,12 +50,12 @@ export default class Lobby {
 		return { userId: newUser.id, pseudo: newUser.pseudo }
 	}
 
-	refreshWebsocket(userId: string, websocket: WebSocket) {
-		const user = this.getUser(userId)
-		if (!user || user.socket?.readyState === WebSocket.OPEN) return
-		user.socket = websocket
-		console.log(`🆕 ${user.pseudo} refresh his websocket`)
-	}
+	// refreshWebsocket(userId: string, websocket: WebSocket) {
+	// 	const user = this.getUser(userId)
+	// 	if (!user || user.socket?.readyState === WebSocket.OPEN) return
+	// 	user.socket = websocket
+	// 	console.log(`🆕 ${user.pseudo} refresh his websocket`)
+	// }
 
 	getUser(userId: string): User | undefined {
 		return this.users.get(userId)
@@ -72,22 +73,26 @@ export default class Lobby {
 	handleDuel(sender: User, msg: DuelType) {
 		const destinataire = this.getUserByPseudo(msg.to)
 		if (!destinataire) return sender.send({ type: 'error', text: `${msg.to} can't be found` })
-		switch (msg.action) {
-			case 'propose': {
+		switch (msg.action)
+		{
+			case 'propose':
+			{
 				if (sender.status !== 'chat') return sender.send({ type: 'error', text: `You're already in game` })
 				if (destinataire.status !== 'chat') return sender.send({ type: 'error', text: `${msg.to} isn't available` })
 				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'propose' })
 				console.log(`${sender.pseudo} send a duel to ${destinataire.pseudo}`)
 				break
 			}
-			case 'accept': {
+			case 'accept':
+			{
 				console.log(`${sender.pseudo} create game`)
-				new Game(destinataire, sender)
+				new RemoteGame([destinataire, sender])
 				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'accept' })
 				console.log(`${sender.pseudo} accept a duel from ${destinataire.pseudo}`)
 				break
 			}
-			case 'decline': {
+			case 'decline':
+			{
 				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'decline' })
 				console.log(`${sender.pseudo} refuse a duel from ${destinataire.pseudo}`)
 			}

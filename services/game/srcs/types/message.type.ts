@@ -1,17 +1,9 @@
-// import { MessageOptionType } from './messageOption.type'
-
-// export type MessageType = {
-// 	type: MessageOptionType
-// 	to?: string
-// 	msg: string
-// }
-
 export type InputType = {
 	type: 'input',
 	key: KeyType
 }
 
-export type StatusType = "chat" | "game"
+export type StatusType = "chat" | "game" | "lobby"
 
 export type KeyType = "none" | "+" | "-" | "space" | "chatGPT"
 
@@ -36,7 +28,15 @@ export type NavigateType = {
 	navigate : string
 }
 
-export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType
+export type CreateGameType = {
+	type : 'create-game',
+	gameInit : {
+		comCount: number,
+		playersCount: number
+	}
+}
+
+export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType | CreateGameType
 
 export type FrontType = FrontErrorType | DuelResponse
 
