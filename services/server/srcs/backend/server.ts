@@ -16,7 +16,7 @@ import { publicWatcher } from './services/publicWatcher.service.js'
 /********************** Services **********************/
 import { log } from './logs.js'
 import { totalHttpRequests } from './services/prometheus.service.js'
-import { createAccount, createTransporter } from './services/ethereal.service.js'
+import { createTransporter } from './services/ethereal.service.js'
 
 /********************** Routes **********************/
 import { authRoutes, metricsRoutes, userRoutes } from './routes/handler.route.js'

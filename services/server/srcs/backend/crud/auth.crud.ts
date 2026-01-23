@@ -5,6 +5,7 @@ import { dbPostQuery } from '../services/db.service.js'
 import type { CookieSerializeOptions } from '@fastify/cookie'
 import { type InfoFetchType } from '../../types/infofetch.type.js'
 import { type User42InfoType } from '../../types/user42Info.type.js'
+import { userInfoType } from '../../types/user.type.js'
 
 export async function getPayload(request: FastifyRequest): Promise<any | null | undefined> {
 	const loggedInToken = getToken(request)
@@ -118,7 +119,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 export async function generateAndSendToken(infoFetch: InfoFetchType, reply: any) {
 	if (!infoFetch.id) return reply.status(404).send({ message: 'User ID not found' })
 
-	const userInfo = { email: infoFetch.email, username: infoFetch.username, id: infoFetch.id }
+	const userInfo: userInfoType = { email: infoFetch.email!, username: infoFetch.username!, id: infoFetch.id }
 	const token = await createToken(userInfo)
 	if (!token) return reply.status(500).send({ message: 'Token generation failed' })
 	return reply

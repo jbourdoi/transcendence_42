@@ -1,14 +1,13 @@
-const errors = {
-	404: {
-		message: 'Page not found'
-	}
+type ErrorEntry = {
+	message: string
 }
 
-export async function applyError(pageContent: string, error: number): Promise<string> {
-	return new Promise(async (resolve, reject) => {
-		pageContent = pageContent.replaceAll('{{error}}', String(error))
-		pageContent = pageContent.replaceAll('{{errorMessage}}', errors[error].message)
+const errors: Record<number, ErrorEntry> = {
+	404: { message: 'Page not found' }
+}
 
-		resolve(pageContent)
-	})
+export async function applyError(pageContent: string, errorCode: number): Promise<string> {
+	const errorMessage = errors[errorCode]?.message ?? 'Unknown error'
+
+	return pageContent.replaceAll('{{error}}', String(errorCode)).replaceAll('{{errorMessage}}', errorMessage)
 }

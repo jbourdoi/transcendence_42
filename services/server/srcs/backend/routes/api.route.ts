@@ -14,7 +14,10 @@ export async function getClientID(req: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: FastifyReply) {
-	const { code } = json_parse(req.body)
+	const value = json_parse(req.body) as any
+
+	if (value == undefined) return
+	const code = value?.code
 
 	const url =
 		'https://api.intra.42.fr/oauth/token?' +
@@ -34,7 +37,10 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 }
 
 export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: FastifyReply) {
-	const { code } = json_parse(req.body)
+	const value = json_parse(req.body) as any
+
+	if (value == undefined) return
+	const code = value?.code
 
 	const url =
 		'https://api.intra.42.fr/oauth/token?' +

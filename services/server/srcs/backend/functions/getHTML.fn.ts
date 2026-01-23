@@ -17,7 +17,7 @@ export async function getHTML(route: string, type?: string, error?: number): Pro
 			pageContent = await applyTemplate(pageContent)
 		} else if (type === 'error') {
 			pageContent = await applyTemplate(pageContent)
-			pageContent = await applyError(pageContent, error)
+			pageContent = await applyError(pageContent, error || 400)
 		}
 		resolve(pageContent)
 	})
