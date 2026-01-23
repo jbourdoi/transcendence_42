@@ -32,9 +32,7 @@ constructor(canvas: HTMLCanvasElement, deps: {
 	this.getAnglePlayer = deps.getAnglePlayer
 	this.getEnd = deps.getEnd
 	this.canvas = canvas
-
-	canvas.width = board.width
-	canvas.height = board.height
+	this.resizeCanvas()
 }
 
 pause() { this.paused = true; }
@@ -45,6 +43,7 @@ async start()
 {
 	await this.initBabylon()
 	this.engine.runRenderLoop(()=>this.renderCanvas3D())
+	window.addEventListener("resize", this.resizeCanvas)
 }
 
 private renderCanvas3D()
@@ -52,12 +51,29 @@ private renderCanvas3D()
 	if (this.getEnd())
 	{
 		console.log("renderCanvas3D stop renderLoop")
+		window.removeEventListener("resize", this.resizeCanvas)
 		this.engine.stopRenderLoop()
 		this.engine.dispose()
 		this.scene.dispose()
 	}
 	else this.scene.render()
 } //renderCanvas3D
+
+private resizeCanvas()
+{
+	const w = Math.min(1920, window.innerWidth)
+	const h = Math.min(1080, window.innerHeight * 0.8)
+
+	this.canvas.style.width = w + "px"
+	this.canvas.style.height = h + "px"
+
+	this.canvas.width = w
+	this.canvas.height = h
+
+	if (this.engine)
+		this.engine.resize()
+}
+
 
 private async initBabylon()
 {
@@ -68,8 +84,6 @@ private async initBabylon()
 
 private initScene ()
 {
-	this.canvas.width = board.width
-	this.canvas.height = board.height
 	const state = this.getState()
 	const radius = arena.radius * this.worldScale
 

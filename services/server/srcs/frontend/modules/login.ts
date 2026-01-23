@@ -2,6 +2,7 @@ import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
+import { NotificationStore } from '../stores/notification.store'
 import { hasInvalidFields, createLoginFormData, setupUsernameAndPwdFieldsValidation } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchLogin } from '../functions/loginRegisterFetch.js'
@@ -53,10 +54,13 @@ if (codeParam) {
 			if (res.status === 200) return res.json()
 			$menuButtons.style.display = 'flex'
 			$loginForm.style.display = 'flex'
-			return
+			return res.json()
 		})
 		.then(res => {
-			if (!res || res.status >= 400) return
+			if (res.info.status >= 400) {
+				NotificationStore.notify(res.info.message, "ERROR")
+				return
+			}
 			UserStore.emit(res)
 			navigate('')
 		})

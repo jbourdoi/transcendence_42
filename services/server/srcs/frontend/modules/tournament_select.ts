@@ -1,6 +1,4 @@
 import { navigate } from "../js/routing.js";
-import { TournamentStore } from "./tournament/tournament.store.js";
-import { TournamentModel } from "./tournament/tournament.model.js";
 import { TournamentController } from "./tournament/tournament.controller.js";
 import type { TournamentPlayer } from "./tournament/tournament.type.js";
 
@@ -9,9 +7,6 @@ const $username1 = document.getElementById("username1") as HTMLInputElement;
 const $username2 = document.getElementById("username2") as HTMLInputElement;
 const $username3 = document.getElementById("username3") as HTMLInputElement;
 const $username4 = document.getElementById("username4") as HTMLInputElement;
-
-const model = new TournamentModel([]);
-const tournamentController = new TournamentController(model, TournamentStore);
 
 document.querySelector("#go")?.addEventListener("click", (e) => {
 	e.preventDefault();
@@ -22,15 +17,10 @@ document.querySelector("#go")?.addEventListener("click", (e) => {
 		{ id: "player3", color: "green",  alias: $username3.value },
 		{ id: "player4", color: "purple", alias: $username4.value }
 	]);
-
-	tournamentController.start(players);
-
+	TournamentController.start(players);
 	navigate("tournament_tree");
 });
 
-/**
- * Fisher–Yates shuffle (pure)
- */
 function shuffle<T>(array: T[]): T[] {
 	const result = [...array];
 
@@ -46,7 +36,6 @@ function shuffle<T>(array: T[]): T[] {
 ========================= */
 
 const cleanupTournamentSelect = () => {
-	console.log("tournament_select cleanup: ")
 	$pageTournamentSelect.removeEventListener("cleanup", cleanupTournamentSelect)
 }
 

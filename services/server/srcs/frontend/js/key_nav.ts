@@ -16,7 +16,6 @@ PageDestroyStore.subscribe(() => {
 	cleanTabIndexedElementsEvents()
 	buttonList.length = 0
 	currentTabIndex = 0
-	console.log('Page Destroyed')
 })
 
 TabIndexStore.subscribe(tabIndex => {

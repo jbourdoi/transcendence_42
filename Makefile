@@ -9,6 +9,9 @@ up:
 	COMPOSE_BAKE=true docker compose -f $(FILEPATH) up -d
 	COMPOSE_BAKE=true docker compose -f $(FILEPATH) logs -f
 
+# open https://localhost:443
+# xdg-open https://localhost:443
+
 down-db:
 	- docker stop database && docker rm database
 	- rm -rf ./services/database/data/db.sqlite

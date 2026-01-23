@@ -1,30 +1,45 @@
-import type { TournamentModel } from "./tournament.model.ts";
-import type { TournamentPlayer } from "./tournament.type.ts";
+import type { TournamentMatch, TournamentPlayer } from "./tournament.type.ts";
 import { TournamentStore } from "./tournament.store.ts";
+import { TournamentModel } from "./tournament.model.ts";
+import { NotificationStore } from "../../stores/notification.store.ts";
 
 export class TournamentController
 {
-	constructor(
-		private model: TournamentModel,
-		private store: typeof TournamentStore
-	) {}
-
-	private start(players: TournamentPlayer[])
+	static start(players: TournamentPlayer[])
 	{
-		this.model.players = players;
-		this.model.init();
-		this.sync();
+		const tournament = TournamentStore.get();
+		tournament.players = players;
+		tournament.init();
+		TournamentStore.update(tournament);
 	}
 
-	finishMatch(score: number[])
+	static finishMatch(score: number[])
 	{
-		this.model.setScore(score);
-		this.model.nextMatch();
-		this.sync();
+		const tournament = TournamentStore.get();
+		tournament.setScore(score);
+		tournament.nextMatch();
+		TournamentStore.update(tournament);
 	}
 
-	private sync()
+	static getCurrentMatch() : TournamentMatch | undefined
 	{
-		this.store.update(this.model);
+		const tournament = TournamentStore.get();
+		if (tournament.matches.length === 0)
+			return undefined;
+		return tournament.getCurrentMatch();
+	}
+
+	static getTournament() : TournamentModel | undefined
+	{
+		const tournament = TournamentStore.get();
+		if (tournament.matches.length === 0)
+			return undefined;
+		return tournament;
+	}
+
+	static reset()
+	{
+		NotificationStore.notify("Tournament RESET", "INFO");
+		TournamentStore.reset();
 	}
 }

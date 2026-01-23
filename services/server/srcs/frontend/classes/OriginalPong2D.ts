@@ -292,7 +292,6 @@ function predictBallRightWallIntersection(ball: Ball, arena: Arena): number
     return y + minY;
 }
 
-
 export class GameController
 {
     private keys = new Set<string>();

@@ -1,27 +1,25 @@
 import { navigate } from "../js/routing.js";
-import { TournamentStore } from "./tournament/tournament.store.js";
 import { TournamentModel } from "./tournament/tournament.model.js";
+import { TournamentController } from "./tournament/tournament.controller.js";
+import { NotificationStore } from "../stores/notification.store.js";
 
 const $pageTournamentTree = document.querySelector('page[type="tournament_tree"]')!;
 const $container = document.getElementById("tournament-tree")!;
 
-/* =========================
-   Store subscription
-========================= */
+const tournament = TournamentController.getTournament();
 
-const unsubscribe = TournamentStore.subscribe((tournament: TournamentModel | null) => {
+renderTournamenentTree(tournament);
+
+function renderTournamenentTree(tournament: TournamentModel | undefined)
+{
 	if (!tournament)
 	{
-		navigate('tournament_select')
-		return
+		return navigate("tournament_select");
 	}
-	render(tournament);
-});
 
-function render(model: TournamentModel) {
-	const semi1 = model.matches[0];
-	const semi2 = model.matches[1];
-	const final = model.matches[2];
+	const semi1 = tournament.matches[0];
+	const semi2 = tournament.matches[1];
+	const final = tournament.matches[2];
 
 	$container.innerHTML = `
 		<div class="tournament">
@@ -29,25 +27,25 @@ function render(model: TournamentModel) {
 			<div class="round">
 				<h3>Demi-finales</h3>
 
-				${renderMatch("Demi-finale 1", semi1, model.currentMatch === 0)}
-				${renderMatch("Demi-finale 2", semi2, model.currentMatch === 1)}
+				${renderMatch("Demi-finale 1", semi1, tournament.currentMatch === 0)}
+				${renderMatch("Demi-finale 2", semi2, tournament.currentMatch === 1)}
 			</div>
 
 			<div class="round">
 				<h3>Finale</h3>
 
-				${renderMatch("Finale", final, model.currentMatch === 2)}
+				${renderMatch("Finale", final, tournament.currentMatch === 2)}
 			</div>
 
 			<div class="round">
 				<h3>Vainqueur</h3>
 				<div class="winner">
-					${model.winner?.alias ?? "—"}
+					${tournament.winner?.alias ?? "—"}
 				</div>
 			</div>
 
 			<div class="actions">
-				${renderAction(model)}
+				${renderAction(tournament)}
 			</div>
 
 		</div>
@@ -101,14 +99,23 @@ function nextMatch(event : any)
 
 $container.addEventListener("click", nextMatch);
 
+function beforeunloadTournamentTree(event : any)
+{
+	event.preventDefault();
+	TournamentController.reset();
+}
+
+window.addEventListener("beforeunload", beforeunloadTournamentTree)
+window.addEventListener("popstate", beforeunloadTournamentTree);
+
 /* =========================
    Cleanup SPA
 ========================= */
 
 const cleanupTournamentTree = () => {
-    console.log("tournament_tree cleanup: ")
-	unsubscribe();
-	$container.removeEventListener("click", nextMatch)
+	$container.removeEventListener("click", nextMatch);
+	window.removeEventListener("beforeunload", beforeunloadTournamentTree);
+	window.removeEventListener("popstate", beforeunloadTournamentTree);
 	$pageTournamentTree.removeEventListener("cleanup", cleanupTournamentTree);
 };
 

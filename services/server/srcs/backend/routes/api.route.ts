@@ -28,8 +28,7 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 		})
 
 	const infoFetch: InfoFetchType = await fetch42User(url, { saveToDb: true })
-	if (!infoFetch || infoFetch.info.status >= 400)
-		return reply.status(403).send({ error: infoFetch?.info.message || 'Something went wrong' })
+	if (!infoFetch || infoFetch.info.status >= 400) return reply.status(infoFetch.info.status).send({ ...infoFetch })
 	console.log('REGISTER 42 OAUTH --- infoFetch: ', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
 }
@@ -49,8 +48,7 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 		})
 
 	const infoFetch: InfoFetchType = await fetch42User(url, { saveToDb: false })
-	if (!infoFetch || infoFetch.info.status >= 400)
-		return reply.status(403).send({ error: infoFetch?.info.message || 'Something went wrong' })
+	if (!infoFetch || infoFetch.info.status >= 400) return reply.status(infoFetch.info.status).send({ ...infoFetch })
 	console.log('LOGIN 42 OAUTH --- infoFetch: ', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
 }

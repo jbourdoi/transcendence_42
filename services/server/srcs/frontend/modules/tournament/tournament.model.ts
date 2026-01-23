@@ -23,6 +23,15 @@ export class TournamentModel
 		this.matches[this.currentMatch].score = score;
 	}
 
+	getCurrentMatch() : TournamentMatch | undefined
+	{
+		if (this.matches.length === 0)
+			return undefined;
+		if (this.currentMatch > this.matches.length)
+			return undefined;
+		return (this.matches[this.currentMatch]);
+	}
+
 	nextMatch(): void
 	{
 		this.currentMatch++;
