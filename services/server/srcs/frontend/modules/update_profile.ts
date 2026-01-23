@@ -92,7 +92,7 @@ function displayModalError(modalError: HTMLDivElement, message: string) {
 	modalError.classList.remove('hidden')
 }
 
-function render2FAState($toggle2FABtn: HTMLButtonElement, enabled: boolean) {
+function render2FAState($toggle2FABtn: HTMLButtonElement | undefined, enabled: boolean) {
 	console.log('2FA Value: ', enabled)
 	document.querySelector('button#twofa').innerText = enabled ? '2FA Enabled' : '2FA Disabled'
 	// $toggle2FABtn.textContent = enabled ? '2FA Enabled' : '2FA Disabled'
@@ -207,6 +207,7 @@ handleUpdateProfile()
 const unsubUserStore = UserStore.subscribe(value => {
 	console.log('User Store Value: ', value)
 	console.log(($usernameInput.placeholder = value.username))
+	render2FAState(undefined, value.has_2fa)
 })
 
 const cleanPage = () => {
