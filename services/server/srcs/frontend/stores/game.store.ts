@@ -12,7 +12,8 @@ let ws: WebSocket | undefined = undefined
 if (!ws) {
 	UserStore.subscribe(userStore => {
 		if (userStore.isValid) {
-			ws = new WebSocket('ws://localhost:3333')
+			ws = new WebSocket(`wss://${location.host}/gamews`)
+			// ws = new WebSocket('ws://localhost:3333')
 			if (!ws) return NotificationStore.notify("Network error, websocket shutdown", "ERROR");
 			console.log("gamesocket created")
 			ws.onopen = e => {

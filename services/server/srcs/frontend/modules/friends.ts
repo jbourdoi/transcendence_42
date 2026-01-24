@@ -5,37 +5,40 @@ import { UserStore } from '../stores/user.store'
 const $page: HTMLElement = document.querySelector('page[type=friends]')!
 const $tableData: HTMLElement = document.querySelector('friends table tbody')!
 
-const username = UserStore.getUserName()
-
 type FriendType = {
 	username_1: string
 	username_2: string
 }
 
-if (username) {
-	fetch('https://localhost:443/friends', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ name: 'alice' })
-	})
-		.then(res => {
-			if (res.status >= 400) return console.log('ERROR updating profile', res.status)
-			return res.json()
+let username
+
+UserStore.subscribe(user => {
+	username = user.username
+	if (username && username != '') {
+		fetch(`https://${location.host}/friends`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ name: username })
 		})
-		.then(res => {
-			if (res) {
-				setFriends(res)
-			}
-		})
-}
+			.then(res => {
+				if (res.status >= 400) return console.log('ERROR updating profile', res.status)
+				return res.json()
+			})
+			.then(res => {
+				if (res) {
+					setFriends(res)
+				}
+			})
+	}
+})
 
 function setFriends(friends: FriendType[]) {
 	$tableData.innerHTML = ''
 	friends
 		.map(value => {
-			if (value.username_1 == username) return value.username_1
+			if (value.username_1 != username) return value.username_1
 			else return value.username_2
 		})
 		.forEach(friend => {

@@ -16,7 +16,7 @@ const unsubStateStore = StateStore.subscribe(async data => {
 	document.title = `${selectedProfile} Profile`
 	$pageTitle.innerText = selectedProfile
 
-	fetch('https://localhost:443/user_profile', {
+	fetch(`https://${location.host}:443/user_profile`, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'

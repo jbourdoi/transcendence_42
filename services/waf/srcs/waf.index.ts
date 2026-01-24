@@ -156,6 +156,7 @@ const cert_key = await getVaultSecret<string>('services_key', value => value.rep
 if (!cert_crt || !cert_key) console.error('Failed to load TLS certificates from Vault service.')
 
 Bun.serve({
+	hostname: '0.0.0.0',
 	port: 443,
 	key: cert_key,
 	cert: cert_crt,
@@ -195,6 +196,28 @@ Bun.serve({
 
 		if (url.pathname === '/health') return new Response('OK', { status: 200 })
 
+		if (url.pathname.startsWith('/chatws')) {
+			if (!(await allowRequest(req, ''))) return new Response('Forbidden', { status: 403 })
+			const upgraded = server.upgrade(req, {
+				data: {
+					backendUrl: 'ws://chat:4444'
+				}
+			})
+			if (!upgraded) return new Response('Failed to upgrade WS', { status: 500 })
+			return
+		}
+		
+		if (url.pathname.startsWith('/gamews')) {
+			if (!(await allowRequest(req, ''))) return new Response('Forbidden', { status: 403 })
+			const upgraded = server.upgrade(req, {
+				data: {
+					backendUrl: 'ws://game:3333'
+				}
+			})
+			if (!upgraded) return new Response('Failed to upgrade WS', { status: 500 })
+			return
+		}
+
 		await fetch(`https://server:3000/get_payload`, {
 			method: req.method,
 			headers: req.headers
@@ -203,14 +226,6 @@ Bun.serve({
 			.then(res => {
 				isAuthenticated = res !== null
 			})
-
-		if (req.headers.get('upgrade') === 'websocket') {
-			if (!(await allowRequest(req, ''))) return new Response('Forbidden', { status: 403 })
-			const backendUrl = `wss://server:3000${url.pathname}${url.search}`
-			const upgraded = server.upgrade(req, { data: { backendUrl } })
-			if (!upgraded) return new Response('Failed to upgrade WS', { status: 500 })
-			return
-		}
 
 		const reqBuffer = await req.arrayBuffer()
 		const bodyText = new TextDecoder().decode(reqBuffer)
@@ -222,7 +237,6 @@ Bun.serve({
 		if (authOnly.includes(url.pathname) && !isAuthenticated) {
 			return Response.redirect('/forbidden', 302)
 		}
-		console.log('New Path: ', url.pathname)
 
 		let result = await fetch(`https://server:3000${url.pathname}${url.search}`, {
 			method: req.method,

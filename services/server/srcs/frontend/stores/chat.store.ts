@@ -11,7 +11,7 @@ const chats: MessageType[] = []
 if (ws === null) {
 	UserStore.subscribe(userStore => {
 		if (userStore.isValid && ws === null) {
-			ws = new WebSocket('ws://localhost:4444')
+			ws = new WebSocket(`wss://${location.host}/chatws`)
 			if (ws === null) return
 			ws.addEventListener('open', () => {
 				if (ws === null) return

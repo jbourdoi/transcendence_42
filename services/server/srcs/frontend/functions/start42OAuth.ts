@@ -7,7 +7,7 @@ export async function start42OAuth(self: HTMLElement, uri: string) {
 	let client_id
 
 	try {
-		const res = await fetch('https://localhost:443/api/auth/client_id', { method: 'GET' })
+		const res = await fetch('/api/auth/client_id', { method: 'GET' })
 		const data = await res.json()
 		client_id = data.client_id
 	} catch (error) {
