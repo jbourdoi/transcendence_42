@@ -3,135 +3,12 @@ import { UserStore } from '../stores/user.store'
 import { NotificationStore } from '../stores/notification.store'
 import { StateStore } from '../stores/state.store'
 import { ChatStore } from '../stores/chat.store'
+import { render2FAState, start2FAFlow } from '../functions/twofa_auth'
 
 let trackEvent = false
 
 const $page: HTMLElement = document.querySelector('page[type=update_profile]')!
 const $usernameInput: HTMLInputElement = document.querySelector('input[name="username"]')!
-
-function open2FAModal(modal: HTMLDivElement, overlay: HTMLDivElement, codeInput: HTMLInputElement, modalError: HTMLDivElement) {
-	modal.classList.remove('hidden')
-	overlay.classList.remove('hidden')
-	codeInput.value = ''
-	modalError.classList.add('hidden')
-}
-
-function close2FAModal(modal: HTMLDivElement, overlay: HTMLDivElement) {
-	modal.classList.add('hidden')
-	overlay.classList.add('hidden')
-}
-
-async function send2FACode(): Promise<boolean> {
-	const purposeType = UserStore.getUser2FAStatus() ? 'disable' : 'enable'
-	console.log('2FA purpose type when sending 2fa code:', purposeType)
-
-	const res = await fetch('https://localhost:443/2fa/send_code', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ purpose: purposeType })
-	})
-	if (res.status >= 400) {
-		console.log('Failed to send 2FA code. Retry later.', res.status, res.statusText)
-		return false
-	}
-	console.log('2FA code sent successfully')
-	return true
-}
-
-async function check2FACodeWithServer(code: string): Promise<boolean> {
-	const purposeType = UserStore.getUser2FAStatus() ? 'disable' : 'enable'
-	console.log('2FA purpose type when validating 2fa code:', purposeType)
-
-	const res = await fetch('https://localhost:443/2fa/validate_code', {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ code, purpose: purposeType })
-	})
-	if (res.status >= 400) {
-		console.log('2FA code validation failed. Retry later.', res.status, res.statusText)
-		return false
-	}
-	console.log('2FA code validated successfully with server')
-	return true
-}
-
-function validate2FACode(
-	toggle2FABtn: HTMLButtonElement,
-	modal: HTMLDivElement,
-	overlay: HTMLDivElement,
-	codeInput: HTMLInputElement,
-	modalError: HTMLDivElement
-) {
-	const validate2FABtn = $page.querySelector('#twofa-validate-btn') as HTMLButtonElement
-
-	validate2FABtn.addEventListener('click', async e => {
-		const code = codeInput.value.trim()
-		if (!/^\d{6}$/.test(code)) {
-			console.log('Invalid 2FA code format')
-			displayModalError(modalError, 'Invalid code format. Please enter a 6-digit code.')
-			return
-		}
-		const isValid = await check2FACodeWithServer(code)
-		if (!isValid) {
-			console.log('Incorrect 2FA code')
-			displayModalError(modalError, 'Incorrect code. Please try again.')
-			return
-		}
-		UserStore.setUser2FAStatus(!UserStore.getUser2FAStatus())
-		render2FAState(toggle2FABtn, UserStore.getUser2FAStatus())
-		close2FAModal(modal, overlay)
-	})
-}
-
-function displayModalError(modalError: HTMLDivElement, message: string) {
-	modalError.textContent = message
-	modalError.classList.remove('hidden')
-}
-
-function render2FAState($toggle2FABtn: HTMLButtonElement, enabled: boolean) {
-	console.log('2FA Value: ', enabled)
-	document.querySelector('button#twofa').innerText = enabled ? '2FA Enabled' : '2FA Disabled'
-	// $toggle2FABtn.textContent = enabled ? '2FA Enabled' : '2FA Disabled'
-}
-
-function toggle2FA($toggle2FABtn: HTMLButtonElement) {
-	const $modal = $page.querySelector('#twofa-modal') as HTMLDivElement
-	const $overlay = $page.querySelector('#twofa-modal-overlay') as HTMLDivElement
-	const $closeModalBtn = $page.querySelector('#twofa-modal-close') as HTMLButtonElement
-	const $codeInput = $page.querySelector('#twofa-code-input') as HTMLInputElement
-	const $modalError = $page.querySelector('#twofa-error') as HTMLDivElement
-
-	$toggle2FABtn.addEventListener('click', async e => {
-		open2FAModal($modal, $overlay, $codeInput, $modalError)
-		const success = await send2FACode()
-		if (!success) {
-			displayModalError($modalError, 'Error sending 2FA code. Try again later.')
-			setTimeout(() => {
-				close2FAModal($modal, $overlay)
-			}, 2000)
-			return
-		}
-		validate2FACode($toggle2FABtn, $modal, $overlay, $codeInput, $modalError)
-	})
-
-	const $resend2FABtn = $page.querySelector('#twofa-resend-btn') as HTMLButtonElement
-	$resend2FABtn.addEventListener('click', async () => {
-		console.log('Resend 2FA code button clicked')
-		const resendSuccess = await send2FACode()
-		if (!resendSuccess) {
-			displayModalError($modalError, 'Error resending 2FA code. Please try again.')
-			return
-		}
-		console.log('2FA code resent successfully')
-	})
-
-	$closeModalBtn.addEventListener('click', () => close2FAModal($modal, $overlay))
-	$overlay.addEventListener('click', () => close2FAModal($modal, $overlay))
-}
 
 function handleUpdateProfile() {
 	const $submitBtn = document.querySelector('span[type="submit"]') as HTMLElement
@@ -144,11 +21,10 @@ function handleUpdateProfile() {
 
 	console.log('Initial 2FA status from UserStore:', UserStore.getUser2FAStatus())
 	render2FAState($toggle2FABtn, UserStore.getUser2FAStatus())
-	// checkbox dependant de l'etat 2fa de l'user coté front a l'ouverture de la page
-	toggle2FA($toggle2FABtn)
-	// double msg in front console
-	// weird bug when code validation to disable 2fa: code validated but checkbox true, sometimes false
-	// in 'on change' if 2fa checked/unchecked -> modif user from table to enable/disable 2fa
+	$toggle2FABtn.onclick = () => {
+		start2FAFlow($page, UserStore.getUser2FAStatus() ? 'disable' : 'enable', () =>
+			NotificationStore.notify(`2FA ${UserStore.getUser2FAStatus() ? 'disabled' : 'enabled'}`, 'SUCCESS'))
+	}
 
 	if (trackEvent === false) {
 		trackEvent = true

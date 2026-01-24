@@ -7,6 +7,7 @@ import { hasInvalidFields, createLoginFormData, setupUsernameAndPwdFieldsValidat
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchLogin } from '../functions/loginRegisterFetch.js'
 import { redirectIfAuthenticated } from '../functions/authGuard.js'
+import { start2FAFlow } from '../functions/twofa_auth.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -59,6 +60,16 @@ if (codeParam) {
 		.then(res => {
 			if (res.info.status >= 400) {
 				NotificationStore.notify(res.info.message, "ERROR")
+				return
+			}
+			if (res.info.message === '2FA_REQUIRED') {
+				console.log(res)
+				NotificationStore.notify('Two-Factor Authentication required. Please enter your 2FA code.', "INFO")
+				start2FAFlow($page, 'login', () => {
+					NotificationStore.notify('Login successful', "SUCCESS")
+					UserStore.emit(res)
+					navigate('')
+				}, res)
 				return
 			}
 			UserStore.emit(res)

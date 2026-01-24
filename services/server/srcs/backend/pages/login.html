@@ -40,6 +40,44 @@
 			align-items: center;
 			justify-content: center;
 		}
+
+		modal input {
+			padding: 0.25rem 0.5rem;
+			background-color: rgba(0, 0, 0, 0.75);
+			border-bottom: 2px transparent dashed;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		#twofa-modal-overlay {
+			position: fixed;
+			inset: 0;
+			background: rgba(0, 0, 0, 0.5);
+		}
+
+		#twofa-modal {
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			width: 320px;
+			transform: translate(-50%, -50%);
+			background: rgb(59, 39, 82);
+			padding: 20px;
+			border-radius: 6px;
+		}
+
+		.actions {
+			display: flex;
+			justify-content: space-between;
+			margin-top: 10px;
+		}
+
+		.error {
+			color: red;
+			margin-top: 8px;
+		}
 	</style>
 </head>
 
@@ -67,6 +105,26 @@
 	<menu-buttons>
 		<nav-button data-route="" class="button text-3xl" tabindex="9">Back</nav-button>
 	</menu-buttons>
+
+	<modal>
+		<div id="twofa-modal-overlay" class="hidden"></div>
+		<div id="twofa-modal" class="hidden">
+			<h2>Two-Factor Authentication</h2>
+			<p>
+				The Two-Factor Authentication is done by email.
+				<br />
+				A code was sent to your email address.
+			</p>
+			<input id="twofa-code-input" class="" type="text" placeholder="6 number code" maxlength="6" inputmode="numeric" />
+			<div id="twofa-error" class="error hidden"></div>
+			<div class="actions">
+				<button id="twofa-validate-btn" class="button text-2xl">Validate</button>
+				<button id="twofa-resend-btn" class="button text-2xl">Resend Code</button>
+			</div>
+			<button id="twofa-modal-close">Close</button>
+		</div>
+	</modal>
+
 </page>
 
 <script type="module" src="modules/login.js"></script>

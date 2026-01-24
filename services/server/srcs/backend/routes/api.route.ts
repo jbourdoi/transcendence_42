@@ -4,6 +4,7 @@ import { json_parse } from '../../frontend/functions/json_wrapper.js'
 import { fetch42User, generateAndSendToken } from '../crud/auth.crud.js'
 import { getVaultSecret } from '../services/vault.service.js'
 import { InfoFetchType } from '../../types/infofetch.type.js'
+import { create2FAChallenge } from './2fa.route.js'
 
 const CLIENT_ID = await getVaultSecret<string>('client_id', value => value)
 const CLIENT_SECRET = await getVaultSecret<string>('client_secret', value => value)
@@ -55,6 +56,12 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 
 	const infoFetch: InfoFetchType = await fetch42User(url, { saveToDb: false })
 	if (!infoFetch || infoFetch.info.status >= 400) return reply.status(infoFetch.info.status).send({ ...infoFetch })
+	if (infoFetch.info.message === '2FA_REQUIRED') {
+		const userData = { userId: infoFetch.id, purpose: 'login' }
+		const res = await create2FAChallenge(userData)
+		if (res.status >= 400) return reply.status(res.status).send({ info: res.message })
+		return reply.status(200).send({ ...infoFetch })
+	}
 	console.log('LOGIN 42 OAUTH --- infoFetch: ', infoFetch)
 	await generateAndSendToken(infoFetch, reply)
 }

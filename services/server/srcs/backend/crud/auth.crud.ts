@@ -6,6 +6,7 @@ import type { CookieSerializeOptions } from '@fastify/cookie'
 import { type InfoFetchType } from '../../types/infofetch.type.js'
 import { type User42InfoType } from '../../types/user42Info.type.js'
 import { UserInfoType } from '../../types/user.type.js'
+import { getVaultSecret } from '../services/vault.service.js'
 
 export async function getPayload(request: FastifyRequest): Promise<any | null | undefined> {
 	const loggedInToken = getToken(request)
@@ -99,6 +100,18 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 		}
 		userId = body.data.id
 		has_2fa = body.data.has_2fa === 1 // '=== 1' to convert from integer to boolean
+		if (body?.data?.has_2fa === 1) {
+			return {
+				email: user42Info.email,
+				username: user42Info.login,
+				id: userId,
+				has_2fa: has_2fa,
+				info: {
+					status: 200,
+					message: '2FA_REQUIRED'
+				}
+			}
+		}
 	}
 
 	if (body.status >= 400) {
@@ -115,7 +128,8 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 		id: userId,
 		has_2fa: has_2fa,
 		info: {
-			status: 200
+			status: 200,
+			message: 'AUTHENTICATED'
 		}
 	}
 }
