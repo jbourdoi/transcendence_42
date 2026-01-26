@@ -15,19 +15,30 @@ export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) 
 	}
 	console.log('Client Found: ', clientFound)
 	if (clientFound) {
-		if (await isAtLeastOneBlocked(ws, clientFound.data.username, data)) return
+		const blockedStatus = await isAtLeastOneBlocked(ws, clientFound.data.username, data)
+		if (blockedStatus === 'error') return
+		if (blockedStatus === 'true') {
+			data.type = 'notification'
+			data.notificationLevel = 'error'
+			data.msg = `Cannot send friend request. You or user ${clientFound.data.username} has blocked the other.`
+			ws.send(JSON.stringify(data))
+			return
+		}
 		console.log('User not blocked, check if friends')
 
 		const friendStatus = await isFriend(ws, clientFound.data.username, data)
 		if (friendStatus == 'error') return
 		else if (friendStatus == 'true') {
 			console.log('Users are already friends. Removing them from friendships.')
-			if (!(await removeFromFriendships(ws, clientFound.data.username, data))) return
-			console.log('Users removed from friendships.')
-			data.msg = `You have removed ${clientFound.data.username} from your friends list.`
-			data.type = 'notification'
-			data.notificationLevel = 'info'
-			ws.send(JSON.stringify(data))
+			if (await removeFromFriendships(ws, clientFound, data)) {
+				data.type = 'notification'
+				data.notificationLevel = 'info'
+				data.msg = `You and user ${ws.data.username} are no longer friends!`
+				clientFound.send(JSON.stringify(data))
+
+				data.msg = `You and user ${clientFound.data.username} are no longer friends!`
+				ws.send(JSON.stringify(data))
+			}
 			return
 		}
 		console.log('Users are not friends, check if double friend request')
@@ -35,7 +46,7 @@ export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) 
 		const doubleFriendRequest = await isDoubleFriendRequest(ws, clientFound.data.username, data)
 		if (doubleFriendRequest === 'error' || doubleFriendRequest === 'true') return
 		console.log('No double friend request, check if the other user has sent a friend request')
-		const inFriendRequests = await isInFriendRequests(ws, clientFound.data.username, data)
+		const inFriendRequests = await isInFriendRequests(ws, clientFound, data)
 		if (inFriendRequests === 'error') return
 		else if (inFriendRequests === 'true') {
 			console.log('User is in friend requests, add to friendships')
@@ -49,20 +60,8 @@ export async function reqFriendChannel(ws: BunSocketType, data: SocketDataType) 
 		}
 
 		console.log('User is not in friend requests, send friend request')
-		if (!(await insertFriendRequest(ws, clientFound.data.username, data))) return
+		if (!(await insertFriendRequest(ws, clientFound, data))) return
 		console.log('Friend request sent to DB')
-
-		data.msg = clientFound.data.username
-		data.type = 'req-friend'
-		clientFound.send(JSON.stringify(data))
-
-		data.type = 'notification'
-		data.notificationLevel = 'info'
-		data.msg = `User ${ws.data.username} wants to be friends!`
-		clientFound.send(JSON.stringify(data))
-
-		data.msg = `Friend request sent to ${ws.data.username}!`
-		ws.send(JSON.stringify(data))
 	} else {
 		data.msg = 'Player not found'
 		data.type = 'error'

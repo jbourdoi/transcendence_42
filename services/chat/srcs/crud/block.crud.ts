@@ -8,7 +8,7 @@ export function isCurrentClientBlocked(blockers: { blocker_username: string }[],
 	return isBlocked
 }
 
-export async function isAtLeastOneBlocked(ws: BunSocketType, blocked_user: string, data: SocketDataType): Promise<boolean> {
+export async function isAtLeastOneBlocked(ws: BunSocketType, blocked_user: string, data: SocketDataType): Promise<string> {
 	const res = await dbPostQuery({
 		endpoint: 'dbGet',
 		query: {
@@ -18,20 +18,17 @@ export async function isAtLeastOneBlocked(ws: BunSocketType, blocked_user: strin
 		}
 	})
 	console.log('BLOCK --- isAtLeastOneBlocked: ', res)
-	if (res.status >= 400 && res.status !== 404)
+	if (res.status == 404)
+		return 'false' // no blocks found
+	else if (res.status >= 400)
 	{
+		data.type = 'notification'
+		data.notificationLevel = 'error'
 		data.msg = res.message
-		data.type = 'error'
 		ws.send(JSON.stringify(data))
-		return true
+		return 'error'
 	}
-	else if (res.data) {
-		data.msg = 'Cannot send friend request. One of the users has blocked the other.'
-		data.type = 'error'
-		ws.send(JSON.stringify(data))
-		return true
-	}
-	return false
+	return 'true'
 }
 
 export async function isDoubleBlock(ws: BunSocketType, friend: string, data: SocketDataType): Promise<string> {
@@ -44,20 +41,17 @@ export async function isDoubleBlock(ws: BunSocketType, friend: string, data: Soc
 		}
 	})
 	console.log('BLOCK --- isDoubleBlock: ', res)
-	if (res.status >= 400 && res.status !== 404)
+	if (res.status == 404)
+		return 'false' // no block found
+	else if (res.status >= 400)
 	{
+		data.type = 'notification'
+		data.notificationLevel = 'error'
 		data.msg = res.message
-		data.type = 'error'
 		ws.send(JSON.stringify(data))
 		return 'error'
 	}
-	else if (res.data) {
-		data.msg = 'Cannot block user as you have already blocked them. Deblocking the user.'
-		data.type = 'info'
-		ws.send(JSON.stringify(data))
-		return 'true'
-	}
-	return 'false'
+	return 'true'
 }
 
 export async function deblockUser(ws: BunSocketType, blocked_user: string, data: SocketDataType) {
@@ -71,11 +65,17 @@ export async function deblockUser(ws: BunSocketType, blocked_user: string, data:
 	})
 	console.log('REMOVE --- deblockUser: ', res)
 	if (res.status >= 400) {
+		data.type = 'notification'
+		data.notificationLevel = 'error'
 		data.msg = res.message
-		data.type = 'error'
 		ws.send(JSON.stringify(data))
+		return
 	}
 	console.log('Blocked user removed from DB')
+	data.type = 'notification'
+	data.notificationLevel = 'info'
+	data.msg = `User ${blocked_user} has been unblocked.`
+	ws.send(JSON.stringify(data))
 }
 
 export async function blockUser(ws: BunSocketType, blocked_user: string, data: SocketDataType): Promise<string> {
@@ -88,11 +88,17 @@ export async function blockUser(ws: BunSocketType, blocked_user: string, data: S
 		}
 	})
 	if (res.status >= 400) {
+		data.type = 'notification'
+		data.notificationLevel = 'error'
 		data.msg = res.message
-		data.type = 'error'
 		ws.send(JSON.stringify(data))
 		return 'error'
 	}
 	console.log('Blocked user added to DB')
+	data.type = 'notification'
+	data.notificationLevel = 'info'
+	data.msg = `User ${blocked_user} has been blocked.`
+	ws.send(JSON.stringify(data))
+
 	return 'true'
 }

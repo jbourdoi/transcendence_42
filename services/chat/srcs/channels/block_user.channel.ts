@@ -27,13 +27,8 @@ export async function blockUserChannel(ws: BunSocketType, data: SocketDataType) 
 		if (blockUserStatus === 'error') return
 		if (blockUserStatus === 'true') {
 			removeFromFriendRequests(ws, clientFound.data.username, data)
-			removeFromFriendships(ws, clientFound.data.username, data)
+			removeFromFriendships(ws, clientFound, data)
 		}
-
-		data.msg = `User ${clientFound.data.username} has been blocked`
-		data.type = 'notification'
-		data.notificationLevel = 'error'
-		ws.send(JSON.stringify(data))
 	} else {
 		data.msg = 'Player not found'
 		data.type = 'error'

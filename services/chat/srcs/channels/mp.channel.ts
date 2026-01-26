@@ -10,7 +10,15 @@ export async function mpChannel(ws: BunSocketType, data: SocketDataType, message
 			clientFound = client
 		}
 	}
-	if (clientFound && !(await isAtLeastOneBlocked(ws, data.to, data))) {
+	const blockedStatus = await isAtLeastOneBlocked(ws, data.to, data)
+	if (blockedStatus === 'error') return
+	if (blockedStatus === 'true') {
+		data.type = 'error'
+		data.msg = `Cannot send message. You or user ${data.to} has blocked the other.`
+		ws.send(JSON.stringify(data))
+		return
+	}
+	if (clientFound && blockedStatus == 'false') {
 		clientFound.send(message)
 		ws.send(message)
 	} else if (!clientFound) {
