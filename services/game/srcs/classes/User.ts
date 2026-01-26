@@ -34,9 +34,9 @@ export default class User
 		return (this.socket?.readyState === WebSocket.OPEN)
 	}
 
-	isInGame()
+	isOutGame()
 	{
-		return (this.isConnected() && this.navigate === "remote_game")
+		return (!this.isConnected() || this.status != "game" || this.navigate === "quit_game")
 	}
 
 	toJSON()

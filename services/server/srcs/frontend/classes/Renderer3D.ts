@@ -62,7 +62,7 @@ private renderCanvas3D()
 private resizeCanvas()
 {
 	const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
-	if (!$canvas3D) return
+	if (!$canvas3D) return ;
 	this.canvas = $canvas3D
 	const w = Math.min(1920, window.innerWidth)
 	const h = Math.min(1080, window.innerHeight * 0.8)

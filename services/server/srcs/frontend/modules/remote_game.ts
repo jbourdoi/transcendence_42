@@ -6,6 +6,7 @@ import { Renderer3D } from '../classes/Renderer3D.js'
 import { GameStore } from '../stores/game.store.js'
 import { UserStore } from '../stores/user.store.js'
 import { NotificationStore } from '../stores/notification.store.js'
+import { navigate } from '../js/routing.js'
 
 const $score = document.getElementById('score') as HTMLElement
 const $debug = document.getElementById('debug') as HTMLElement
@@ -56,6 +57,7 @@ function onMessage(e:any)
 		{
 			end = true
 			NotificationStore.notify(data.text, "INFO")
+			navigate('')
 			break
 		}
 		case 'state':
@@ -189,7 +191,7 @@ function initAnglePlayer(players: any): number
 const cleanupGameRemote = () => {
 	// console.log("gamepage cleanup")
 	end = true
-	ws?.send(json_stringify({type:"navigate", navigate:"quit-game"}))
+	ws?.send(json_stringify({type:"navigate", navigate:"quit_game"}))
 	ws?.removeEventListener("message", onMessage)
 	$pageGameRemote.removeEventListener("cleanup", cleanupGameRemote);
 	document.removeEventListener("keydown", handleKeyDown)
