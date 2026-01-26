@@ -2,6 +2,8 @@
 Add responsive
 Add SEO
 
+When log out close socket bordel
+
 Send proper constraint message from backend
 	auth.route.ts > line 86
 

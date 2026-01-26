@@ -45,7 +45,7 @@ public destroy()
 		clearInterval(this.IAinterval)
 		this.IAinterval = undefined
 	}
-	this.players.forEach(p => { p.user.status = "chat"; });
+	this.players.forEach(p => { p.user.status = "chat"; p.user.navigate = "home"; });
 	this.players = []
 	this.ball = null
 	this.predictions = []
@@ -98,7 +98,7 @@ private checkDisconnection() : boolean
 	let disconnect = false
 	let text : string = ""
 	this.players.forEach(p=>{
-		if (p.user.id != "" && !p.user.isInGame())
+		if (p.user.id != "" && p.user.isOutGame())
 		{
 			disconnect = true;
 			text += ` | ${p.user.pseudo} has left the game`
