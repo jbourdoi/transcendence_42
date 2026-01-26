@@ -16,7 +16,7 @@ function close2FAModal(modal: HTMLDivElement, overlay: HTMLDivElement) {
 
 async function send2FACode(purpose: twoFAPurpose, userData: any): Promise<boolean> {
 
-    const res = await fetch('https://localhost:443/2fa/send_code', {
+    const res = await fetch('/2fa/send_code', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -32,7 +32,7 @@ async function send2FACode(purpose: twoFAPurpose, userData: any): Promise<boolea
 }
 
 async function check2FACodeWithServer(code: string, purpose: twoFAPurpose, userData: any): Promise<boolean> {
-    const res = await fetch('https://localhost:443/2fa/validate_code', {
+    const res = await fetch('/2fa/validate_code', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
