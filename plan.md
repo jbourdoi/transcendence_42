@@ -2,7 +2,6 @@
 Add responsive
 Add SEO
 
-When first app start, login in with from, the socket doesn't connect?
 When log out close socket bordel
 
 Send proper constraint message from backend
