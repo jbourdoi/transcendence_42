@@ -84,7 +84,7 @@ function handleUserForm(self: HTMLElement) {
 	const $navLeft = document.createElement('nav-left')
 	const $navRight = document.createElement('nav-right')
 	const $span = document.createElement('span')
-	const $submitBtn = document.querySelector('form button[type="submit"]') as HTMLElement
+	const $submitBtn = document.querySelector('form span[type="submit"]') as HTMLElement
 
 	if (trackEvent === false) {
 		trackEvent = true
@@ -112,7 +112,7 @@ function handleUserForm(self: HTMLElement) {
 	self.appendChild($span)
 	self.appendChild($navRight)
 
-	$loginForm.style.display = 'flex'
+	$loginForm.style.display = 'grid'
 
 	setupUsernameAndPwdFieldsValidation($loginForm)
 }

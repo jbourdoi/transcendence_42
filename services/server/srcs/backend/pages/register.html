@@ -8,32 +8,41 @@
 		form {
 			margin: 1rem 0;
 			display: none;
-			flex-direction: column;
+			grid-template-columns: 180px 1fr;
+			row-gap: 1rem;
+			align-items: center;
 		}
 
 		form-section {
-			display: flex;
-			margin-bottom: 1rem;
-			align-items: center;
-			justify-content: center;
-			flex-wrap: wrap;
+			display: contents;
 		}
 
 		form-section span {
+			text-align: right;
+			justify-self: end;
+		}
+
+		form-section.label {
 			margin-right: 0.5rem;
 		}
 
+		form-section.center-section {
+			display: flex;
+			grid-column: 1 / -1;
+			justify-content: center;
+			align-items: center;
+		}
+
 		form-section input {
+			justify-self: center;
 			padding: 0.25rem 0.5rem;
 			background-color: rgba(0, 0, 0, 0.75);
 			border-bottom: 2px transparent dashed;
-			/* box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.75); */
 		}
 
 		input:focus {
 			outline: none;
 			border-bottom: 2px white dashed;
-			/* box-shadow: inset 0px -2px 0px yellow; */
 		}
 
 		oauth-container {
@@ -57,23 +66,23 @@
 
 	<form>
 		<form-section>
-			<span>Username:</span>
+			<span class="label">Username:</span>
 			<input type="text" name="username" value="username" required tabindex="2" inert="true" />
 		</form-section>
 		<form-section>
-			<span>Email:</span>
+			<span class="label">Email:</span>
 			<input type="email" name="email" autocomplete="email" required value="email@email.com" tabindex="3" inert="true" />
 		</form-section>
 		<form-section>
-			<span>Confirm email:</span>
+			<span class="label">Confirm email:</span>
 			<input type="email" name="checkmail" autocomplete="email" required value="email@email.com" tabindex="4" inert="true" />
 		</form-section>
 		<form-section>
-			<span>Password:</span>
+			<span class="label">Password:</span>
 			<input type="password" name="pwd" autocomplete="new-password" value="Password1!@" tabindex="5" inert="true" />
 		</form-section>
 		<form-section>
-			<span>Confirm Password:</span>
+			<span class="label">Confirm Password:</span>
 			<input
 				type="password"
 				name="checkpwd"
@@ -84,8 +93,8 @@
 				inert="true"
 			/>
 		</form-section>
-		<form-section>
-			<span>Avatar:</span>
+		<form-section class="center-section">
+			<span style="margin-right: 10px">Avatar:</span>
 			<img
 				id="avatarPreview"
 				src="/images/avatars/baseAvatar.jpg"
@@ -98,7 +107,7 @@
 				Reset Avatar
 			</button>
 		</form-section>
-		<form-section>
+		<form-section class="center-section">
 			<span class="button text-3xl" type="submit" tabindex="9" inert="true">Register</span>
 		</form-section>
 	</form>

@@ -8,22 +8,34 @@
 		form {
 			margin: 1rem 0;
 			display: none;
-			flex-direction: column;
+			grid-template-columns: 100px 1fr;
+			row-gap: 1rem;
+			align-items: center;
+			column-gap: 20px;
 		}
 
 		form-section {
-			display: flex;
-			margin-bottom: 1rem;
-			align-items: center;
-			justify-content: center;
-			flex-wrap: wrap;
+			display: contents;
 		}
 
 		form-section span {
+			text-align: right;
+			justify-self: end;
+		}
+
+		form-section.label {
 			margin-right: 0.5rem;
 		}
 
+		form-section.center-section {
+			display: flex;
+			grid-column: 1 / -1;
+			justify-content: center;
+			align-items: center;
+		}
+
 		form-section input {
+			justify-self: center;
 			padding: 0.25rem 0.5rem;
 			background-color: rgba(0, 0, 0, 0.75);
 			border-bottom: 2px transparent dashed;
@@ -93,14 +105,16 @@
 
 	<form>
 		<form-section>
-			<span>Username:</span>
+			<span class="label">Username:</span>
 			<input type="text" name="username" value="bob" required tabindex="2" />
 		</form-section>
 		<form-section>
-			<span>Password:</span>
+			<span class="label">Password:</span>
 			<input type="password" name="pwd" autocomplete="new-password" value="pwd" tabindex="5" />
 		</form-section>
-		<button class="button text-3xl" type="submit" tabindex="8">Login</button>
+		<form-section class="center-section">
+			<span class="button text-3xl" type="submit" tabindex="8">Login</span>
+		</form-section>
 	</form>
 
 	<menu-buttons>

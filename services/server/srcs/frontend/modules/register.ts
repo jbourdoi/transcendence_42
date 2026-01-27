@@ -103,7 +103,7 @@ function handleUserForm(self: HTMLElement) {
 	self.appendChild($span)
 	self.appendChild($navRight)
 
-	$registerForm.style.display = 'flex'
+	$registerForm.style.display = 'grid'
 
 	setupAvatarPreview($avatarInput, $avatarPreview)
 	setupAllFieldValidation($registerForm)
