@@ -155,6 +155,9 @@ page {
 		height: auto;
 		padding: 2rem 0;
 	}
+	page-title {
+		font-size: 2.3rem;
+	}
 }
 
 span[type='spinner'] img {
