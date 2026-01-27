@@ -21,6 +21,7 @@ import { start2FAFlow } from '../functions/twofa_auth.js'
 
 let trackEvent = false
 
+const $spinner = document.querySelector('span[type="spinner"] img') as HTMLImageElement
 const $menuButtons = document.querySelector('menu-buttons') as HTMLElement
 const $loginForm = document.querySelector('form') as HTMLElement
 const urlParams = new URLSearchParams(window.location.search)
@@ -53,8 +54,8 @@ if (codeParam) {
 	})
 		.then(res => {
 			if (res.status === 200) return res.json()
+			$spinner.style.display = 'none'
 			$menuButtons.style.display = 'flex'
-			$loginForm.style.display = 'flex'
 			return res.json()
 		})
 		.then(res => {
@@ -75,6 +76,7 @@ if (codeParam) {
 			navigate('')
 		})
 } else {
+	$spinner.style.display = 'none'
 	$menuButtons.style.display = 'flex'
 }
 
