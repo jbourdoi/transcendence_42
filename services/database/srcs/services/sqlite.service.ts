@@ -28,26 +28,26 @@ export default function initDb() {
 		bcrypt.hash('pwd', salt).then(pass => {
 			db.exec(`
 			INSERT OR IGNORE INTO users (id, username, email, pwd, avatar, is_oauth) VALUES
-				(1,  'alice',  'alice@test.com',  '${pass}',  NULL, 0),
-				(2,  'bob',    'bob@test.com',    '${pass}',  NULL, 0),
-				(3,  'carol',  'carol@test.com',  '${pass}',  NULL, 0),
-				(4,  'dave',   'dave@test.com',   '${pass}',  NULL, 0),
-				(5,  'eve',    'eve@test.com',    '${pass}',  NULL, 0),
-				(6,  'frank',  'frank@test.com',  '${pass}',  NULL, 0),
-				(7,  'grace',  'grace@test.com',  '${pass}',  NULL, 0),
-				(8,  'heidi',  'heidi@test.com',  '${pass}',  NULL, 0),
-				(9,  'ivan',   'ivan@test.com',   '${pass}',  NULL, 0),
-				(10, 'judy',   'judy@test.com',   '${pass}', NULL, 0),
-				(11, 'kate',   'kate@test.com',   '${pass}', NULL, 0),
-				(12, 'leo',    'leo@test.com',    '${pass}', NULL, 0),
-				(13, 'mallory','mallory@test.com','${pass}', NULL, 0),
-				(14, 'nancy',  'nancy@test.com',  '${pass}', NULL, 0),
-				(15, 'oscar',  'oscar@test.com',  '${pass}', NULL, 0),
-				(16, 'peggy',  'peggy@test.com',  '${pass}', NULL, 0),
-				(17, 'quentin','quentin@test.com','${pass}', NULL, 0),
-				(18, 'ruth',   'ruth@test.com',   '${pass}', NULL, 0),
-				(19, 'sybil',  'sybil@test.com',  '${pass}', NULL, 0),
-				(20, 'trent',  'trent@test.com',  '${pass}', NULL, 0);
+				(1,  'alice',  'transcendencebunbun@gmail.com',  '${pass}',  NULL, 0),
+				(2,  'bob',    'transcendencebunbun@gmail.com',    '${pass}',  NULL, 0),
+				(3,  'carol',  'transcendencebunbun@gmail.com',  '${pass}',  NULL, 0),
+				(4,  'dave',   'transcendencebunbun@gmail.com',   '${pass}',  NULL, 0),
+				(5,  'eve',    'transcendencebunbun@gmail.com',    '${pass}',  NULL, 0),
+				(6,  'frank',  'transcendencebunbun@gmail.com',  '${pass}',  NULL, 0),
+				(7,  'grace',  'transcendencebunbun@gmail.com',  '${pass}',  NULL, 0),
+				(8,  'heidi',  'transcendencebunbun@gmail.com',  '${pass}',  NULL, 0),
+				(9,  'ivan',   'transcendencebunbun@gmail.com',   '${pass}',  NULL, 0),
+				(10, 'judy',   'transcendencebunbun@gmail.com',   '${pass}', NULL, 0),
+				(11, 'kate',   'transcendencebunbun@gmail.com',   '${pass}', NULL, 0),
+				(12, 'leo',    'transcendencebunbun@gmail.com',    '${pass}', NULL, 0),
+				(13, 'mallory','transcendencebunbun@gmail.com','${pass}', NULL, 0),
+				(14, 'nancy',  'transcendencebunbun@gmail.com',  '${pass}', NULL, 0),
+				(15, 'oscar',  'transcendencebunbun@gmail.com',  '${pass}', NULL, 0),
+				(16, 'peggy',  'transcendencebunbun@gmail.com',  '${pass}', NULL, 0),
+				(17, 'quentin','transcendencebunbun@gmail.com','${pass}', NULL, 0),
+				(18, 'ruth',   'transcendencebunbun@gmail.com',   '${pass}', NULL, 0),
+				(19, 'sybil',  'transcendencebunbun@gmail.com',  '${pass}', NULL, 0),
+				(20, 'trent',  'transcendencebunbun@gmail.com',  '${pass}', NULL, 0);
 			`)
 		})
 	})
@@ -143,49 +143,22 @@ export default function initDb() {
 			CREATE INDEX IF NOT EXISTS idx_friend_requests_to ON friend_requests(to_username);
 			
 			
+			INSERT OR IGNORE INTO blocks (blocker_username, blocked_username) VALUES
+			('mallory','nancy'),
+			('ruth','quentin');
+
 			INSERT OR IGNORE INTO friend_requests (from_username, to_username) VALUES
 			('alice','bob'),
 			('bob','carol'),
 			('carol','dave'),
 			('dave','eve'),
-			('eve','frank'),
-			('frank','grace'),
-			('grace','heidi'),
-			('heidi','ivan'),
-			('ivan','judy'),
-			('judy','kate'),
-			('kate','leo'),
-			('leo','mallory'),
-			('mallory','nancy'),
-			('nancy','oscar'),
-			('oscar','peggy'),
-			('peggy','quentin'),
-			('quentin','ruth'),
-			('ruth','sybil'),
-			('sybil','trent'),
-			('trent','alice');
+			('eve','frank');
 			
 			INSERT OR IGNORE INTO friendships (username_1, username_2) VALUES
-			('alice','bob'),
-			('bob','carol'),
-			('carol','dave'),
-			('dave','eve'),
 			('eve','frank'),
 			('frank','grace'),
 			('grace','heidi'),
-			('heidi','ivan'),
-			('ivan','judy'),
-			('judy','kate'),
-			('kate','leo'),
-			('leo','mallory'),
-			('mallory','nancy'),
-			('nancy','oscar'),
-			('oscar','peggy'),
-			('peggy','quentin'),
-			('quentin','ruth'),
-			('ruth','sybil'),
-			('sybil','trent'),
-			('alice','trent');
+			('heidi','ivan');
 
 			INSERT  OR IGNORE INTO matches (id, type) VALUES
 			(1,  'duel'),

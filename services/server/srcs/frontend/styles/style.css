@@ -150,16 +150,6 @@ page {
 	color: #fff;
 }
 
-@media (max-width: 700px) {
-	page {
-		height: auto;
-		padding: 2rem 0;
-	}
-	page-title {
-		font-size: 2.3rem;
-	}
-}
-
 span[type='spinner'] img {
 	height: 128px;
 	width: 128px;
@@ -168,6 +158,20 @@ span[type='spinner'] img {
 *[data-selected='true'] nav-left,
 *[data-selected='true'] nav-right {
 	opacity: 1;
+}
+
+@media (max-width: 700px) {
+	page {
+		height: auto;
+		padding: 2rem 0;
+	}
+	page-title {
+		font-size: 2.3rem;
+	}
+	nav-left,
+	nav-right {
+		opacity: 1 !important;
+	}
 }
 
 nav-button span {
