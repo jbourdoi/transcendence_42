@@ -25,21 +25,21 @@ function renderTournamenentTree(tournament: TournamentModel | undefined)
 		<div class="tournament">
 
 			<div class="round">
-				<h3>Demi-finales</h3>
+				<h3>Semi-final</h3>
 
-				${renderMatch("Demi-finale 1", semi1, tournament.currentMatch === 0)}
-				${renderMatch("Demi-finale 2", semi2, tournament.currentMatch === 1)}
+				${renderMatch("First semi-final", semi1, tournament.currentMatch === 0)}
+				${renderMatch("Second semi-final", semi2, tournament.currentMatch === 1)}
 			</div>
 
 			<div class="round">
-				<h3>Finale</h3>
+				<h3>Final</h3>
 
-				${renderMatch("Finale", final, tournament.currentMatch === 2)}
+				${renderMatch("Final", final, tournament.currentMatch === 2)}
 			</div>
 
 			<div class="round">
-				<h3>Vainqueur</h3>
-				<div class="winner">
+				<h3>Winner</h3>
+				<div class="winner ${tournament.winner?.alias ? 'winner-final' : ''}">
 					${tournament.winner?.alias ?? "—"}
 				</div>
 			</div>
@@ -78,13 +78,12 @@ function renderMatch(
 
 function renderAction(model: TournamentModel) {
 	if (model.currentMatch >= 3) {
-		return `<span class="done">Tournoi terminé</span>
-		<button data-route=''>home</button>`;
+		return ``;
 	}
 
 	return `
 		<button id="play-match">
-			Jouer le match
+			Play
 		</button>
 	`;
 }
