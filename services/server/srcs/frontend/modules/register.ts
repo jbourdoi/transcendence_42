@@ -13,6 +13,7 @@ import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchRegister } from '../functions/loginRegisterFetch.js'
 import { redirectIfAuthenticated } from '../functions/authGuard.js'
 import { PageUpdateStore } from '../stores/page_state.js'
+import { NotificationStore } from '../stores/notification.store.js'
 
 let trackEvent = false
 
@@ -52,11 +53,14 @@ if (codeParam) {
 			if (res.status === 200) return res.json()
 			$spinner.style.display = 'none'
 			$menuButtons.style.display = 'flex'
-			$registerForm.style.display = 'flex'
+			return res.json()
 		})
 		.then(res => {
-			if (!res || res.status >= 400) return
-			console.log('FRONTEND --- register form response:', res)
+			if (res.info.status >= 400) {
+				NotificationStore.notify(res.info.message, 'ERROR')
+				return
+			}
+			NotificationStore.notify('Login successful', "SUCCESS")
 			UserStore.emit(res)
 			navigate('')
 		})
