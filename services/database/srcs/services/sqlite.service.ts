@@ -143,49 +143,22 @@ export default function initDb() {
 			CREATE INDEX IF NOT EXISTS idx_friend_requests_to ON friend_requests(to_username);
 			
 			
+			INSERT OR IGNORE INTO blocks (blocker_username, blocked_username) VALUES
+			('mallory','nancy'),
+			('ruth','quentin');
+
 			INSERT OR IGNORE INTO friend_requests (from_username, to_username) VALUES
 			('alice','bob'),
 			('bob','carol'),
 			('carol','dave'),
 			('dave','eve'),
-			('eve','frank'),
-			('frank','grace'),
-			('grace','heidi'),
-			('heidi','ivan'),
-			('ivan','judy'),
-			('judy','kate'),
-			('kate','leo'),
-			('leo','mallory'),
-			('mallory','nancy'),
-			('nancy','oscar'),
-			('oscar','peggy'),
-			('peggy','quentin'),
-			('quentin','ruth'),
-			('ruth','sybil'),
-			('sybil','trent'),
-			('trent','alice');
+			('eve','frank');
 			
 			INSERT OR IGNORE INTO friendships (username_1, username_2) VALUES
-			('alice','bob'),
-			('bob','carol'),
-			('carol','dave'),
-			('dave','eve'),
 			('eve','frank'),
 			('frank','grace'),
 			('grace','heidi'),
-			('heidi','ivan'),
-			('ivan','judy'),
-			('judy','kate'),
-			('kate','leo'),
-			('leo','mallory'),
-			('mallory','nancy'),
-			('nancy','oscar'),
-			('oscar','peggy'),
-			('peggy','quentin'),
-			('quentin','ruth'),
-			('ruth','sybil'),
-			('sybil','trent'),
-			('alice','trent');
+			('heidi','ivan');
 
 			INSERT  OR IGNORE INTO matches (id, type) VALUES
 			(1,  'duel'),
