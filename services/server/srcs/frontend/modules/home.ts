@@ -3,6 +3,7 @@ import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore, type UserType } from '../stores/user.store'
 import { navigate } from '../js/routing'
 import { StateStore } from '../stores/state.store'
+import { PageUpdateStore } from '../stores/page_state'
 
 type LoginButtonValues = {
 	[key: string]: {
@@ -81,11 +82,13 @@ const unsubUserStore = UserStore.subscribe((user: UserType) => {
 		$loginButton.remove()
 
 		StateStore.update({ username: user.username })
+		PageUpdateStore.emit('user valid')
 	} else {
 		console.log('Removing Logout button')
 		if ($elementBackup) $loginButtonParent.appendChild($elementBackup)
-		$elementBackup = $logoutButton
+			$elementBackup = $logoutButton
 		$logoutButton.remove()
+		PageUpdateStore.emit('user invalid')
 	}
 })
 

@@ -7,6 +7,7 @@ let currentKeyPress: KeyboardKeyEvent
 KeyboardStore.subscribe(keyBoardKey => (currentKeyPress = keyBoardKey))
 
 export function getTabIndexedElements(): HTMLElement[] {
+	buttonList.length = 0
 	document.querySelectorAll<HTMLElement>('*[tabindex]:not([inert])').forEach((el: HTMLElement, idx: number) => {
 		if (idx === 0) el.focus()
 		buttonList.push(el)
@@ -16,6 +17,10 @@ export function getTabIndexedElements(): HTMLElement[] {
 		el.addEventListener('mouseenter', handleMouseEnter)
 
 		el.addEventListener('click', handleNavClick)
+	})
+	console.log(buttonList)
+	buttonList.forEach(el => {
+		console.log(el)
 	})
 	return buttonList
 }
