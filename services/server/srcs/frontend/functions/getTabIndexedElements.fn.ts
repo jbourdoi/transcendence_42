@@ -18,10 +18,6 @@ export function getTabIndexedElements(): HTMLElement[] {
 
 		el.addEventListener('click', handleNavClick)
 	})
-	console.log(buttonList)
-	buttonList.forEach(el => {
-		console.log(el)
-	})
 	return buttonList
 }
 

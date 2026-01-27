@@ -1,5 +1,6 @@
 <head>
 	<title>Login</title>
+	<meta name="description" content="PongPong Login page" module />
 	<style module>
 		menu-buttons {
 			display: none;
@@ -96,24 +97,24 @@
 				grid-template-columns: 1fr;
 				row-gap: 0.5rem;
 			}
-		
+
 			form-section span {
 				text-align: center;
 				justify-self: start;
 			}
-		
+
 			form-section input {
 				justify-self: center;
 				width: 100%;
 				max-width: 320px;
 			}
-		
+
 			form-section.center-section {
 				flex-direction: column;
 				margin-top: 1rem;
 			}
 		}
-		</style>
+	</style>
 </head>
 
 <page type="login">
@@ -162,7 +163,6 @@
 			<button id="twofa-modal-close">Close</button>
 		</div>
 	</modal>
-
 </page>
 
 <script type="module" src="modules/login.js"></script>

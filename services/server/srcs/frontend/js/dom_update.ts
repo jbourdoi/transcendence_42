@@ -29,6 +29,7 @@ async function updateDom(htmlDoc: Document) {
 	const $htmlDocPage: HTMLElement | null = htmlDoc.querySelector('page')
 	const $htmlDocTitle: HTMLTitleElement | null = htmlDoc.querySelector('head title')
 	const $htmlDocStyle: HTMLStyleElement | null = htmlDoc.querySelector('head style')
+	const $htmlDocMeta: HTMLMetaElement[] | null[] = Array.from(htmlDoc.querySelectorAll('meta[module]'))
 	const $htmlDocScript: HTMLScriptElement[] | null[] = Array.from(htmlDoc.querySelectorAll('body script[type="module"]'))
 
 	$mainPage?.dispatchEvent(new Event('cleanup'))
@@ -49,6 +50,8 @@ async function updateDom(htmlDoc: Document) {
 		}
 	}
 
+	updateMetaTags($htmlDocMeta)
+
 	PageUpdateStore.emit(document.title)
 }
 
@@ -57,6 +60,16 @@ function updateStyleModule(htmlDocStyle: HTMLStyleElement) {
 
 	$head.querySelectorAll('style[module]').forEach($el => $el.remove())
 	$head.appendChild(htmlDocStyle)
+}
+
+function updateMetaTags(htmlMetaTags: HTMLMetaElement[]) {
+	const $head: HTMLHeadElement = document.querySelector('head')!
+	document.querySelectorAll('meta[module]').forEach($el => {
+		$el.remove()
+	})
+	htmlMetaTags.forEach(el => {
+		$head.appendChild(el)
+	})
 }
 
 function runFunction(htmlDocScript: HTMLScriptElement) {

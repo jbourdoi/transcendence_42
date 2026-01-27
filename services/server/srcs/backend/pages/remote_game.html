@@ -1,8 +1,8 @@
 <head>
 	<title>Game</title>
+	<meta name="description" content="PongPong Game Page" module />
 	<style module>
-		body
-		{
+		body {
 			margin: 0;
 			display: flex;
 			place-items: center;
@@ -10,20 +10,17 @@
 			min-height: 100vh;
 		}
 
-		canvas
-		{
+		canvas {
 			cursor: none;
 		}
 
-		page
-		{
+		page {
 			display: flex;
 			width: 100vw;
 			flex-direction: column;
 		}
 
-		countdown
-		{
+		countdown {
 			position: fixed;
 			top: 0;
 			left: 0;
@@ -34,23 +31,21 @@
 			justify-content: center;
 			align-items: center;
 
-			font-size: 15vw;           /* énorme */
+			font-size: 15vw; /* énorme */
 			font-weight: bold;
 			color: white;
 
 			background: rgba(0, 0, 0, 0.4); /* léger voile */
 			z-index: 1000;
 
-			pointer-events: none;      /* ne bloque pas les inputs */
+			pointer-events: none; /* ne bloque pas les inputs */
 			opacity: 0;
 			transition: opacity 0.3s ease;
 		}
 
-		countdown.visible
-		{
+		countdown.visible {
 			opacity: 1;
 		}
-
 	</style>
 </head>
 

@@ -47,8 +47,6 @@ function createStateStore() {
 			updateDomWithState(key, newState[key])
 		}
 		for (const fn of subscribers) fn(state)
-
-		console.log('Update State: ', state)
 	}
 
 	function getStateUUID() {

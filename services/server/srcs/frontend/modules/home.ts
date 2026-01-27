@@ -76,9 +76,7 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 let $elementBackup: HTMLElement | null = null
 
 const unsubUserStore = UserStore.subscribe((user: UserType) => {
-	console.log('UserStore subscribe home user: ', user)
 	if (user.isValid) {
-		console.log('Removing Login button')
 		if ($elementBackup) $logoutButtonParent.appendChild($elementBackup)
 		$elementBackup = $loginButton
 		$loginButton.remove()
@@ -86,7 +84,6 @@ const unsubUserStore = UserStore.subscribe((user: UserType) => {
 		StateStore.update({ username: user.username })
 		PageUpdateStore.emit('user valid')
 	} else {
-		console.log('Removing Logout button')
 		if ($elementBackup) $loginButtonParent.appendChild($elementBackup)
 		$elementBackup = $logoutButton
 		$logoutButton.remove()

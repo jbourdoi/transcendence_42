@@ -15,7 +15,6 @@ if (!ws) {
 			ws = new WebSocket(`wss://${location.host}/gamews`)
 			// ws = new WebSocket('ws://localhost:3333')
 			if (!ws) return NotificationStore.notify("Network error, websocket shutdown", "ERROR");
-			console.log("gamesocket created");
 			ws.onopen = e => {
 				if (!ws) return NotificationStore.notify("Network error, websocket shutdown", "ERROR");
 				ws.send(json_stringify({type: 'auth',username: UserStore.getUserName()}));
