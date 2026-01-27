@@ -15,11 +15,10 @@ function handleUpdateProfile() {
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement
 	const $avatarPreview = $page.querySelector('#avatarPreview') as HTMLImageElement
 	const $resetAvatarBtn = $page.querySelector('#resetAvatarButton') as HTMLButtonElement
-	const $toggle2FABtn = $page.querySelector('#twofa') as HTMLButtonElement
-
+	const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
+	
 	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
-
-	console.log('Initial 2FA status from UserStore:', UserStore.getUser2FAStatus())
+	
 	render2FAState($toggle2FABtn, UserStore.getUser2FAStatus())
 	$toggle2FABtn.onclick = () => {
 		start2FAFlow($page, UserStore.getUser2FAStatus() ? 'disable' : 'enable', () =>
@@ -83,7 +82,8 @@ handleUpdateProfile()
 const unsubUserStore = UserStore.subscribe(value => {
 	console.log('User Store Value: ', value)
 	console.log(($usernameInput.placeholder = value.username))
-	render2FAState(undefined, value.has_2fa)
+	const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
+	render2FAState($toggle2FABtn, value.has_2fa)
 })
 
 const cleanPage = () => {

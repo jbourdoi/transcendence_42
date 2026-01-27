@@ -73,7 +73,7 @@ function validate2FACode(
             displayModalError(modalError, 'Incorrect code. Please try again.')
             return
         }
-        if ( toggle2FABtn && (purpose === 'enable' || purpose === 'disable')) {
+        if (toggle2FABtn && (purpose === 'enable' || purpose === 'disable')) {
             UserStore.setUser2FAStatus(!UserStore.getUser2FAStatus())
             render2FAState(toggle2FABtn, UserStore.getUser2FAStatus())
         }
@@ -87,10 +87,8 @@ function displayModalError(modalError: HTMLDivElement, message: string) {
 	modalError.classList.remove('hidden')
 }
 
-export function render2FAState($toggle2FABtn: HTMLButtonElement, enabled: boolean) {
-	console.log('2FA Value: ', enabled)
-	console.log('check button before rendering:', $toggle2FABtn)
-	$toggle2FABtn.innerText = enabled ? '2FA Enabled' : '2FA Disabled'
+export function render2FAState(toggle2FABtn: HTMLButtonElement, enabled: boolean) {
+	toggle2FABtn.innerText = enabled ? '2FA Enabled' : '2FA Disabled'
 }
 
 export async function start2FAFlow(page: HTMLElement, purpose: twoFAPurpose, onSuccess: () => void, userData?: any) {
