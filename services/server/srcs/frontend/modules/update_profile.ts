@@ -10,6 +10,10 @@ let trackEvent = false
 const $page: HTMLElement = document.querySelector('page[type=update_profile]')!
 const $usernameInput: HTMLInputElement = document.querySelector('input[name="username"]')!
 
+function onSuccess() {
+	NotificationStore.notify(`2FA ${UserStore.getUser2FAStatus() ? 'enabled' : 'disabled'}`, 'SUCCESS')
+}
+
 function handleUpdateProfile() {
 	const $submitBtn = document.querySelector('span[type="submit"]') as HTMLElement
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement
@@ -21,8 +25,12 @@ function handleUpdateProfile() {
 
 	render2FAState($toggle2FABtn, UserStore.getUser2FAStatus())
 	$toggle2FABtn.onclick = () => {
-		start2FAFlow($page, UserStore.getUser2FAStatus() ? 'disable' : 'enable', () =>
-			NotificationStore.notify(`2FA ${UserStore.getUser2FAStatus() ? 'disabled' : 'enabled'}`, 'SUCCESS')
+		start2FAFlow(
+			$page,
+			UserStore.getUser2FAStatus() ? 'disable' : 'enable',
+			() => onSuccess(),
+			() => null,
+			null
 		)
 	}
 
