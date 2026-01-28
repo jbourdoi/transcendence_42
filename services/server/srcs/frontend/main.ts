@@ -55,5 +55,9 @@ fetch('/get_payload', {
 ChatStore.subscribe(_ => {})
 GameStore.subscribe(_ => {})
 UserStore.subscribe(value => {
-	if (value.username) ChatStore.addWebsocket(value.username)
+	if (value.username)
+	{
+		ChatStore.addWebsocket(value.username)
+		GameStore.addWebGamesocket(value.username)
+	}
 })
