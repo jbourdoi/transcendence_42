@@ -13,6 +13,4 @@ avant dernier push:
 	check grafana (port 4000) affiche tout sur pc perso
 	decommente envoi mail 2fa (2fa.route ligne 65) + test que ca fonctionne
 
-	mettre les 4 premieres variables de .env dans curl
-	call curl avant ligne 18 de setup_project.sh
 	vider toutes les variables ligne 18 a 31 de setup_project.sh
