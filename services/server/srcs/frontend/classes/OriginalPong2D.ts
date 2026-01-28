@@ -9,7 +9,35 @@ enum GameState
     GAME_OVER   //4
 }
 
-const GameStateStr = [ "NEW_GAME", "PLAYING", "PAUSED", "COUNTDOWN", "GAME_OVER"]
+const GameStateStr = [ "NEW_GAME", "PLAYING", "PAUSED", "COUNTDOWN", "GAME_OVER"];
+
+const ENG = {
+    left:"LEFT",
+    right:"RIGHT",
+    go:"GO",
+    start:"PRESS SPACE TO START",
+    pause:"PAUSE",
+    continue: "PRESS SPACE TO CONTINUE",
+    gameover:"GAME OVER",
+    restart:"PRESS SPACE TO RESTART",
+    ai_enabled: "AI ON",
+    ai_disabled: "AI OFF"
+}
+
+const COEFF = {
+    SPEED_MULTIPLIER: 1.06,
+    SPEED_BALL_X: 0.3,
+    SPEED_BALL_Y: 0.4,
+    COUNTDOWN_SECONDE: 3,
+    MAX_SCORE: 5,
+}
+
+const KEY_PLAYER = {
+    LEFT_CMD_UP:"d",
+    LEFT_CMD_DOWN:"c",
+    RIGHT_CMD_UP:"j",
+    RIGHT_CMD_DOWN:"n"
+}
 
 class Arena
 {
@@ -84,7 +112,7 @@ class Ball
     {
         this.radius = arena.width * arena.ballRadiusRatio;
         this.position = new Vector2(arena.width / 2, arena.height / 2);
-        this.velocity = new Vector2(arena.width * 0.5, arena.height * 0.3);
+        this.velocity = new Vector2(arena.width * COEFF.SPEED_BALL_X, 0);
         this.speed = arena.height * arena.ballSpeedRatio;
     }
 
@@ -92,8 +120,8 @@ class Ball
     {
         this.position.x = this.arena.width / 2;
         this.position.y = this.arena.height / 2;
-        this.velocity.x = direction * this.arena.width * 0.5;
-        this.velocity.y = (Math.random() - 0.5) * this.arena.height * 0.6;
+        this.velocity.x = direction * this.arena.width * COEFF.SPEED_BALL_X;
+        this.velocity.y = (Math.random() - 0.5) * this.arena.height * COEFF.SPEED_BALL_Y;
     }
 
     update(dt: number): void
@@ -111,13 +139,13 @@ export class GameModel
     state = GameState.NEW_GAME;
     showGo: boolean = false;
     countdown : number = 0;
-    readonly countdownDuration : number = 3; // secondes
+    readonly countdownDuration : number = COEFF.COUNTDOWN_SECONDE; // secondes
     lastScorerDirection : number = 1;
 	arena : Arena;
     isTournament: boolean = false;
     leftScore : number = 0;
     rightScore : number = 0;
-    readonly maxScore : number = 5;
+    readonly maxScore : number = COEFF.MAX_SCORE;
     leftPlayerName : string = ''
     rightPlayerName : string = ''
     leftPaddle!: Paddle;
@@ -130,7 +158,7 @@ export class GameModel
         this.state = GameState.NEW_GAME;
 	}
 
-    init(leftPlayerName:string = 'left', rightPlayerName:string = 'right', isTournament = false): void
+    init(leftPlayerName:string = ENG.left, rightPlayerName:string = ENG.right, isTournament = false): void
     {
         this.leftPlayerName = leftPlayerName;
         this.rightPlayerName = rightPlayerName;
@@ -139,8 +167,8 @@ export class GameModel
         this.rightScore = 0;
         this.state = GameState.NEW_GAME;
 
-        this.leftPaddle = new Paddle(0.5, this.arena, "d", "c");
-        this.rightPaddle = new Paddle(this.arena.width - 0.5, this.arena, "j", "n");
+        this.leftPaddle = new Paddle(0.5, this.arena, KEY_PLAYER.LEFT_CMD_UP, KEY_PLAYER.LEFT_CMD_DOWN);
+        this.rightPaddle = new Paddle(this.arena.width - 0.5, this.arena, KEY_PLAYER.RIGHT_CMD_UP, KEY_PLAYER.RIGHT_CMD_DOWN);
 
         this.ball = new Ball(this.arena);
         this.countdown = 0;
@@ -224,7 +252,7 @@ export class GameView
             if (model.showGo)
             {
                 ctx.font = `${5 * this.scale}px Arial Black`;
-                ctx.fillText("GO", width * 0.5, height * 0.5);
+                ctx.fillText(ENG.go, width * 0.5, height * 0.5);
             }
             else
             {
@@ -250,14 +278,15 @@ export class GameView
 		switch (model.state)
 		{
             case (GameState.NEW_GAME):
-                ctx.fillText("ESPACE pour démarrer", width * 0.5, height * 0.5 + 0.8 * this.scale);
+                ctx.fillText(ENG.start, width * 0.5, height * 0.5 + 0.8 * this.scale);
                 break;
             case (GameState.PAUSED):
-                ctx.fillText("PAUSE", width * 0.5, height * 0.5 + 0.8 * this.scale);
+                ctx.fillText(ENG.pause, width * 0.5, height * 0.5 + 0.8 * this.scale);
+                ctx.fillText(ENG.continue, width * 0.5, height * 0.5 + 1.6 * this.scale);
                 break;
             case (GameState.GAME_OVER):
-                ctx.fillText("FIN DE PARTIE", width * 0.5, height * 0.5 + 0.8 * this.scale);
-                ctx.fillText("ESPACE pour rejouer", width * 0.5, height * 0.5 + 1.6 * this.scale);
+                ctx.fillText(ENG.gameover, width * 0.5, height * 0.5 + 0.8 * this.scale);
+                ctx.fillText(ENG.restart, width * 0.5, height * 0.5 + 1.6 * this.scale);
                 break;
             default:
 		}
@@ -386,12 +415,12 @@ export class GameController
 
         if (this.aiEnabled)
         {
-            NotificationStore.notify("AI activated", "SUCCESS")
+            NotificationStore.notify(ENG.ai_enabled, "SUCCESS")
             this.aiStart();
         }
         else
         {
-            NotificationStore.notify("AI desactivated", "INFO")
+            NotificationStore.notify(ENG.ai_disabled, "INFO")
             this.aiStop();
         }
     }
@@ -493,8 +522,8 @@ export class GameController
         const ball = this.model.ball;
         const dir = this.model.lastScorerDirection;
 
-        ball.velocity.x = dir * this.model.arena.width * 0.5;
-        ball.velocity.y = (Math.random() - 0.5) * this.model.arena.height * 0.6;
+        ball.velocity.x = dir * this.model.arena.width * COEFF.SPEED_BALL_X;
+        ball.velocity.y = (Math.random() - 0.5) * this.model.arena.height * COEFF.SPEED_BALL_Y;
 
         this.model.state = GameState.PLAYING;
     }
@@ -600,8 +629,7 @@ export class GameController
             {
                 ball.position.x = leftPaddle.x + ball.radius;
                 const hitPos = (ball.position.y - (leftPaddle.position.y + leftPaddle.height / 2)) / (leftPaddle.height / 2);
-                const speedMultiplier = 1.03;
-                const speed = Math.hypot(ball.velocity.x, ball.velocity.y) * speedMultiplier;
+                const speed = Math.hypot(ball.velocity.x, ball.velocity.y) * COEFF.SPEED_MULTIPLIER;
                 const maxAngle = Math.PI / 3;
                 const randomFactor = (Math.random() - 0.5) * 0.2;
                 const angle = hitPos * maxAngle + randomFactor;
@@ -622,8 +650,7 @@ export class GameController
             {
                 ball.position.x = rightPaddle.x - ball.radius;
                 const hitPos = (ball.position.y - (rightPaddle.position.y + rightPaddle.height / 2)) / (rightPaddle.height / 2);
-                const speedMultiplier = 1.03;
-                const speed = Math.hypot(ball.velocity.x, ball.velocity.y) * speedMultiplier;
+                const speed = Math.hypot(ball.velocity.x, ball.velocity.y) * COEFF.SPEED_MULTIPLIER;
                 const maxAngle = Math.PI / 3;
                 const randomFactor = (Math.random() - 0.5) * 0.2;
                 const angle = hitPos * maxAngle + randomFactor;
