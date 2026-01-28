@@ -8,7 +8,6 @@ const validRoutes = [
 	'home',
 	'update_profile',
 	'login',
-	'options',
 	'register',
 	'users',
 	'remote_game',
