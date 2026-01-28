@@ -16,7 +16,6 @@ private worldScale = 0.08
 private canvas: HTMLCanvasElement
 private engine: BABYLON.Engine
 private scene: BABYLON.Scene
-private paused: boolean = false
 private getState: () => GameState | null
 private getAnglePlayer: () => number
 private getEnd: () => boolean
@@ -35,10 +34,6 @@ constructor(canvas: HTMLCanvasElement, deps: {
 	this.resizeCanvas()
 }
 
-pause() { this.paused = true; }
-
-resume() { this.paused = false; }
-
 async start()
 {
 	await this.initBabylon()
@@ -46,15 +41,20 @@ async start()
 	window.addEventListener("resize", this.resizeCanvas)
 }
 
+public destroy()
+{
+	console.log("renderCanvas3D stop renderLoop")
+	window.removeEventListener("resize", this.resizeCanvas)
+	this.engine.stopRenderLoop()
+	this.engine.dispose()
+	this.scene.dispose()
+}
+
 private renderCanvas3D()
 {
 	if (this.getEnd())
 	{
-		console.log("renderCanvas3D stop renderLoop")
-		window.removeEventListener("resize", this.resizeCanvas)
-		this.engine.stopRenderLoop()
-		this.engine.dispose()
-		this.scene.dispose()
+		this.destroy()
 	}
 	else this.scene.render()
 } //renderCanvas3D

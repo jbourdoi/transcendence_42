@@ -5,6 +5,7 @@ import { navigate } from '../js/routing'
 import { StateStore } from '../stores/state.store'
 import { PageUpdateStore } from '../stores/page_state'
 import { ChatStore } from '../stores/chat.store'
+import { GameStore } from '../stores/game.store'
 
 type LoginButtonValues = {
 	[key: string]: {
@@ -43,6 +44,7 @@ $logoutButton.addEventListener('click', async () => {
 		credentials: 'include'
 	})
 	ChatStore.removeWebsocket()
+	GameStore.removeWebGameSocket()
 	UserStore.clear()
 	navigate('')
 })

@@ -1,7 +1,6 @@
 import type { Countdown, GamePause, GameState, GameDisconnect } from '../../types/game.type.js'
 import { json_parse, json_stringify } from '../functions/json_wrapper.js'
 import { color } from '../functions/pickerColor.js'
-import { Renderer2D } from '../classes/Renderer2D.js'
 import { Renderer3D } from '../classes/Renderer3D.js'
 import { GameStore } from '../stores/game.store.js'
 import { UserStore } from '../stores/user.store.js'
@@ -11,7 +10,6 @@ import { navigate } from '../js/routing.js'
 const $score = document.getElementById('score') as HTMLElement
 const $debug = document.getElementById('debug') as HTMLElement
 const $countdown = document.querySelector('countdown') as HTMLElement
-// const $canvas2D = document.getElementById('canvas2D') as HTMLCanvasElement
 const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
 const $pageGameRemote = document.querySelector("page[type=game]")!
 
@@ -31,16 +29,15 @@ let state : GameState = {
 let end: boolean = false
 let pseudo: string = ''
 let anglePlayer: number = -1
-let ws : WebSocket | undefined;
-// let renderer2D : Renderer2D;
+let ws : WebSocket | null;
 let renderer3D : Renderer3D;
 let keyState: any = {}
 
 
 function playRemote()
 {
-	ws = GameStore.getSocket()
-	if (!ws) return NotificationStore.notify("websocket unavailable", "INFO")
+	ws = GameStore.getWebGameSocket()
+	if (!ws) return NotificationStore.notify("WebGameSocket unavailable", "INFO")
 	ws.send(json_stringify({type:"navigate", navigate:"remote_game"}))
 	const pseudo = UserStore.getUserName()
 	launchGame(ws, pseudo);
@@ -63,25 +60,17 @@ function onMessage(e:any)
 		case 'state':
 		{
 			state = data
-			// renderer2D.resume()
 			if (anglePlayer === -1)
 			{
 				anglePlayer = initAnglePlayer(state.players)
-				// console.log('anglePlayer', anglePlayer)
 			}
 			$debug.textContent = data.nbFrame.toString()
-			break
-		}
-		case 'pause':
-		{
-			// renderer2D.pause()
 			break
 		}
 		case 'end':
 		{
 			state = data
 			end = true
-			// console.log('data.end', data)
 			anglePlayer = -1;
 			$debug.textContent = data.nbFrame.toString()
 			NotificationStore.notify("Game finished", "INFO")
@@ -106,15 +95,8 @@ function onMessage(e:any)
 
 function launchGame(webSocket: WebSocket, pseu: string)
 {
-	// console.log('start a new game')
 	pseudo = pseu
 	anglePlayer = -1
-	// renderer2D = new Renderer2D($canvas2D, {
-	// 	color,
-	// 	getState: () => state,
-	// 	getAnglePlayer: () => anglePlayer,
-	// 	getEnd: () => end
-	// })
 	renderer3D = new Renderer3D($canvas3D, {
 		color,
 		getState: () => state,
@@ -124,7 +106,6 @@ function launchGame(webSocket: WebSocket, pseu: string)
 	webSocket.addEventListener("message", onMessage)
 	end = false
 	handlePlayerInput(webSocket)
-	// renderer2D.start()
 	renderer3D.start()
 } //launchGame
 
@@ -142,14 +123,6 @@ function handlePlayerInput(webSocket: WebSocket)
 	document.addEventListener('keyup', handleKeyUp)
 	const idInterval = setInterval(async () => {
 		if (end) return clearInterval(idInterval)
-		// if (keyState['i']) {
-		// 	keyState['i'] = false
-		// 	return webSocket?.send(json_stringify({ type: 'input', key: 'chatGPT' }))
-		// }
-		// if (keyState[' ']) {
-		// 	keyState[' '] = false
-		// 	return webSocket?.send(json_stringify({ type: 'input', key: 'space' }))
-		// }
 		if (keyState['s'] && !keyState['d']) webSocket?.send(json_stringify({ type: 'input', key: '-' }))
 		else if (!keyState['s'] && keyState['d']) webSocket?.send(json_stringify({ type: 'input', key: '+' }))
 	}, 10)
@@ -189,8 +162,7 @@ function initAnglePlayer(players: any): number
 } //initAnglePlayer
 
 const cleanupGameRemote = () => {
-	// console.log("gamepage cleanup")
-	end = true
+	renderer3D.destroy()
 	ws?.send(json_stringify({type:"navigate", navigate:"quit_game"}))
 	ws?.removeEventListener("message", onMessage)
 	$pageGameRemote.removeEventListener("cleanup", cleanupGameRemote);

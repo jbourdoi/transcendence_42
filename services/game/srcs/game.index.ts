@@ -49,7 +49,7 @@ const server = Bun.serve({
 		{
 			const info : FrontSystemType = {
 				type: 'system',
-				text: 'ws open!'
+				text: 'WebGameSocket ON'
 			}
 			// clientsSocket.add(ws)
 			ws.send(json_stringify(info))
