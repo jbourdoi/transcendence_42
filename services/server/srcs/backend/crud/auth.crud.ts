@@ -124,7 +124,7 @@ export async function fetch42User(url: string, { saveToDb }: { saveToDb: boolean
 	}
 	return {
 		email: user42Info.email,
-		username: user42Info.login,
+		username: body.data.username,
 		id: userId,
 		has_2fa: has_2fa,
 		info: {
