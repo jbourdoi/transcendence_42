@@ -91,7 +91,7 @@ services:
       - "./services/waf/package.json:/app/package.json"
       - ${LOGS_PATH}:${LOGS_DIR}
     ports:
-      - "${WAF_PORT}:${WAF_PORT}"
+      - "${WAF_PORT_OUT}:${WAF_PORT_IN}"
     depends_on:
       vault:
         condition: service_healthy
