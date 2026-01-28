@@ -1,5 +1,6 @@
 import { navigate } from "../js/routing.ts"
 import { GameStore } from "../stores/game.store.ts"
+import { LobbyStore } from "../stores/lobby.store.ts"
 import { NotificationStore } from "../stores/notification.store.ts"
 import { StateStore } from "../stores/state.store.ts"
 import { UserStore } from "../stores/user.store.ts"
@@ -78,7 +79,8 @@ $createGame.addEventListener('click', () => {
 		{
 			StateStore.update({createdGame: { ai:comCount === 1, pseudo1: UserStore.getUserName() || "Anonymous", pseudo2: comCount === 1?"Marvin":"Guest"}})
 			NotificationStore.notify("local game created", "INFO")
-			GameStore.send({type:"leave-game"})
+			if (LobbyStore.getState().sessionId !== "")
+				GameStore.send({type:"leave-game"})
 			navigate("local_game");
 		}
 	}
