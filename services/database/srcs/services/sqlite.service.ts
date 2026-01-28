@@ -159,7 +159,40 @@ export default function initDb() {
 			('frank','grace'),
 			('grace','heidi'),
 			('heidi','ivan');
+			
+			
+			CREATE TRIGGER IF NOT EXISTS update_username_cascade
+			AFTER UPDATE OF username ON users
+			FOR EACH ROW
+			BEGIN
+				UPDATE friend_requests
+				SET from_username = NEW.username
+				WHERE from_username = OLD.username;
 
+				UPDATE friend_requests
+				SET to_username = NEW.username
+				WHERE to_username = OLD.username;
+
+				UPDATE friendships
+				SET username_1 = NEW.username
+				WHERE username_1 = OLD.username;
+
+				UPDATE friendships
+				SET username_2 = NEW.username
+				WHERE username_2 = OLD.username;
+
+				UPDATE blocks
+				SET blocker_username = NEW.username
+				WHERE blocker_username = OLD.username;
+
+				UPDATE blocks
+				SET blocked_username = NEW.username
+				WHERE blocked_username = OLD.username;
+
+				UPDATE match_players
+				SET username = NEW.username
+				WHERE username = OLD.username;
+			END;
 			`)
 
 	console.log('\x1b[32m%s\x1b[0m', 'Tables created if not already exists')
