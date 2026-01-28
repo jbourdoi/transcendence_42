@@ -23,6 +23,7 @@ let trackEvent = false
 
 const $spinner = document.querySelector('span[type="spinner"] img') as HTMLImageElement
 const $menuButtons = document.querySelector('menu-buttons') as HTMLElement
+const $navButton = document.querySelector('nav-button') as HTMLElement
 const $loginForm = document.querySelector('form') as HTMLElement
 const urlParams = new URLSearchParams(window.location.search)
 const codeParam = urlParams.get('code')
@@ -47,7 +48,18 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 
 start42OAuth(document.querySelector('nav-button'), `https://localhost:8443/login`)
 
+function onSuccess(res: any) {
+	NotificationStore.notify('Login successful', 'SUCCESS')
+	UserStore.emit(res)
+	navigate('')
+}
+
+function onExit() {
+	navigate('login')
+}
+
 if (codeParam) {
+	$navButton.style.display = 'none'
 	fetch('/api/auth/login', {
 		method: 'POST',
 		body: JSON.stringify({ code: codeParam })
@@ -61,20 +73,12 @@ if (codeParam) {
 		.then(res => {
 			if (res.info.status >= 400) {
 				NotificationStore.notify(res.info.message, 'ERROR')
+				navigate('login')
 				return
 			}
 			if (res.info.message === '2FA_REQUIRED') {
 				NotificationStore.notify('Two-Factor Authentication required. Please enter your 2FA code.', 'INFO')
-				start2FAFlow(
-					$page,
-					'login',
-					() => {
-						NotificationStore.notify('Login successful', 'SUCCESS')
-						UserStore.emit(res)
-						navigate('')
-					},
-					res
-				)
+				start2FAFlow($page, 'login', () => onSuccess(res), () => onExit(), res)
 				return
 			}
 			UserStore.emit(res)
@@ -83,6 +87,7 @@ if (codeParam) {
 } else {
 	$spinner.style.display = 'none'
 	$menuButtons.style.display = 'flex'
+	$navButton.style.display = 'flex'
 }
 
 function handleUserForm(self: HTMLElement) {

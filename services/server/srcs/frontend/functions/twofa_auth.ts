@@ -1,4 +1,4 @@
-import { UserStore } from "../stores/user.store"
+import { UserStore } from '../stores/user.store'
 
 type twoFAPurpose = 'login' | 'enable' | 'disable'
 
@@ -15,71 +15,70 @@ function close2FAModal(modal: HTMLDivElement, overlay: HTMLDivElement) {
 }
 
 async function send2FACode(purpose: twoFAPurpose, userData: any): Promise<boolean> {
-
-    const res = await fetch('/2fa/send_code', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ purpose, userData })
-    })
-    if (res.status >= 400) {
-        console.log('Failed to send 2FA code. Retry later.', res.status, res.statusText)
-        return false
-    }
-    console.log('2FA code sent successfully')
-    return true
+	const res = await fetch('/2fa/send_code', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ purpose, userData })
+	})
+	if (res.status >= 400) {
+		console.log('Failed to send 2FA code. Retry later.', res.status, res.statusText)
+		return false
+	}
+	console.log('2FA code sent successfully')
+	return true
 }
 
 async function check2FACodeWithServer(code: string, purpose: twoFAPurpose, userData: any): Promise<boolean> {
-    const res = await fetch('/2fa/validate_code', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ code, purpose, userData })
-    })
-    if (res.status >= 400) {
-        console.log('2FA code validation failed. Retry later.', res.status, res.statusText)
-        return false
-    }
-    console.log('2FA code validated successfully with server')
-    return true
+	const res = await fetch('/2fa/validate_code', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ code, purpose, userData })
+	})
+	if (res.status >= 400) {
+		console.log('2FA code validation failed. Retry later.', res.status, res.statusText)
+		return false
+	}
+	console.log('2FA code validated successfully with server')
+	return true
 }
 
 function validate2FACode(
-    page: HTMLElement,
-    toggle2FABtn: HTMLButtonElement | null,
-    modal: HTMLDivElement,
-    overlay: HTMLDivElement,
-    codeInput: HTMLInputElement,
-    modalError: HTMLDivElement,
-    purpose: twoFAPurpose,
-    onSuccess: () => void,
-    userData?: any
+	page: HTMLElement,
+	toggle2FABtn: HTMLButtonElement | null,
+	modal: HTMLDivElement,
+	overlay: HTMLDivElement,
+	codeInput: HTMLInputElement,
+	modalError: HTMLDivElement,
+	purpose: twoFAPurpose,
+	onSuccess: () => void,
+	userData?: any
 ) {
-    const validate2FABtn = page.querySelector('#twofa-validate-btn') as HTMLButtonElement
+	const validate2FABtn = page.querySelector('#twofa-validate-btn') as HTMLButtonElement
 
-    validate2FABtn.onclick = async () => {
-        const code = codeInput.value.trim()
-        if (!/^\d{6}$/.test(code)) {
-            console.log('Invalid 2FA code format')
-            displayModalError(modalError, 'Invalid code format. Please enter a 6-digit code.')
-            return
-        }
-        const isValid = await check2FACodeWithServer(code, purpose, userData)
-        if (!isValid) {
-            console.log('Incorrect 2FA code')
-            displayModalError(modalError, 'Incorrect code. Please try again.')
-            return
-        }
-        if (toggle2FABtn && (purpose === 'enable' || purpose === 'disable')) {
-            UserStore.setUser2FAStatus(!UserStore.getUser2FAStatus())
-            render2FAState(toggle2FABtn, UserStore.getUser2FAStatus())
-        }
-        close2FAModal(modal, overlay)
-        onSuccess()
-    }
+	validate2FABtn.onclick = async () => {
+		const code = codeInput.value.trim()
+		if (!/^\d{6}$/.test(code)) {
+			console.log('Invalid 2FA code format')
+			displayModalError(modalError, 'Invalid code format. Please enter a 6-digit code.')
+			return
+		}
+		const isValid = await check2FACodeWithServer(code, purpose, userData)
+		if (!isValid) {
+			console.log('Incorrect 2FA code')
+			displayModalError(modalError, 'Incorrect code. Please try again.')
+			return
+		}
+		if (toggle2FABtn && (purpose === 'enable' || purpose === 'disable')) {
+			UserStore.setUser2FAStatus(!UserStore.getUser2FAStatus())
+			render2FAState(toggle2FABtn, UserStore.getUser2FAStatus())
+		}
+		close2FAModal(modal, overlay)
+		onSuccess()
+	}
 }
 
 function displayModalError(modalError: HTMLDivElement, message: string) {
@@ -91,25 +90,31 @@ export function render2FAState(toggle2FABtn: HTMLButtonElement, enabled: boolean
 	toggle2FABtn.innerText = enabled ? '2FA Enabled' : '2FA Disabled'
 }
 
-export async function start2FAFlow(page: HTMLElement, purpose: twoFAPurpose, onSuccess: () => void, userData?: any) {
-    const $toggle2FABtn = page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
+export async function start2FAFlow(
+	page: HTMLElement,
+	purpose: twoFAPurpose,
+	onSuccess: () => void,
+	onExit: () => void,
+	userData?: any
+) {
+	const $toggle2FABtn = page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
 	const $modal = page.querySelector('#twofa-modal') as HTMLDivElement
 	const $overlay = page.querySelector('#twofa-modal-overlay') as HTMLDivElement
 	const $closeModalBtn = page.querySelector('#twofa-modal-close') as HTMLButtonElement
 	const $codeInput = page.querySelector('#twofa-code-input') as HTMLInputElement
 	const $modalError = page.querySelector('#twofa-error') as HTMLDivElement
-    const $resend2FABtn = page.querySelector('#twofa-resend-btn') as HTMLButtonElement
+	const $resend2FABtn = page.querySelector('#twofa-resend-btn') as HTMLButtonElement
 
-    open2FAModal($modal, $overlay, $codeInput, $modalError)
-    const success = await send2FACode(purpose, userData)
-    if (!success) {
-        displayModalError($modalError, 'Error sending 2FA code. Try again later.')
-        setTimeout(() => {
-            close2FAModal($modal, $overlay)
-        }, 2000)
-        return
-    }
-    validate2FACode(page, $toggle2FABtn, $modal, $overlay, $codeInput, $modalError, purpose, onSuccess, userData)
+	open2FAModal($modal, $overlay, $codeInput, $modalError)
+	const success = await send2FACode(purpose, userData)
+	if (!success) {
+		displayModalError($modalError, 'Error sending 2FA code. Try again later.')
+		setTimeout(() => {
+			close2FAModal($modal, $overlay)
+		}, 2000)
+		return
+	}
+	validate2FACode(page, $toggle2FABtn, $modal, $overlay, $codeInput, $modalError, purpose, onSuccess, userData)
 
 	$resend2FABtn.onclick = async () => {
 		console.log('Resend 2FA code button clicked')
@@ -121,6 +126,12 @@ export async function start2FAFlow(page: HTMLElement, purpose: twoFAPurpose, onS
 		console.log('2FA code resent successfully')
 	}
 
-	$closeModalBtn.onclick = () => close2FAModal($modal, $overlay)
-	$overlay.onclick = () => close2FAModal($modal, $overlay)
+	$closeModalBtn.onclick = () => {
+		close2FAModal($modal, $overlay)
+		onExit()
+	}
+	$overlay.onclick = () => {
+		close2FAModal($modal, $overlay)
+		onExit()
+	}
 }

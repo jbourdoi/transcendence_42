@@ -67,7 +67,7 @@ if (codeParam) {
 				navigate('register')
 				return
 			}
-			NotificationStore.notify('Login successful', 'SUCCESS')
+			NotificationStore.notify('Register successful', 'SUCCESS')
 			UserStore.emit(res)
 			navigate('')
 		})
