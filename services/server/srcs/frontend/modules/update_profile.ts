@@ -41,7 +41,7 @@ function handleUpdateProfile() {
 			const formData = new FormData()
 			if (username !== '') formData.append('username', username)
 			if (avatarFile) formData.append('avatar', avatarFile)
-			fetch(`https://${location.host}:443/update_user`, {
+			fetch(`https://${location.host}/update_user`, {
 				method: 'PUT',
 				body: formData
 			})

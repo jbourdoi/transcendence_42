@@ -47,7 +47,7 @@ start42OAuth(document.querySelector('nav-button')!, 'https://localhost/register'
 
 if (codeParam) {
 	$navButton.style.display = 'none'
-	fetch('https://localhost:443/api/auth/register', {
+	fetch('https://localhost:8443/api/auth/register', {
 		method: 'POST',
 		body: JSON.stringify({ code: codeParam })
 	})
