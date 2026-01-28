@@ -2,14 +2,14 @@ import { GamePending } from "../../types/message.type.ts"
 import { GameStore } from "../stores/game.store.ts"
 import { LobbyDuel, LobbyStore } from "../stores/lobby.store.ts"
 
-const $gameList = document.getElementById("game-list")!
-const $duelsDiv = document.getElementById("duels")!
-const $pageLobby = document.querySelector("page[type=lobby]")!
+const $pageLobby : Element | null = document.querySelector("page[type=lobby]")!
+const $gameList : HTMLElement | null = document.querySelector("#game-list")
+const $duelsDiv : HTMLElement | null = document.getElementById("game-duels")
 
 const refreshGamePendings = (gamePendings : GamePending[], sessionId : string)=>
 {
+	if (!$gameList) return;
 	$gameList.innerHTML = ""
-
 	for (const game of gamePendings)
 	{
 		const row = document.createElement("div")
@@ -31,11 +31,11 @@ const refreshGamePendings = (gamePendings : GamePending[], sessionId : string)=>
 		$gameList.appendChild(row)
 	}
 }
-
+				
 const refreshDuels = (duels: LobbyDuel[]) =>
 {
+	if (!$duelsDiv) return;
 	$duelsDiv.innerHTML = ""
-
 	for (const duel of duels)
 	{
 		const row = document.createElement("div")
@@ -71,9 +71,9 @@ const cleanupLobbyPage = () =>
 {
 	unsubscribeGamePendings();
 	unsubcribeLobbyDuels();
-	$pageLobby.removeEventListener("cleanup", cleanupLobbyPage);
+	$pageLobby?.removeEventListener("cleanup", cleanupLobbyPage);
 }
 
-$pageLobby.addEventListener("cleanup", cleanupLobbyPage);
+$pageLobby?.addEventListener("cleanup", cleanupLobbyPage);
 
 

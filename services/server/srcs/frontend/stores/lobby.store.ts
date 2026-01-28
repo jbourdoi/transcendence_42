@@ -38,19 +38,23 @@ function createLobbyStore()
 		for (const fn of subscribers) fn(state)
 	}
 
-	function addIncomingDuel(from: string)
+	function addIncomingDuel(from: string) : boolean
 	{
 		const exists = state.duels.some(d => d.from === from)
-		if (exists) return
+		if (exists) return false
 
 		state.duels.push({ from, status: 'pending' })
 		emit()
+		return true
 	}
 
 	function removeDuel(from: string)
 	{
+		const exists = state.duels.some(d => d.from === from)
+		if (!exists) return true
 		state.duels = state.duels.filter(d => d.from !== from)
 		emit()
+		return false
 	}
 
 

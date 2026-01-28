@@ -44,63 +44,13 @@ export default class Lobby
 		return user;
 	}
 
-	// addUser(pseudo: string)
-	// {
-	// 	if (this.isPseudoTaken(pseudo)) return { id: '0', pseudo: '' }
-	// 	const newUser = new User(randomUUID(), pseudo)
-	// 	this.users.set(newUser.id, newUser)
-	// 	console.log(`🆕 ${newUser.pseudo} join the lobby`)
-	// 	this.broadcast({
-	// 		type: 'system',
-	// 		text: `${newUser.pseudo} join the lobby.`
-	// 	})
-	// 	return { userId: newUser.id, pseudo: newUser.pseudo }
-	// }
-
-	getUser(userId: string): User | undefined
-	{
-		return this.users.get(userId)
-	}
-
 	removeUser(user: User)
 	{
 		if (!user) return
+
 		console.log(`❌ ${user.pseudo} left the lobby`)
 		const info : FrontInfoType = {type: 'info',text : `${user.pseudo} left the lobby`}
 		this.broadcast(info)
-	}
-
-	handleDuel(sender: User, msg: DuelType)
-	{
-		if (!sender) return ;
-		const destinataire = this.getUserByPseudo(msg.to)
-		if (!destinataire) return sender.send({ type: 'error', text: `404 '${msg.to}' not found` })
-		switch (msg.action)
-		{
-			case 'propose':
-			{
-				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'propose' })
-				console.log(`${sender.pseudo} send a duel to ${destinataire.pseudo}`)
-				break
-			}
-			case 'accept':
-			{
-				if (destinataire.status === "game")
-				{
-					sender.send({ type: 'info', text: `${destinataire.pseudo} is already in a game, please try again later`})
-					break;
-				}
-				console.log(`${sender.pseudo} accept a duel from ${destinataire.pseudo}`)
-				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'accept' })
-				this.gameManager.createGame([destinataire, sender])
-				break
-			}
-			case 'decline':
-			{
-				destinataire.send({ type: 'duel', from: sender.pseudo, action: 'decline' })
-				console.log(`${sender.pseudo} decline a duel from ${destinataire.pseudo}`)
-			}
-		}
 	}
 
 	handleInputKey(sender: User, msg: InputType)

@@ -9,81 +9,6 @@ type Subscriber = (message: MessageType[]) => void
 
 let ws: WebSocket | null = null
 
-// if (!ws) {
-// 	UserStore.subscribe(userStore => {
-// 		if (userStore.isValid) {
-// 			ws = new WebSocket(`wss://${location.host}/gamews`)
-// 			// ws = new WebSocket('ws://localhost:3333')
-// 			if (!ws) return NotificationStore.notify("Network error, websocket shutdown 1", "ERROR");
-// 			ws.onopen = e => {
-// 				if (!ws) return NotificationStore.notify("Network error, websocket shutdown 2", "ERROR");
-// 				ws.send(json_stringify({type: 'auth',username: UserStore.getUserName()}));
-// 			}
-// 			ws.onmessage = e => {
-// 				const message: FrontType = json_parse(e.data) as FrontType
-// 				if (!message) return
-// 				switch (message.type) {
-// 					case 'error':
-// 					if (message.text && message.text != "undefined")
-// 					{
-// 						NotificationStore.notify(message.text, "ERROR")
-// 					}
-// 					return ;
-// 					case 'system':
-// 					if (message.text && message.text != "undefined")
-// 					{
-// 						NotificationStore.notify(message.text, "INFO")
-// 					}
-// 					return ;
-// 					case 'info':
-// 					if (message.text && message.text != "undefined")
-// 					{
-// 						NotificationStore.notify(message.text, "INFO")
-// 					}
-// 					return ;
-// 					case 'start-game':
-// 					{
-// 						NotificationStore.notify("START remote game", "SUCCESS");
-// 						return navigate('remote_game');
-// 					}
-// 					case 'session-id':
-// 					{
-// 						return (LobbyStore.refreshSessionId(message.sessionId));
-// 					}
-// 					case 'list-game':
-// 					{
-// 						return (LobbyStore.setGamePendings(message.games))
-// 					}
-// 					case 'duel':
-// 					{
-// 						switch (message.action)
-// 						{
-// 							case 'accept':
-// 							{
-// 								LobbyStore.removeDuel(message.from);
-// 								return NotificationStore.notify(`${message.from} accept you duel`, "INFO")
-// 							}
-// 							case 'decline':
-// 							{
-// 								LobbyStore.removeDuel(message.from)
-// 								return NotificationStore.notify(`Duel has been declined from ${message.from}`, "INFO")
-// 							}
-// 							case 'propose':
-// 							{
-// 								LobbyStore.addIncomingDuel(message.from)
-// 								return NotificationStore.notify(`${message?.from} send you a duel`, "INFO")
-// 							}
-// 						}
-// 					}
-// 				}
-// 			}
-// 			ws.onclose = e => {
-// 				NotificationStore.notify("WebSocket closed", "INFO")
-// 			}
-// 		}
-// 	})
-// }
-
 function createGameStore() {
 	const subscribers = new Set<Subscriber>()
 
@@ -154,18 +79,21 @@ function createGameStore() {
 					{
 						case 'accept':
 						{
-							LobbyStore.removeDuel(message.from);
-							return NotificationStore.notify(`${message.from} accept you duel`, "INFO")
+							if (LobbyStore.removeDuel(message.from))
+								NotificationStore.notify(`${message.from} accept you duel`, "INFO");
+							return ;
 						}
 						case 'decline':
 						{
-							LobbyStore.removeDuel(message.from)
-							return NotificationStore.notify(`Duel has been declined from ${message.from}`, "INFO")
+							if (LobbyStore.removeDuel(message.from))
+								NotificationStore.notify(`Duel has been declined from ${message.from}`, "INFO");
+							return ;
 						}
 						case 'propose':
 						{
-							LobbyStore.addIncomingDuel(message.from)
-							return NotificationStore.notify(`${message?.from} send you a duel`, "INFO")
+							if (LobbyStore.addIncomingDuel(message.from))
+								NotificationStore.notify(`${message?.from} send you a duel`, "INFO");
+							return ;
 						}
 					}
 				}
