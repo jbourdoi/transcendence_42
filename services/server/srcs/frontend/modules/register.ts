@@ -43,7 +43,7 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-start42OAuth(document.querySelector('nav-button')!, 'https://localhost/register')
+start42OAuth(document.querySelector('nav-button')!, 'https://localhost:8443/register')
 
 if (codeParam) {
 	$navButton.style.display = 'none'

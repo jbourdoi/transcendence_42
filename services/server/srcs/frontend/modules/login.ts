@@ -45,7 +45,7 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-start42OAuth(document.querySelector('nav-button'), `https://localhost/login`)
+start42OAuth(document.querySelector('nav-button'), `https://localhost:8443/login`)
 
 if (codeParam) {
 	fetch('/api/auth/login', {
