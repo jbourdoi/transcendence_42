@@ -55,7 +55,7 @@ function handleUpdateProfile() {
 			})
 				.then(res => {
 					if (res.status >= 400) {
-						console.log('Error: ', res)
+						// console.log('Error: ', res)
 						return {
 							error: true
 						}
@@ -89,8 +89,8 @@ function handleUpdateProfile() {
 handleUpdateProfile()
 
 const unsubUserStore = UserStore.subscribe(value => {
-	console.log('User Store Value: ', value)
-	console.log(($usernameInput.placeholder = value.username))
+	// console.log('User Store Value: ', value)
+	// console.log(($usernameInput.placeholder = value.username))
 	const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
 	render2FAState($toggle2FABtn, value.has_2fa)
 })

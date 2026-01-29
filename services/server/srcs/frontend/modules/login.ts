@@ -139,10 +139,10 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 	if (['ArrowLeft', 'ArrowRight'].includes(key.value)) {
 		const data = currentButton?.dataset
 		if (data && data?.stateValue) {
-			console.log('data', data)
+			// console.log('data', data)
 			const action = actions[data.action]
 			const current = Number(data.stateValue)
-			console.log('action', action)
+			// console.log('action', action)
 			const min = action.min
 			const max = action.max
 			const steps = action.steps

@@ -111,7 +111,7 @@ export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview:
 export function isUsernameFormatInvalid(username: string): boolean {
 	if (username.length < 4) return true
 	if (username.length > 20) return true
-	if (!/^[a-zA-Z0-9_]+$/.test(username)) return true
+	if (!/^[a-zA-Z0-9_-]+$/.test(username)) return true
 	return false
 }
 

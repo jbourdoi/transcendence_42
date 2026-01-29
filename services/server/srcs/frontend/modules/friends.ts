@@ -23,7 +23,7 @@ UserStore.subscribe(user => {
 			body: JSON.stringify({ name: username })
 		})
 			.then(res => {
-				if (res.status >= 400) return console.log('ERROR updating profile', res.status)
+				if (res.status >= 400) return ; //console.log('ERROR updating profile', res.status)
 				return res.json()
 			})
 			.then(res => {

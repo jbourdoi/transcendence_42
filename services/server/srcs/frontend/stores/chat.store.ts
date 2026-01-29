@@ -52,7 +52,6 @@ function createChatStore() {
 
 			if (msg.type === 'system') return
 			if (msg.type === 'req-friend') {
-				console.log(event.data)
 				return
 			}
 			if (msg.type === 'notification') {
@@ -62,9 +61,7 @@ function createChatStore() {
 			chats.push(msg)
 			ChatStore.emit(chats)
 		}
-		ws.onclose = event => {
-			console.log(event)
-		}
+		ws.onclose = event => {}
 	}
 
 	function removeWebsocket() {

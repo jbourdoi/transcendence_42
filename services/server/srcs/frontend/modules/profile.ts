@@ -24,7 +24,7 @@ const unsubStateStore = StateStore.subscribe(async data => {
 		body: JSON.stringify({ name: selectedProfile })
 	})
 		.then(res => {
-			if (res.status >= 400) return console.log('ERROR updating profile', res.status)
+			if (res.status >= 400) return ; //console.log('ERROR updating profile', res.status)
 			return res.json()
 		})
 		.then(res => {

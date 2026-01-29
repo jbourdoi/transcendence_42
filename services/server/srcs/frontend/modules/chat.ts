@@ -86,7 +86,7 @@ function isBlocked(blocker: string, blocked: string): Promise<boolean> {
 			})
 			if (!blockedUser.ok) return false
 			const body = await blockedUser.json()
-			console.log('body.isBlocked: ', body.isBlocked)
+			// console.log('body.isBlocked: ', body.isBlocked)
 			resolve(body.isBlocked)
 		} catch (error) {
 			reject()
@@ -104,7 +104,7 @@ function isFriend(user1: string, user2: string): Promise<boolean> {
 			})
 			if (!friendUser.ok) return false
 			const body = await friendUser.json()
-			console.log('body.isFriend: ', body.isFriend)
+			// console.log('body.isFriend: ', body.isFriend)
 			// return body.isFriend
 			resolve(body.isFriend)
 		} catch (error) {

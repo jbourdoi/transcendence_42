@@ -1,13 +1,12 @@
 150 POINTS!!!!! 🥳🥳🥳🥳
 
 gerer css modal (login + update_profile)
+Focus modal
+check for missing tabindexes
 friends btn view -> visiblement btn
 
-enable dashed in username in frontend and backend
+verifier tous les placeholder
+verifier la deconnexion d'un user lorsque de double connexion ailleurs
 
-notif 'you are not waiting' quand create game avec 2 joueurs
-
-avant dernier push:
+avant dernier push vogo:
 	vider toutes les variables ligne 18 a 31 de setup_project.sh
-
-notify user when receiving an mp

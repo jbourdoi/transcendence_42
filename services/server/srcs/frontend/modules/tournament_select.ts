@@ -17,11 +17,11 @@ const ENG = {
 	required: 'Name is required.',
 	minLength: `Minimum ${limitLength.min} characters.`,
 	maxLength: `Maximum ${limitLength.max} characters.`,
-	allowedChar: 'Allowed characters: A-Z, 0-9, _ and -.',
+	allowedChar: 'Allowed characters: A-Z, 0-9 and _',
 	alreadyUse: 'This name is already used.'
 }
 
-const USERNAME_REGEX = /^[A-Za-z0-9_-]+$/
+const USERNAME_REGEX = /^[A-Za-z0-9_]+$/
 
 function sanitize(value: string): string
 {

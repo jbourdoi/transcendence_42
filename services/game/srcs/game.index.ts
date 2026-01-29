@@ -4,31 +4,28 @@ import { inputChannel } from './channels/input.channel.js'
 import { navigateChannel } from './channels/navigate.channel.js'
 import JSONParser from './functions/json_parser.fn'
 import { BunSocketType } from './types/bunSocket.type'
-import { getVaultSecret } from './services/vault.service.js'
+// import { getVaultSecret } from './services/vault.service.js'
 import Lobby from './classes/Lobby.js'
-import { FrontSystemType, FrontInfoType, MessageType } from './types/message.type.js'
+import { MessageType } from './types/message.type.js'
 import { createGameChannel } from './channels/create.game.channel.js'
 import { GameManager } from './classes/GameManager.js'
 import { joinGameChannel, listGamesChannel } from './channels/join.game.channel.js'
 import { leaveGameChannel } from './channels/leave.game.channel.js'
-import { json_stringify } from './functions/json_wrapper.js'
 
-const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
-	value.replace(/\\n/g, '\n').trim()
-)
-const cert_key = await getVaultSecret<string>('services_key', (value) =>
-	value.replace(/\\n/g, '\n').trim()
-)
-if (!cert_crt || !cert_key)
-	console.error('Failed to load TLS certificates from Vault service.')
+// const cert_crt = await getVaultSecret<string>('services_crt', (value) =>
+// 	value.replace(/\\n/g, '\n').trim()
+// )
+// const cert_key = await getVaultSecret<string>('services_key', (value) =>
+// 	value.replace(/\\n/g, '\n').trim()
+// )
+// if (!cert_crt || !cert_key)
+// 	console.error('Failed to load TLS certificates from Vault service.')
 
 const gameManager = new GameManager()
 const lobby = new Lobby(gameManager)
 
 const server = Bun.serve({
 	port: 3333,
-	// key: cert_key,
-	// cert: cert_crt,
 	fetch(req, server) {
 		if (req.url === '/health') return new Response('OK', { status: 200 })
 		if (
