@@ -5,7 +5,7 @@ import { KeyboardStore } from '../stores/keyboard.store'
 import { PageDestroyStore, PageUpdateStore } from '../stores/page_state'
 import { navigate } from './routing'
 
-let buttonList: HTMLElement[] = []
+let buttonList: (HTMLElement | undefined)[] = []
 let currentTabIndex = 0
 
 PageUpdateStore.subscribe(_ => {
@@ -19,38 +19,57 @@ PageDestroyStore.subscribe(() => {
 })
 
 TabIndexStore.subscribe(tabIndex => {
-	currentTabIndex = tabIndex
-
-	let $foundEl = buttonList.find($el => {
-		const elTabIndex = Number($el.getAttribute('tabIndex')) as number | null
-		return tabIndex + 1 === elTabIndex
-	})
-
-	if ($foundEl) {
-		unselectButtons()
-		let currentButton = $foundEl
-		if (currentButton?.dataset?.selected !== undefined) {
-			currentButton.dataset.selected = 'true'
-			CurrentButtonStore.emit(currentButton)
-		}
-	}
+	// console.log('Tab Index: ', tabIndex)
+	// selectElement(tabIndex)
 })
 
-KeyboardStore.subscribe(keyEvt => {
-	if (!['ArrowDown', 'ArrowUp'].includes(keyEvt.value)) return
-	if (keyEvt.value === 'ArrowDown') {
-		currentTabIndex = (currentTabIndex + 1) % buttonList.length
-	} else if (keyEvt.value === 'ArrowUp') {
-		currentTabIndex = (currentTabIndex - 1 + buttonList.length) % buttonList.length
-	}
+CurrentButtonStore.subscribe(currentButton => {
 	unselectButtons()
-	let currentButton = buttonList[currentTabIndex]
-	if (currentButton?.dataset?.selected !== undefined) {
-		TabIndexStore.emit(currentTabIndex)
-		currentButton.dataset.selected = 'true'
-		currentButton.focus()
-		CurrentButtonStore.emit(currentButton)
+	// console.log(currentButton)
+	currentButton.dataset.selected = 'true'
+})
+
+function findNextIndex(list, startIndex, direction) {
+	const step = direction === 'down' ? 1 : -1
+	const length = list.length
+
+	let i = startIndex
+
+	for (let count = 0; count < length; count++) {
+		i = (i + step + length) % length
+
+		if (list[i] !== undefined) {
+			return i
+		}
 	}
+	return -1
+}
+
+function selectElement(index: number) {
+	currentTabIndex = index
+	unselectButtons()
+	const currentButton = buttonList[currentTabIndex]
+	if (!currentButton) return
+	currentButton.dataset.selected = 'true'
+	currentButton.focus()
+	CurrentButtonStore.emit(currentButton)
+}
+
+KeyboardStore.subscribe(keyEvt => {
+	if (!['ArrowDown', 'ArrowUp', 'Tab'].includes(keyEvt.value)) return
+
+	let direction = keyEvt.value === 'ArrowDown' ? 'down' : 'up'
+	if (keyEvt.value === 'Tab') {
+		direction = keyEvt.isShift === true ? 'up' : 'down'
+		// return
+	} else {
+		direction = keyEvt.value === 'ArrowDown' ? 'down' : 'up'
+	}
+
+	const nextIndex = findNextIndex(buttonList, currentTabIndex, direction)
+
+	if (nextIndex === -1) return
+	selectElement(nextIndex)
 })
 
 KeyboardStore.subscribe(keyEvt => {
@@ -67,5 +86,7 @@ KeyboardStore.subscribe(keyEvt => {
 })
 
 function unselectButtons() {
-	buttonList.forEach(el => (el.dataset.selected = 'false'))
+	buttonList.forEach(el => {
+		if (el) el.dataset.selected = 'false'
+	})
 }
