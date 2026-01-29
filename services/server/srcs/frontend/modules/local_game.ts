@@ -1,10 +1,14 @@
 import { GameModel, GameView, GameController } from "../classes/OriginalPong2D.ts";
+import { navigate } from "../js/routing.ts";
 import { CreatedLocalGame, StateStore } from "../stores/state.store.ts";
 
 const $pageLocalGame = document.querySelector("page[type=local_game]")!;
 const $canvas = document.querySelector("#canvas2D") as HTMLCanvasElement
 const createdGame : CreatedLocalGame = StateStore.getCreatedGame()
 const model = new GameModel();
+
+if (!$canvas) await navigate("lobby")
+
 if (createdGame)
 {
     model.init(createdGame?.pseudo1, createdGame?.pseudo2, false);

@@ -10,36 +10,35 @@ import { LobbyStore } from '../stores/lobby.store.js'
 import { MatchTypeToSave, saveMatch } from '../functions/saveMatch.js'
 
 const $score = document.getElementById('score') as HTMLElement
-const $debug = document.getElementById('debug') as HTMLElement
 const $countdown = document.querySelector('countdown') as HTMLElement
 const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
 const $pageGameRemote = document.querySelector("page[type=game]")!
 
-if (!$canvas3D) navigate("lobby")
-	
-	$canvas3D.width = 0
-	$canvas3D.height = 0
-	$countdown.textContent = ""
-	$countdown.classList.remove('visible')
-	
-	let state : GameState = {
-		type: 'state',
-		ball: { dist: 0, theta: 0, x: 0, y: 0 },
-		impacts: [],
-		players: [],
-		changeColor: false,
-		nbFrame: 0
-	}
-	let end: boolean = false
-	let pseudo: string = ''
-	let anglePlayer: number = -1
-	let ws : WebSocket | null;
-	let renderer3D : Renderer3D;
-	let keyState: any = {}
-	
-	
-	function playRemote()
-	{
+if (!$canvas3D) await navigate("lobby")
+
+$canvas3D.width = 0
+$canvas3D.height = 0
+$countdown.textContent = ""
+$countdown.classList.remove('visible')
+
+let state : GameState = {
+	type: 'state',
+	ball: { dist: 0, theta: 0, x: 0, y: 0 },
+	impacts: [],
+	players: [],
+	changeColor: false,
+	nbFrame: 0
+}
+let end: boolean = false
+let pseudo: string = ''
+let anglePlayer: number = -1
+let ws : WebSocket | null;
+let renderer3D : Renderer3D;
+let keyState: any = {}
+
+
+function playRemote()
+{
 	ws = GameStore.getWebGameSocket()
 	if (!ws) return ;
 	ws.send(json_stringify({type:"navigate", navigate:"remote_game"}))
@@ -96,7 +95,6 @@ function onMessage(e:any)
 			{
 				anglePlayer = initAnglePlayer(state.players)
 			}
-			$debug.textContent = data.nbFrame.toString()
 			break
 		}
 		case 'end':
@@ -104,8 +102,8 @@ function onMessage(e:any)
 			state = data
 			end = true
 			anglePlayer = -1;
-			$debug.textContent = data.nbFrame.toString()
 			saveMatchResult(data);
+			showVictoryModal(getWinningAliases(data.players))
 			break
 		}
 		case 'countdown':
@@ -160,29 +158,114 @@ function handlePlayerInput(webSocket: WebSocket)
 	}, 10)
 } //handlePlayerInput
 
+let victoryModalShown = false
+
+function onKeyEscape(event : KeyboardEvent)
+{
+	if (event.key === 'Escape')
+		{
+			const modal = document.querySelector('.victory-modal')
+			if (modal) modal.remove()
+			navigate("lobby")
+		}
+}
+
+function getWinningAliases(players: any[]): string[]
+{
+	if (!players?.length) return []
+
+	let bestScore = 0
+
+	for (const p of players)
+		if (p.score > bestScore)
+			bestScore = p.score
+
+	return players
+		.filter(p => p.score === bestScore)
+		.map(p => p.pseudo)
+}
+
+function showVictoryModal(winnerAliases: string[]): void
+{
+	if (victoryModalShown) return
+	victoryModalShown = true
+
+	const winnersHtml = winnerAliases
+		.map(name => `<div class="victory-player">👑 ${name}</div>`)
+		.join('')
+
+	const modal = document.createElement('div')
+	modal.className = 'victory-modal'
+	modal.innerHTML = `
+		<div class="victory-content">
+			<div class="victory-trophy">🏆</div>
+			<div class="victory-title">
+				${winnerAliases.length > 1 ? 'Winners' : 'Winner'}
+			</div>
+
+			<div class="victory-list">
+				${winnersHtml}
+			</div>
+
+			<div class="victory-sub">
+				${winnerAliases.length > 1
+					? 'Win the match!'
+					: 'Wins the match!'}
+			</div>
+		</div>
+	`
+
+	modal.addEventListener('click', e => {
+		if (e.target === modal)
+			modal.remove()
+			navigate("lobby")
+	})
+
+	document.addEventListener('keydown', onKeyEscape)
+	document.body.appendChild(modal)
+}
+
+function resetVictoryState(): void
+{
+	victoryModalShown = false
+	document.body.classList.remove('tournament-won')
+
+	document.removeEventListener("keydown", onKeyEscape)
+	const modal = document.querySelector('.victory-modal')
+	if (modal) modal.remove()
+}
+
+
 function formatScore(players: any, end: boolean = false): string
 {
 	if (!players.length) return ''
 
-	let bestScore = 0
-	players.forEach((p: any) => {
-		if (p.score > bestScore) bestScore = p.score
-	})
+	let bestScore = Math.max(...players.map(p => p.score))
 
-	const colored = players.map((p: any, index: number) => {
-		return { ...p, bg: color.player[index], color: color.playerComp[index] }
-	})
+	const colored = players.map((p: any, index: number) => ({
+		...p,
+		bg: color.player[index],
+		fg: color.playerComp[index]
+	}))
 
-	if (end) colored.sort((a: any, b: any) => b.score - a.score)
-	return colored
-		.map((p: any) => {
-			const crown = p.score === bestScore ? '👑' : ''
-			const AI = p.ai ? '🤖' : ''
-			return `<span style="background-color:${p.bg}; color:${p.color
-				};" class="font-extrabold whitespace-nowrap break-keep">${AI}${p.pseudo.slice(0, 5)}${crown} (${p.score})</span>`
-		})
-		.join('')
-} //formatScore
+	if (end) colored.sort((a, b) => b.score - a.score)
+
+	return colored.map((p: any) => {
+		const leader = p.score === bestScore ? 'score-leader' : ''
+		const AI = p.ai ? '🤖' : ''
+		const crown = p.score === bestScore ? '👑' : ''
+
+		return `
+			<div class="score-pill ${leader}"
+				style="background:${p.bg}; color:${p.fg};">
+				<span>${AI}</span>
+				<span class="score-name">${p.pseudo.slice(0,6)}</span>
+				<span class="score-value">${p.score}</span>
+				<span>${crown}</span>
+			</div>
+		`
+	}).join('')
+}
 
 function initAnglePlayer(players: any): number
 {
@@ -200,6 +283,7 @@ const cleanupGameRemote = () => {
 	document?.removeEventListener("keydown", handleKeyDown)
 	document?.removeEventListener("keyup", handleKeyUp)
 	LobbyStore.refreshSessionId("")
+	resetVictoryState()
 }
 
 $pageGameRemote?.addEventListener("cleanup", cleanupGameRemote)

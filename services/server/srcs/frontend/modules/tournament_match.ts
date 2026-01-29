@@ -9,6 +9,8 @@ const gameModel = new GameModel();
 const gameView = new GameView($canvas);
 const gameController = new GameController(gameModel, gameView, false);
 
+if (!$canvas) await onBackNavigation()
+
 const match = TournamentController?.getCurrentMatch()
 
 playMatch(match);
