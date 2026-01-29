@@ -25,6 +25,7 @@ function handleUpdateProfile() {
 
 	render2FAState($toggle2FABtn, UserStore.getUser2FAStatus())
 	$toggle2FABtn.onclick = () => {
+		if ($toggle2FABtn.getAttribute('disabled') === 'true') return
 		start2FAFlow(
 			$page,
 			UserStore.getUser2FAStatus() ? 'disable' : 'enable',

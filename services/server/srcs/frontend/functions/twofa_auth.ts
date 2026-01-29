@@ -104,14 +104,10 @@ export async function start2FAFlow(
 	const $codeInput = page.querySelector('#twofa-code-input') as HTMLInputElement
 	const $modalError = page.querySelector('#twofa-error') as HTMLDivElement
 	const $resend2FABtn = page.querySelector('#twofa-resend-btn') as HTMLButtonElement
-	const $form = page.querySelector('form')
 
+	$toggle2FABtn.setAttribute('disabled', 'true')
 	open2FAModal($modal, $overlay, $codeInput, $modalError)
-	$codeInput.click()
 	$codeInput.focus()
-	console.log($form)
-	// $form.style.pointerEvents = 'none'
-	// console.log(123)
 	const success = await send2FACode(purpose, userData)
 	if (!success) {
 		displayModalError($modalError, 'Error sending 2FA code. Try again later.')
