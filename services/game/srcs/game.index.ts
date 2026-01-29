@@ -45,11 +45,11 @@ const server = Bun.serve({
 	websocket: {
 		open(ws: BunSocketType)
 		{
-			const info : FrontSystemType = {
-				type: 'system',
-				text: 'WebGameSocket ON'
-			}
-			ws.send(json_stringify(info))
+			// const info : FrontSystemType = {
+			// 	type: 'system',
+			// 	text: 'WebGameSocket ON'
+			// }
+			// ws.send(json_stringify(info))
 		},
 		message(ws: BunSocketType, message)
 		{

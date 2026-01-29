@@ -50,8 +50,6 @@ start()
                 this.draw();
             requestAnimationFrame(loop);
         }
-        else
-            console.log("renderCanvas1D stop renderLoop")
     };
     requestAnimationFrame(loop);
 }

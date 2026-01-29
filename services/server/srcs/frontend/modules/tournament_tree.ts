@@ -61,7 +61,7 @@ function resetVictoryState(): void
 
 function savematchTournamentResults(tournament: TournamentModel)
 {
-	if (!tournament.winner) return;
+	if (!tournament?.winner) return;
 
 	const winner = tournament.winner.alias;
 	const p1 = tournament.players[0].alias;
@@ -118,7 +118,13 @@ function renderTournamenentTree(tournament: TournamentModel | undefined)
 
 			</div>
 		`
-	if (tournament.winner !== null)
+	if (tournament?.currentMatch < 3 && !tournament?.winner)
+	{
+		focusPlayButton()
+	}
+
+
+	if (tournament?.winner !== null)
 	{
 		savematchTournamentResults(tournament);
 		document.body.classList.add('tournament-won')
@@ -155,6 +161,16 @@ function renderMatch(label: string, match: any, isCurrent: boolean)
 	}
 }
 
+function focusPlayButton(): void
+{
+	const button = document.getElementById('play-match') as HTMLButtonElement | null
+	if (button)
+	{
+		button.focus()
+	}
+}
+
+
 function renderAction(model: TournamentModel)
 {
 	if (model.currentMatch >= 3)
@@ -163,7 +179,7 @@ function renderAction(model: TournamentModel)
 	}
 
 	return `
-		<button id="play-match">
+		<button id="play-match" type="button" tabindex="1">
 			Play
 		</button>
 	`

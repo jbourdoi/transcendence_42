@@ -1,4 +1,3 @@
-import { NotificationStore } from "../stores/notification.store"
 import { UserStore } from "../stores/user.store"
 import { json_stringify } from "./json_wrapper"
 
@@ -16,5 +15,4 @@ export async function saveMatch(match : MatchTypeToSave)
         headers: { 'Content-Type': 'application/json' },
         body: json_stringify(match)
     })
-    if (res.status >= 400) NotificationStore.notify('Error saving match', 'ERROR')
 }

@@ -386,7 +386,6 @@ export class GameController
     {
         if (this.intervalId !== 0)
         {
-            console.log('clearInterval with gamestate: ', GameStateStr[this.model.state]);
             clearInterval(this.intervalId);
             this.intervalId = 0;
         }

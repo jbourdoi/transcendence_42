@@ -1,14 +1,13 @@
 import { GameModel, GameView, GameController } from "../classes/OriginalPong2D.ts";
-import { StateStore } from "../stores/state.store.ts";
+import { CreatedLocalGame, StateStore } from "../stores/state.store.ts";
 
 const $pageLocalGame = document.querySelector("page[type=local_game]")!;
 const $canvas = document.querySelector("#canvas2D") as HTMLCanvasElement
-// Création de l'arène et du Pong
-const createdGame = StateStore.getCreatedGame()
+const createdGame : CreatedLocalGame = StateStore.getCreatedGame()
 const model = new GameModel();
 if (createdGame)
 {
-    model.init(createdGame.pseudo1, createdGame.pseudo2, false);
+    model.init(createdGame?.pseudo1, createdGame?.pseudo2, false);
 }
 else
 {
@@ -24,7 +23,6 @@ view.render(model)
 function popUpDefault(event : any)
 {
     event.preventDefault()
-    console.log("local_game popup: ", event)
 }
 
 window.addEventListener("beforeunload", popUpDefault)
@@ -35,7 +33,6 @@ window.addEventListener("popstate", popUpDefault);
 ========================= */
 
 const cleanupLocalGame = () => {
-    console.log("local_game cleanup: ")
     view.destroy()
     controller.destroy()
     window.removeEventListener("beforeunload", popUpDefault)

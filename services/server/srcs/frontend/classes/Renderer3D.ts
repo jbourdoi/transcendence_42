@@ -43,7 +43,6 @@ async start()
 
 public destroy()
 {
-	console.log("renderCanvas3D stop renderLoop")
 	window.removeEventListener("resize", this.resizeCanvas)
 	this.engine.stopRenderLoop()
 	this.engine.dispose()

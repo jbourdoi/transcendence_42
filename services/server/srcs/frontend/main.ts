@@ -41,8 +41,6 @@ fetch('/get_payload', {
 }).then(async res => {
 	const payload = await res.json()
 	if (!payload) return
-	// console.log('refresh PAYLOAD:', payload)
-	// console.log('refresh PAYLOAD info:', payload.userInfo)
 	UserStore.emit({
 		email: payload.userInfo.email,
 		username: payload.userInfo.username,

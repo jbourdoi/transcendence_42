@@ -41,7 +41,7 @@ let keyState: any = {}
 function playRemote()
 {
 	ws = GameStore.getWebGameSocket()
-	if (!ws) return NotificationStore.notify("WebGameSocket unavailable", "INFO")
+	if (!ws) return ;
 	ws.send(json_stringify({type:"navigate", navigate:"remote_game"}))
 	const pseudo = UserStore.getUserName()
 	launchGame(ws, pseudo);
@@ -106,7 +106,6 @@ function onMessage(e:any)
 			anglePlayer = -1;
 			$debug.textContent = data.nbFrame.toString()
 			saveMatchResult(data);
-			NotificationStore.notify("Game finished", "INFO")
 			break
 		}
 		case 'countdown':
@@ -187,7 +186,6 @@ function formatScore(players: any, end: boolean = false): string
 
 function initAnglePlayer(players: any): number
 {
-	// console.log('pseudo', pseudo, 'players', players)
 	const nbPlayer: number = players.length
 	for (let index = 0; index < nbPlayer; index++)
 		if (players[index].pseudo === pseudo) return Math.PI * (0.5 - (1 + 2 * index) / nbPlayer)

@@ -4,6 +4,12 @@ import { v4 as uuidv4 } from 'uuid'
 
 type Subscriber = (config: any) => void
 
+export type CreatedLocalGame = {
+	ai:boolean,
+	pseudo1:string,
+	pseudo2:string
+}
+
 let state = {
 	textSize: 20,
 	username: undefined,
@@ -53,8 +59,8 @@ function createStateStore() {
 		return state.uuid
 	}
 
-	function getCreatedGame(){
-		return state.createdGame
+	function getCreatedGame() : CreatedLocalGame{
+		return state.createdGame as CreatedLocalGame
 	}
 
 	return { subscribe, emit, update, getStateUUID, getCreatedGame }

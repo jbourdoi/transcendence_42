@@ -22,7 +22,7 @@ function createGameStore() {
 	}
 
 	function send(message: MessageType) {
-		if (!ws || ws.readyState >= WebSocket.CLOSING) return NotificationStore.notify("Network error, websocket shutdown", "ERROR")
+		if (!ws || ws.readyState >= WebSocket.CLOSING) return ;
 		ws.send(json_stringify(message))
 	}
 
@@ -35,7 +35,7 @@ function createGameStore() {
 		if (ws !== null) return;
 		ws = new WebSocket(`wss://${location.host}/gamews`);
 		ws.onopen = e => {
-				if (!ws) return NotificationStore.notify("Network error, websocket shutdown 2", "ERROR");
+				if (!ws) return ;
 				ws.send(json_stringify({type: 'auth',username: UserStore.getUserName()}));
 			}
 		ws.onmessage = e => {
@@ -62,7 +62,6 @@ function createGameStore() {
 				return ;
 				case 'start-game':
 				{
-					NotificationStore.notify("START remote game", "SUCCESS");
 					LobbyStore.refreshSessionId("")
 					return navigate('remote_game');
 				}
@@ -101,7 +100,7 @@ function createGameStore() {
 			}
 		}
 		ws.onclose = e => {
-			NotificationStore.notify("WebGameSocket OFF", "INFO")
+			// NotificationStore.notify("WebGameSocket OFF", "INFO")
 		}
 	}
 

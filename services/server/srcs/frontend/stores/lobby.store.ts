@@ -1,6 +1,4 @@
-import type { DuelResponse, DuelType, GamePending } from '../../types/message.type.ts'
-
-type DuelStore = DuelResponse | DuelType
+import type { GamePending } from '../../types/message.type.ts'
 
 export type LobbyDuel = {
 	from: string

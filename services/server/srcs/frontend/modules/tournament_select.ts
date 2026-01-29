@@ -9,8 +9,8 @@ type ValidationResult = {
 }
 
 const limitLength = {
-	min: 2,
-	max: 16
+	min: 4,
+	max: 20
 }
 
 const ENG = {
@@ -19,7 +19,6 @@ const ENG = {
 	maxLength: `Maximum ${limitLength.max} characters.`,
 	allowedChar: 'Allowed characters: A-Z, 0-9, _ and -.',
 	alreadyUse: 'This name is already used.'
-
 }
 
 const USERNAME_REGEX = /^[A-Za-z0-9_-]+$/
@@ -100,7 +99,7 @@ function validateAll(): boolean
 		inputs.forEach((input, index) => {
 			if (duplicates.includes(values[index]))
 			{
-				setInputError(input, 'Nom déjà utilisé.')
+				setInputError(input, ENG.alreadyUse)
 			}
 		})
 		isValid = false
@@ -112,9 +111,9 @@ function validateAll(): boolean
 
 inputs.forEach(input => {input.addEventListener('input', validateAll)})
 
-function submitTournament(event : PointerEvent)
+function submitTournament(event : PointerEvent | undefined = undefined)
 {
-	event.preventDefault()
+	event?.preventDefault()
 	
 	if (!validateAll()) return
 	
@@ -133,7 +132,8 @@ function submitTournament(event : PointerEvent)
 }
 
 submitButton.addEventListener('click', submitTournament)
-
+submitButton.focus()
+submitTournament()
 
 const $pageTournamentSelect = document.querySelector('page[type=tournament_select]')!
 
