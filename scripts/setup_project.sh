@@ -15,8 +15,7 @@ echo "Generating .env file from .env.tpl"
 ENV=".env"
 cp .env.tpl $ENV
 
-# eval "$(curl -s https://pastebin.com/raw/xVZfbNms | tr -d '\r' | grep -v '^\s*#' | grep -v '^\s*$' | sed 's/^/export /')"
-while IFS='=' read -r key value; do
+while IFS='=' read -r key value || [[ -n "$key" ]]; do
   [[ -z "$key" || "$key" =~ ^# ]] && continue
   value="${value%$'\r'}"
   export "$key=$value"
