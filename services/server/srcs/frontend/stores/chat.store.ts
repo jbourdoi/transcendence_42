@@ -1,4 +1,5 @@
 import { type MessageType } from '../../types/chat.type'
+import { handleLogout } from '../functions/logout'
 import { NotificationStore } from './notification.store'
 import { PageUpdateStore } from './page_state'
 import { UserStore } from './user.store'
@@ -61,7 +62,7 @@ function createChatStore() {
 			chats.push(msg)
 			ChatStore.emit(chats)
 		}
-		ws.onclose = event => {}
+		ws.onclose = event => {handleLogout()}
 	}
 
 	function removeWebsocket() {
