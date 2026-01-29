@@ -83,7 +83,11 @@ export type JoinGameType = {
 
 export type MessageType = InputType | DuelType | AuthType | InfoType | NavigateType | CreateGameType | LeaveGameType | JoinGameType
 
-export type FrontType = FrontInfoType | FrontErrorType | FrontSystemType | DuelResponse | ListGameType | SessionId | StartGame;
+export type FrontType = FrontInfoType | FrontErrorType | FrontSystemType | DuelResponse | ListGameType | SessionId | StartGame | FrontLogoutType;
+
+export type FrontLogoutType = {
+	type : 'logout'
+}
 
 export type FrontInfoType = {
 	type : 'info',

@@ -226,76 +226,6 @@
     },
     {
       "datasource": {
-        "uid": "P31F6A179D9F63D32"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 9,
-        "x": 15,
-        "y": 0
-      },
-      "id": 4,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.2.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "P31F6A179D9F63D32"
-          },
-          "editorMode": "code",
-          "expr": "time() - container_start_time_seconds{name=\"server\"}",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Uptime",
-      "type": "stat"
-    },
-    {
-      "datasource": {
         "type": "prometheus",
         "uid": "P31F6A179D9F63D32"
       },
@@ -685,7 +615,7 @@
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "rate(container_cpu_usage_seconds_total{container_label_com_docker_compose_image!=\"\"}[1m]) * 100",
+          "expr": "rate(container_cpu_usage_seconds_total[1m]) * 100",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -752,7 +682,7 @@
         {
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(container_memory_usage_bytes{container_label_com_docker_compose_image!=\"\"} / 256 / 1024 / 1024) * 100",
+          "expr": "(container_memory_usage_bytes / 256 / 1024 / 1024) * 100",
           "format": "time_series",
           "instant": false,
           "interval": "",

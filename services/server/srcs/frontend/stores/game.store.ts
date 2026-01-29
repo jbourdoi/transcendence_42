@@ -4,6 +4,8 @@ import { NotificationStore } from './notification.store'
 import { json_parse, json_stringify } from '../functions/json_wrapper.ts'
 import { navigate } from '../js/routing.ts'
 import { LobbyStore } from './lobby.store.ts'
+import { clearFrontEndWhenLogout } from '../modules/home.ts'
+import { ChatStore } from './chat.store.ts'
 
 type Subscriber = (message: MessageType[]) => void
 
@@ -41,7 +43,8 @@ function createGameStore() {
 		ws.onmessage = e => {
 			const message: FrontType = json_parse(e.data) as FrontType
 			if (!message) return
-			switch (message.type) {
+			switch (message.type)
+			{
 				case 'error':
 				if (message.text && message.text != "undefined")
 				{
@@ -100,7 +103,7 @@ function createGameStore() {
 			}
 		}
 		ws.onclose = e => {
-			// NotificationStore.notify("WebGameSocket OFF", "INFO")
+			NotificationStore.notify("You are now logged out.", "INFO")
 		}
 	}
 

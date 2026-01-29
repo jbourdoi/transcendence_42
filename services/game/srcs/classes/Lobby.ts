@@ -35,7 +35,11 @@ export default class Lobby
 	createUser(pseudo: string) : User
 	{
 		let user = this.getUserByPseudo(pseudo)
-		if (user) return user;
+		if (user)
+		{
+			user.send({type:'logout'});
+			this.users.delete(user.id);
+		}
 		user = new User(randomUUID(), pseudo);
 		this.users.set(user.id, user);
 		console.log(`🆕 ${user.pseudo} join the lobby`)

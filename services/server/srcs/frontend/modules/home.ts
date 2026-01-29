@@ -1,12 +1,9 @@
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore, type UserType } from '../stores/user.store'
-import { navigate } from '../js/routing'
 import { StateStore } from '../stores/state.store'
 import { PageUpdateStore } from '../stores/page_state'
-import { ChatStore } from '../stores/chat.store'
-import { GameStore } from '../stores/game.store'
-import { NotificationStore } from '../stores/notification.store'
+import { handleLogout } from '../functions/logout'
 
 type LoginButtonValues = {
 	[key: string]: {
@@ -39,16 +36,9 @@ const $loginButtonParent: HTMLElement = $loginButton.parentElement!
 const $logoutButtonParent: HTMLElement = $logoutButton.parentElement!
 let currentButton: HTMLElement
 
-$logoutButton.addEventListener('click', async () => {
-	await fetch('/logout', {
-		method: 'POST',
-		credentials: 'include'
-	})
-	ChatStore.removeWebsocket()
-	GameStore.removeWebGameSocket()
-	UserStore.clear()
-	navigate('')
-})
+
+
+$logoutButton.addEventListener('click', async () => {handleLogout()})
 
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
