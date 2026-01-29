@@ -15,31 +15,31 @@ const $countdown = document.querySelector('countdown') as HTMLElement
 const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
 const $pageGameRemote = document.querySelector("page[type=game]")!
 
-if (!$canvas3D) navigate("/lobby")
-
-$canvas3D.width = 0
-$canvas3D.height = 0
-$countdown.textContent = ""
-$countdown.classList.remove('visible')
-
-let state : GameState = {
-	type: 'state',
-	ball: { dist: 0, theta: 0, x: 0, y: 0 },
-	impacts: [],
-	players: [],
-	changeColor: false,
-	nbFrame: 0
-}
-let end: boolean = false
-let pseudo: string = ''
-let anglePlayer: number = -1
-let ws : WebSocket | null;
-let renderer3D : Renderer3D;
-let keyState: any = {}
-
-
-function playRemote()
-{
+if (!$canvas3D) navigate("lobby")
+	
+	$canvas3D.width = 0
+	$canvas3D.height = 0
+	$countdown.textContent = ""
+	$countdown.classList.remove('visible')
+	
+	let state : GameState = {
+		type: 'state',
+		ball: { dist: 0, theta: 0, x: 0, y: 0 },
+		impacts: [],
+		players: [],
+		changeColor: false,
+		nbFrame: 0
+	}
+	let end: boolean = false
+	let pseudo: string = ''
+	let anglePlayer: number = -1
+	let ws : WebSocket | null;
+	let renderer3D : Renderer3D;
+	let keyState: any = {}
+	
+	
+	function playRemote()
+	{
 	ws = GameStore.getWebGameSocket()
 	if (!ws) return ;
 	ws.send(json_stringify({type:"navigate", navigate:"remote_game"}))
@@ -87,7 +87,7 @@ function onMessage(e:any)
 			end = true
 			NotificationStore.notify(data.text, "INFO")
 			navigate('lobby')
-			break
+			return
 		}
 		case 'state':
 		{
@@ -193,7 +193,7 @@ function initAnglePlayer(players: any): number
 } //initAnglePlayer
 
 const cleanupGameRemote = () => {
-	renderer3D.destroy()
+	renderer3D?.destroy()
 	ws?.send(json_stringify({type:"navigate", navigate:"quit_game"}))
 	ws?.removeEventListener("message", onMessage)
 	$pageGameRemote?.removeEventListener("cleanup", cleanupGameRemote);

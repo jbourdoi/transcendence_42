@@ -133,7 +133,6 @@ function submitTournament(event : PointerEvent | undefined = undefined)
 
 submitButton.addEventListener('click', submitTournament)
 submitButton.focus()
-submitTournament()
 
 const $pageTournamentSelect = document.querySelector('page[type=tournament_select]')!
 
