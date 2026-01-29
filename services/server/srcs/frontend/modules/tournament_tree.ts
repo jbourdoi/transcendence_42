@@ -81,7 +81,7 @@ function renderTournamenentTree(tournament: TournamentModel | undefined)
 {
 	if (!tournament)
 	{
-		return navigate('tournament_select')
+		return navigate('lobby')
 	}
 
 	const semi1 = tournament.matches[0]
@@ -196,23 +196,29 @@ function nextMatch(event: any)
 
 $container?.addEventListener('click', nextMatch)
 
-function beforeunloadTournamentTree(event: any)
-{
-	event.preventDefault()
-	TournamentController.reset()
-}
-
-window.addEventListener('beforeunload', beforeunloadTournamentTree)
-window.addEventListener('popstate', beforeunloadTournamentTree)
 
 /* =========================
-   Cleanup SPA
+Cleanup SPA
 ========================= */
+
+function beforeunload(event: BeforeUnloadEvent)
+{
+	event.preventDefault()
+	event.returnValue = ""
+}
+
+function onBackNavigation()
+{
+	TournamentController?.reset()
+}
+
+window.addEventListener("beforeunload", beforeunload)
+window.addEventListener("popstate", onBackNavigation)
 
 const cleanupTournamentTree = () => {
 	$container?.removeEventListener('click', nextMatch)
-	window.removeEventListener('beforeunload', beforeunloadTournamentTree)
-	window.removeEventListener('popstate', beforeunloadTournamentTree)
+	window.removeEventListener('beforeunload', beforeunload)
+	window.removeEventListener('popstate', onBackNavigation)
 	$pageTournamentTree?.removeEventListener('cleanup', cleanupTournamentTree)
 	resetVictoryState()
 }

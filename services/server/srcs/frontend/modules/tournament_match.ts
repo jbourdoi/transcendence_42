@@ -17,7 +17,7 @@ function playMatch(match : TournamentMatch | undefined)
 {
 	if (!match)
 	{
-		return navigate("tournament_select");
+		return navigate("lobby");
 	}
 
 	gameModel?.init(match.playerLeft.alias, match.playerRight.alias, true);
@@ -32,24 +32,31 @@ function playMatch(match : TournamentMatch | undefined)
 	gameView?.render(gameModel)
 	gameView?.resize()
 }
-function beforeunloadTournamentMatch(event : any)
-{
-	event.preventDefault();
-	TournamentController?.reset();
-}
-
-window.addEventListener("beforeunload", beforeunloadTournamentMatch)
-window.addEventListener("popstate", beforeunloadTournamentMatch);
 
 /* =========================
 Cleanup SPA
 ========================= */
 
+function beforeunload(event: BeforeUnloadEvent)
+{
+	event.preventDefault()
+	event.returnValue = ""
+}
+
+async function onBackNavigation()
+{
+	TournamentController?.reset()
+	await navigate("lobby")
+}
+
+window.addEventListener("beforeunload", beforeunload)
+window.addEventListener("popstate", onBackNavigation)
+
 const cleanupTournamentMatch = () => {
 	gameView?.destroy()
 	gameController?.destroy()
-	window.removeEventListener("beforeunload", beforeunloadTournamentMatch)
-	window.removeEventListener("popstate", beforeunloadTournamentMatch)
+	window.removeEventListener("beforeunload", beforeunload)
+	window.removeEventListener("popstate", onBackNavigation)
 	$pageTournamentMatch?.removeEventListener("cleanup", cleanupTournamentMatch)
 }
 

@@ -114,18 +114,18 @@ inputs.forEach(input => {input.addEventListener('input', validateAll)})
 function submitTournament(event : PointerEvent | undefined = undefined)
 {
 	event?.preventDefault()
-	
+
 	if (!validateAll()) return
-	
+
 	const aliases = inputs.map(i => sanitize(i.value))
-	
+
 	const players: TournamentPlayer[] = shuffle([
 		{ id: 'player1', color: 'red', alias: aliases[0] },
 		{ id: 'player2', color: 'blue', alias: aliases[1] },
 		{ id: 'player3', color: 'green', alias: aliases[2] },
 		{ id: 'player4', color: 'purple', alias: aliases[3] }
 	])
-	
+
 	TournamentController.start(players)
 	navigate('tournament_tree')
 
@@ -157,11 +157,19 @@ function shuffle<T>(array: T[]): T[] {
    Cleanup SPA
 ========================= */
 
+function onBackNavigation()
+{
+	TournamentController?.reset()
+}
+
+window.addEventListener("popstate", onBackNavigation)
+
 const cleanupTournamentSelect = () => {
-	$pageTournamentSelect.removeEventListener('cleanup', cleanupTournamentSelect)
+	window.removeEventListener('popstate', onBackNavigation)
 	inputs.forEach(input => {input.removeEventListener('input', validateAll)})
 	submitButton.removeEventListener('click', submitTournament)
 	unsubUserStore()
+	$pageTournamentSelect.removeEventListener('cleanup', cleanupTournamentSelect)
 }
 
 $pageTournamentSelect.addEventListener('cleanup', cleanupTournamentSelect)
