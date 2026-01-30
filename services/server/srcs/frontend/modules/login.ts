@@ -46,7 +46,8 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-start42OAuth(document.querySelector('nav-button'), `https://localhost:8443/login`)
+// `https://${location.host}/friends`
+start42OAuth(document.querySelector('nav-button'), `https://${location.host}/login`)
 
 function onSuccess(res: any) {
 	NotificationStore.notify('Login successful', 'SUCCESS')
@@ -62,7 +63,7 @@ if (codeParam) {
 	$navButton.style.display = 'none'
 	fetch('/api/auth/login', {
 		method: 'POST',
-		body: JSON.stringify({ code: codeParam })
+		body: JSON.stringify({ code: codeParam, redirect: location.host })
 	})
 		.then(res => {
 			if (res.status === 200) return res.json()
@@ -78,7 +79,13 @@ if (codeParam) {
 			}
 			if (res.info.message === '2FA_REQUIRED') {
 				NotificationStore.notify('Two-Factor Authentication required. Please enter your 2FA code.', 'INFO')
-				start2FAFlow($page, 'login', () => onSuccess(res), () => onExit(), res)
+				start2FAFlow(
+					$page,
+					'login',
+					() => onSuccess(res),
+					() => onExit(),
+					res
+				)
 				return
 			}
 			UserStore.emit(res)
@@ -129,7 +136,7 @@ function handleUserForm(self: HTMLElement) {
 
 function selectloginType(loginType: string, self: HTMLElement) {
 	if (loginType === '42') {
-		start42OAuth(self, `https://localhost:8443/login`)
+		start42OAuth(self, `https://${location.host}/login`)
 		inertForm($loginForm, true)
 	} else {
 		inertForm($loginForm, false)

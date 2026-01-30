@@ -42,13 +42,13 @@ let currentButton: HTMLElement
 
 const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButton = el))
 
-start42OAuth(document.querySelector('nav-button')!, 'https://localhost:8443/register')
+start42OAuth(document.querySelector('nav-button')!, `https://${location.host}/register`)
 
 if (codeParam) {
 	$navButton.style.display = 'none'
-	fetch('https://localhost:8443/api/auth/register', {
+	fetch(`/api/auth/register`, {
 		method: 'POST',
-		body: JSON.stringify({ code: codeParam })
+		body: JSON.stringify({ code: codeParam, redirect: location.host })
 	})
 		.then(res => {
 			if (res.status === 200) return res.json()
@@ -115,10 +115,10 @@ function handleUserForm(self: HTMLElement) {
 	setupAvatarPreview($avatarInput, $avatarPreview)
 	setupAllFieldValidation($registerForm)
 }
-
+console.log(`https://${location.host}/register`)
 function selectRegisterType(registerType: string, self: HTMLElement) {
 	if (registerType === '42') {
-		start42OAuth(self, 'https://localhost:8443/register')
+		start42OAuth(self, `https://${location.host}/register`)
 		inertForm($registerForm, true)
 	} else {
 		inertForm($registerForm, false)

@@ -15,10 +15,11 @@ export async function getClientID(req: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: FastifyReply) {
-	const value = json_parse(req.body) as any
+	const body = json_parse(req.body) as any
 
-	if (value == undefined) return
-	const code = value?.code
+	if (body == undefined) return
+	const code = body?.code
+	const redirect = body?.redirect
 
 	const url =
 		'https://api.intra.42.fr/oauth/token?' +
@@ -27,7 +28,7 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 			grant_type: 'authorization_code',
 			client_secret: CLIENT_SECRET as string,
 			code,
-			redirect_uri: 'https://localhost:8443/register',
+			redirect_uri: `https://${redirect}/register`,
 			state: uuidv4()
 		})
 
@@ -38,10 +39,11 @@ export async function handlePOSTApiAuthRegister(req: FastifyRequest, reply: Fast
 }
 
 export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: FastifyReply) {
-	const value = json_parse(req.body) as any
+	const body = json_parse(req.body) as any
 
-	if (value == undefined) return
-	const code = value?.code
+	if (body == undefined) return
+	const code = body?.code
+	const redirect = body?.redirect
 
 	const url =
 		'https://api.intra.42.fr/oauth/token?' +
@@ -50,7 +52,7 @@ export async function handlePOSTApiAuthLogin(req: FastifyRequest, reply: Fastify
 			grant_type: 'authorization_code',
 			client_secret: CLIENT_SECRET as string,
 			code,
-			redirect_uri: 'https://localhost:8443/login',
+			redirect_uri: `https://${redirect}/login`,
 			state: uuidv4()
 		})
 
