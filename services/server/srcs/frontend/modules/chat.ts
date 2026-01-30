@@ -10,7 +10,7 @@ const $chatInput: HTMLInputElement = document.getElementById('chatInput') as HTM
 const $chatWindow = document.querySelector('chat-window') as HTMLElement
 const $chatUsers = document.querySelector('chat-users') as HTMLElement
 
-GameStore.send({type:"navigate", navigate:"chat"})
+GameStore.send({ type: 'navigate', navigate: 'chat' })
 
 function sendMessage() {
 	const chatValue = $chatInput?.value
@@ -75,7 +75,8 @@ function blockUser(username: string) {
 	ChatStore.send(message)
 }
 
-function duelUser(username: string) { GameStore.send({ type: 'duel', to: username, action: 'propose' })
+function duelUser(username: string) {
+	GameStore.send({ type: 'duel', to: username, action: 'propose' })
 }
 
 function isBlocked(blocker: string, blocked: string): Promise<boolean> {
@@ -116,14 +117,13 @@ function isFriend(user1: string, user2: string): Promise<boolean> {
 }
 
 async function updateUserList(users: string[]) {
-
 	let usersEl = []
-	
+
 	for (const user of users) {
 		const username = UserStore.getUserName()
-		const $userLine = document.createElement('user-line')	
+		const $userLine = document.createElement('user-line')
 		const $userName = document.createElement('user-name')
-		
+
 		$userLine.appendChild($userName)
 		$userName.innerText = user
 		if (user !== username) {
@@ -135,40 +135,40 @@ async function updateUserList(users: string[]) {
 			const $userBlockImg = document.createElement('img')
 			const $userAddFriend = document.createElement('user-add-friend')
 			const $userAddFriendImg = document.createElement('img')
-			
+
 			$userDuel.classList.add('user-icon')
 			$userDuelImg.setAttribute('src', '/images/duel.svg')
 			$userDuelImg.setAttribute('alt', '')
 			$userDuel.appendChild($userDuelImg)
-			
+
 			$userMp.classList.add('user-icon')
 			$userMpImg.setAttribute('src', '/images/mp.svg')
 			$userMpImg.setAttribute('alt', '')
 			$userMp.appendChild($userMpImg)
-			
+
 			$userBlock.classList.add('user-icon')
 			$userBlockImg.setAttribute('src', '/images/block.svg')
 			$userBlockImg.setAttribute('alt', '')
 			$userBlock.appendChild($userBlockImg)
-			
+
 			$userAddFriend.classList.add('user-icon')
 			$userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
 			$userAddFriendImg.setAttribute('alt', '')
 			$userAddFriend.appendChild($userAddFriendImg)
-			
+
 			$userLine.appendChild($userDuel)
 			$userLine.appendChild($userMp)
 			$userLine.appendChild($userBlock)
 			$userLine.appendChild($userAddFriend)
-			
+
 			$userMp.addEventListener('click', _ => {
 				mpUser(user)
 			})
-			
+
 			$userAddFriend.addEventListener('click', _ => {
 				addUserAsFriend(user)
 			})
-			
+
 			$userBlock.addEventListener('click', _ => {
 				blockUser(user)
 			})
@@ -178,38 +178,43 @@ async function updateUserList(users: string[]) {
 		}
 		usersEl.push($userLine)
 	}
-	
+
 	$chatUsers.querySelectorAll('user-line').forEach(el => {
 		el.remove()
 	})
 
-	for (let el of usersEl)
-		$chatUsers.appendChild(el)
+	for (let el of usersEl) $chatUsers.appendChild(el)
 	updateButtons()
 }
 
-async function 	updateButtons()
-{
+async function updateButtons() {
 	const $elements = document.querySelectorAll('user-line')
 	const currentUsername = UserStore.getUserName()
 
-	for (const userEl of $elements)
-	{
+	for (const userEl of $elements) {
 		const username = userEl.querySelector('user-name')!.innerHTML
 		const $userBlockImg = userEl.querySelector('user-block img')!
 		const $userAddFriendImg = userEl.querySelector('user-add-friend img')!
 
-		if (username !== currentUsername)
-		{
+		if (username !== currentUsername) {
 			if (await isBlocked(currentUsername, username)) $userBlockImg.setAttribute('src', '/images/unblock.svg')
-				else $userBlockImg.setAttribute('src', '/images/block.svg')
+			else $userBlockImg.setAttribute('src', '/images/block.svg')
 			if (await isFriend(currentUsername, username)) $userAddFriendImg.setAttribute('src', '/images/remove_friend.svg')
-				else $userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
+			else $userAddFriendImg.setAttribute('src', '/images/add_friend.svg')
 		}
 	}
-
 }
 
+function trimMessage(message: string): string[] {
+	const trimmedMessage: string[] = []
+	const CHUNK_SIZE = 30
+
+	for (let i = 0; i < message.length; i += CHUNK_SIZE) {
+		trimmedMessage.push(message.slice(i, i + CHUNK_SIZE))
+	}
+
+	return trimmedMessage
+}
 
 function updateChat(newChat: MessageType[]) {
 	$chatWindow.innerText = ''
@@ -242,7 +247,19 @@ function updateChat(newChat: MessageType[]) {
 		})
 
 		$time.innerText = String(time)
-		$message.innerText = chat.msg
+
+		const trimmedMessage: string[] = trimMessage(chat.msg)
+		if (trimmedMessage.length > 1) {
+			trimmedMessage.forEach(msgChunk => {
+				const p = document.createElement('p')
+				p.innerText = msgChunk
+				$message.appendChild(p)
+			})
+		} else {
+			trimmedMessage.forEach(msgChunk => {
+				$message.innerText = msgChunk
+			})
+		}
 
 		if (chat.type !== 'info' && chat.type !== 'error') {
 			$line.appendChild($time)
