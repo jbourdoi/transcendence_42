@@ -2,6 +2,7 @@ import { navigate } from '../js/routing.js'
 import { TournamentController } from './tournament/tournament.controller.js'
 import type { TournamentPlayer } from './tournament/tournament.type.js'
 import { UserStore } from '../stores/user.store'
+import { GameStore } from '../stores/game.store.js'
 
 type ValidationResult = {
 	valid: boolean
@@ -22,6 +23,8 @@ const ENG = {
 }
 
 const USERNAME_REGEX = /^[A-Za-z0-9_-]+$/
+
+GameStore.send({type:"navigate", navigate:"tournament"})
 
 function sanitize(value: string): string
 {
@@ -111,7 +114,7 @@ function validateAll(): boolean
 
 inputs.forEach(input => {input.addEventListener('input', validateAll)})
 
-function submitTournament(event : PointerEvent | undefined = undefined)
+async function submitTournament(event : PointerEvent | undefined = undefined)
 {
 	event?.preventDefault()
 
@@ -127,8 +130,7 @@ function submitTournament(event : PointerEvent | undefined = undefined)
 	])
 
 	TournamentController.start(players)
-	navigate('tournament_tree')
-
+	await navigate('tournament_tree')
 }
 
 submitButton.addEventListener('click', submitTournament)

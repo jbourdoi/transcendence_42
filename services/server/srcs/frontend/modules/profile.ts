@@ -1,3 +1,4 @@
+import { GameStore } from '../stores/game.store'
 import { StateStore } from '../stores/state.store'
 import { UserStore } from '../stores/user.store'
 
@@ -8,6 +9,8 @@ const $tableData: HTMLElement = document.querySelector('profile-history table tb
 const $winStat: HTMLElement = $profileStats.querySelector('user-wins stat-value')!
 const $ratioStat: HTMLElement = $profileStats.querySelector('user-ratio stat-value')!
 const $lossesStat: HTMLElement = $profileStats.querySelector('user-losses stat-value')!
+
+GameStore.send({type:"navigate", navigate:"profile"})
 
 const unsubStateStore = StateStore.subscribe(async data => {
 	let selectedProfile = data.selectedProfile

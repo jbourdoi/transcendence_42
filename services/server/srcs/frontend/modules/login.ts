@@ -8,6 +8,7 @@ import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchLogin } from '../functions/loginRegisterFetch.js'
 import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
 import { start2FAFlow } from '../functions/twofa_auth.js'
+import { GameStore } from '../stores/game.store.js'
 
 /* 
 	1: Redirect user to OAuth page
@@ -18,6 +19,8 @@ import { start2FAFlow } from '../functions/twofa_auth.js'
 	with the code to get back the user data
 	6: The backend saves the user in DB and then returns the POST request
 */
+
+GameStore.send({type:"navigate", navigate:"login"})
 
 let trackEvent = false
 

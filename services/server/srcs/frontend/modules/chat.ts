@@ -10,6 +10,8 @@ const $chatInput: HTMLInputElement = document.getElementById('chatInput') as HTM
 const $chatWindow = document.querySelector('chat-window') as HTMLElement
 const $chatUsers = document.querySelector('chat-users') as HTMLElement
 
+GameStore.send({type:"navigate", navigate:"chat"})
+
 function sendMessage() {
 	const chatValue = $chatInput?.value
 	let errorMsg = ''

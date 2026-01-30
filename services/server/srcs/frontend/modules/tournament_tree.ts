@@ -2,6 +2,7 @@ import { navigate } from '../js/routing.js'
 import { TournamentModel } from './tournament/tournament.model.js'
 import { TournamentController } from './tournament/tournament.controller.js'
 import { saveMatch } from '../functions/saveMatch.js'
+import { GameStore } from '../stores/game.store.js'
 
 const $pageTournamentTree = document.querySelector('page[type="tournament_tree"]')!
 const $container = document.getElementById('tournament-tree')!
@@ -10,7 +11,9 @@ const tournament = TournamentController.getTournament()
 
 let victoryModalShown = false
 
-renderTournamenentTree(tournament)
+GameStore.send({type:"navigate", navigate:"tournament"})
+
+await renderTournamenentTree(tournament)
 
 function onKeyEscape(event : KeyboardEvent)
 {
@@ -77,11 +80,11 @@ function savematchTournamentResults(tournament: TournamentModel)
 	]});
 }
 
-function renderTournamenentTree(tournament: TournamentModel | undefined)
+async function renderTournamenentTree(tournament: TournamentModel | undefined)
 {
 	if (!tournament)
 	{
-		return navigate('lobby')
+		return await navigate('lobby')
 	}
 
 	const semi1 = tournament.matches[0]
@@ -185,12 +188,12 @@ function renderAction(model: TournamentModel)
 	`
 }
 
-function nextMatch(event: any)
+async function nextMatch(event: any)
 {
 	const target = event.target as HTMLElement
 	if (target.id === 'play-match')
 	{
-		navigate('tournament_match')
+		await navigate('tournament_match')
 	}
 }
 

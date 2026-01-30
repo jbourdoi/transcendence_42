@@ -2,6 +2,7 @@ import { TournamentController } from "./tournament/tournament.controller.js";
 import type { TournamentMatch } from "./tournament/tournament.type.js";
 import { GameModel, GameView, GameController } from "../classes/OriginalPong2D.js";
 import { navigate } from "../js/routing.js";
+import { GameStore } from "../stores/game.store.js";
 
 const $pageTournamentMatch = document.querySelector("page[type=tournament_match]")!;
 const $canvas = document.querySelector("#canvas2D") as HTMLCanvasElement;
@@ -9,17 +10,19 @@ const gameModel = new GameModel();
 const gameView = new GameView($canvas);
 const gameController = new GameController(gameModel, gameView, false);
 
+GameStore.send({type:"navigate", navigate:"tournament"})
+
 if (!$canvas) await onBackNavigation()
 
 const match = TournamentController?.getCurrentMatch()
 
-playMatch(match);
+await playMatch(match);
 
-function playMatch(match : TournamentMatch | undefined)
+async function playMatch(match : TournamentMatch | undefined)
 {
 	if (!match)
 	{
-		return navigate("lobby");
+		return await navigate("lobby");
 	}
 
 	gameModel?.init(match.playerLeft.alias, match.playerRight.alias, true);
@@ -27,8 +30,8 @@ function playMatch(match : TournamentMatch | undefined)
 	gameController?.setGameOver(() => {
 		const score = gameController?.getCurrentScore();
 		TournamentController?.finishMatch(score);
-		setTimeout(()=>{
-			navigate("tournament_tree");
+		setTimeout(async ()=>{
+			await navigate("tournament_tree");
 		}, 1500)
 	});
 	gameView?.render(gameModel)
@@ -48,7 +51,6 @@ function beforeunload(event: BeforeUnloadEvent)
 async function onBackNavigation()
 {
 	TournamentController?.reset()
-	await navigate("lobby")
 }
 
 window.addEventListener("beforeunload", beforeunload)

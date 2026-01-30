@@ -121,7 +121,7 @@ export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	query += ' AND ('
 
 	entries.forEach(([key], index) => {
-		query += `${key} <> ?`
+		query += `${key} IS NULL OR ${key} <> ?`
 		if (index < entries.length - 1) query += ' OR '
 	})
 
@@ -148,21 +148,9 @@ export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	return reply.status(200).send({ message: `User updated: ${id} ${paramsValue[0]}` })
 }
 
-export async function deleteUser(req: FastifyRequest, reply: FastifyReply) {
-	// do with token and token.id instead of id
-	const { id } = (await req.body) as { id: string }
-	const body = await dbPostQuery({
-		endpoint: 'dbRun',
-		query: { verb: 'delete', sql: 'DELETE FROM users WHERE id = ?', data: [id] }
-	})
-	if (body.data.changes === 0) return reply.status(404).send({ message: 'User not found' })
-	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
-	return reply.status(200).send({ message: `User deleted: ${id}` })
-}
-
 export async function getBlockedUser(req: FastifyRequest, reply: FastifyReply) {
-	const { blocker, blocked } = await req.body as { blocker: string, blocked: string }
-	console.log('blocker: ', blocker, ' blocked: ', blocked);
+	const { blocker, blocked } = (await req.body) as { blocker: string; blocked: string }
+	console.log('blocker: ', blocker, ' blocked: ', blocked)
 	const res = await dbPostQuery({
 		endpoint: 'dbGet',
 		query: {
@@ -178,7 +166,7 @@ export async function getBlockedUser(req: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function getFriendUser(req: FastifyRequest, reply: FastifyReply) {
-	const { user1, user2 } = await req.body as { user1: string, user2: string }
+	const { user1, user2 } = (await req.body) as { user1: string; user2: string }
 	console.log('user1: ', user1, ' user2: ', user2)
 	const res = await dbPostQuery({
 		endpoint: 'dbGet',

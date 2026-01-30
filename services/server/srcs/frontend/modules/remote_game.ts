@@ -14,6 +14,8 @@ const $countdown = document.querySelector('countdown') as HTMLElement
 const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
 const $pageGameRemote = document.querySelector("page[type=game]")!
 
+GameStore.send({type:"navigate", navigate:"remote_game"})
+
 if (!$canvas3D) await navigate("lobby")
 
 $canvas3D.width = 0

@@ -3,7 +3,7 @@ export type InputType = {
 	key: KeyType
 }
 
-export type StatusType = "chat" | "game" | "lobby" | "waiting"
+export type StatusType = "chat" | "game" | "local_game" | "tournament" | "lobby" | "waiting"
 
 export type KeyType = "none" | "+" | "-" | "space" | "chatGPT"
 

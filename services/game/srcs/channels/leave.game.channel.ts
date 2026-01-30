@@ -14,13 +14,13 @@ export function leaveGameChannel(
 
 	const success = lobby.gameManager.leaveSession(user)
 
-	if (!success)
-	{
-		return ws.send(json_stringify({
-			type: "error",
-			text: "You are not waiting in a game"
-		}))
-	}
+	// if (!success)
+	// {
+	// 	return ws.send(json_stringify({
+	// 		type: "error",
+	// 		text: "You are not waiting in a game"
+	// 	}))
+	// }
 
 	ws.send(json_stringify({type: "session-id", sessionId: ""}));
 

@@ -25,6 +25,16 @@ export function duelChannel(ws: BunSocketType, data: DuelType, lobby : Lobby)
 				sender.send({ type: 'info', text: `${destinataire.pseudo} is already in a game, please try again later`})
 				break;
 			}
+			if (destinataire.status === "tournament")
+			{
+				sender.send({ type: 'info', text: `${destinataire.pseudo} fight in a tournament, please try again later`})
+				break;
+			}
+			if (destinataire.status === "local_game")
+			{
+				sender.send({ type: 'info', text: `${destinataire.pseudo} is busy to play in local, please try again later`})
+				break;
+			}
 			console.log(`${sender.pseudo} accept a duel from ${destinataire.pseudo}`)
 			sender.send({type: 'duel', from: destinataire.pseudo, action: 'accept'})
 			destinataire.send({type: 'duel', from: sender.pseudo, action: 'accept'})

@@ -7,6 +7,8 @@ const $gameList : HTMLElement | null = document.querySelector("#game-list")
 const $duelsDiv : HTMLElement | null = document.getElementById("game-duels")
 const $pageLobby : Element | null = document.querySelector("page[type=lobby]")!
 
+GameStore.send({type:"navigate", navigate:"lobby"})
+
 const unsubscribeUserStore = UserStore.subscribe(({ isValid })=>{
 	const $lobbyContainer = document.querySelector("lobby-container")
 	if ($lobbyContainer && isValid)
@@ -14,53 +16,6 @@ const unsubscribeUserStore = UserStore.subscribe(({ isValid })=>{
 		$lobbyContainer.classList.remove("hidden");
 	}
 })
-
-const refreshGamePendings2 = (gamePendings: GamePending[], sessionId: string)=>
-{
-	if (!$gameList) return;
-	$gameList.innerHTML = ""
-
-	for (const game of gamePendings)
-	{
-		const row = document.createElement("div")
-
-		/* label */
-		const label = document.createElement("span")
-		label.className = "game-label"
-		label.innerHTML =
-			`Game <span class="game-slots">${game.nbPlayerReady}/${game.nbPlayerMax}</span>`
-
-		/* actions */
-		const actions = document.createElement("div")
-		actions.className = "row-actions"
-
-		const action = document.createElement("button")
-
-		if (sessionId === game.id)
-		{
-			row.classList.add("game-current")
-			action.textContent = "Leave"
-			action.className = "leave-game"
-			action.onclick = () => {
-				GameStore.send({ type: "leave-game" })
-			}
-		}
-		else if (sessionId === "")
-		{
-			action.textContent = "Join"
-			action.className = "join-game"
-			action.onclick = () => {
-				GameStore.send({ type: "join-game", sessionId: game.id })
-			}
-		}
-
-		actions.appendChild(action)
-		row.appendChild(label)
-		row.appendChild(actions)
-
-		$gameList.appendChild(row)
-	}
-}
 
 const refreshGamePendings = (gamePendings: GamePending[], sessionId: string) => {
 	if (!$gameList) return;
@@ -143,6 +98,7 @@ const refreshDuels = (duels: LobbyDuel[]) =>
 		accept.textContent = "Accept"
 		accept.className = "accept"
 		accept.onclick = () => {
+			GameStore.send({ type: "leave-game" })
 			GameStore.send({ type: 'duel', to: duel.from, action: 'accept' });
 		}
 

@@ -4,6 +4,7 @@ import { UserStore, type UserType } from '../stores/user.store'
 import { StateStore } from '../stores/state.store'
 import { PageUpdateStore } from '../stores/page_state'
 import { handleLogout } from '../functions/logout'
+import { GameStore } from '../stores/game.store'
 
 type LoginButtonValues = {
 	[key: string]: {
@@ -28,6 +29,8 @@ const loginButtonValues: LoginButtonValues = {
 		next: 'registerButton'
 	}
 }
+
+GameStore.send({type:"navigate", navigate:"home"})
 
 const $page: HTMLElement = document.querySelector('page[type=index]')!
 const $loginButton: HTMLElement = document.querySelector('nav-button[data-route="login"]')!

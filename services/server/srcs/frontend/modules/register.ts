@@ -13,6 +13,9 @@ import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchRegister } from '../functions/loginRegisterFetch.js'
 import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
 import { NotificationStore } from '../stores/notification.store.js'
+import { GameStore } from '../stores/game.store.js'
+
+GameStore.send({type:"navigate", navigate:"register"})
 
 let trackEvent = false
 

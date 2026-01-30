@@ -19,6 +19,8 @@ const $errorMessageEl: HTMLElement = document.querySelector('error-message')!
 const $createGame: HTMLButtonElement = document.querySelector('create-game')!
 const $pageCreateGame = document.querySelector("page[type=create_game]")!
 
+GameStore.send({type:"navigate", navigate:"create_game"})
+
 const unsubscribeUserStore = UserStore.subscribe(({ isValid })=>{
 	const $remote = document.querySelector("enable-remote");
 	if ($remote && isValid)

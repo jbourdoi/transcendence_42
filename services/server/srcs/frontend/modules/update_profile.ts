@@ -4,8 +4,11 @@ import { NotificationStore } from '../stores/notification.store'
 import { StateStore } from '../stores/state.store'
 import { ChatStore } from '../stores/chat.store'
 import { render2FAState, start2FAFlow } from '../functions/twofa_auth'
+import { GameStore } from '../stores/game.store'
 
 let trackEvent = false
+
+GameStore.send({type:"navigate", navigate:"update_profile"})
 
 const $page: HTMLElement = document.querySelector('page[type=update_profile]')!
 const $usernameInput: HTMLInputElement = document.querySelector('input[name="username"]')!

@@ -10,7 +10,7 @@ export async function getMultipartFormData(req: FastifyRequest) {
 			console.log('--BACK-- Received file:', part)
 			if (!part.mimetype.startsWith('image/')) return { error: 'Invalid file type' }
 			const filePath = `/app/srcs/frontend/images/avatars/${part.filename}`
-			await pipeline(part.file, fs.createWriteStream(filePath)) // TODO after form is validated
+			await pipeline(part.file, fs.createWriteStream(filePath))
 			data[part.fieldname] = filePath
 		} else data[part.fieldname] = part.value
 	}
