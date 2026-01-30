@@ -11,7 +11,6 @@ const model = new GameModel();
 
 GameStore.send({type:"navigate", navigate:"local_game"})
 
-if (!$canvas) await navigate("lobby")
 if (LobbyStore.getState().sessionId !== "") GameStore.send({type:"leave-game"})
 if (createdGame)
 {
@@ -21,12 +20,20 @@ else
 {
     model.init()
 }
-const view = new GameView($canvas);
+const view = new GameView();
 const aiActivated = createdGame?.ai || false
 const controller = new GameController(model, view, aiActivated);
 
-view?.render(model)
-view?.resize()
+
+await playLocal()
+
+async function playLocal()
+{
+    if ($canvas === null) return await navigate("lobby")
+    if (view.setCanvas($canvas) == false) return await navigate("lobby")
+    view?.render(model)
+    view?.resize()
+}
 
 function popUpDefault(event : any)
 {
