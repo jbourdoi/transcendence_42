@@ -7,23 +7,21 @@ import { GameStore } from "../stores/game.store.js";
 const $pageTournamentMatch = document.querySelector("page[type=tournament_match]")!;
 const $canvas = document.querySelector("#canvas2D") as HTMLCanvasElement;
 const gameModel = new GameModel();
-const gameView = new GameView($canvas);
+const gameView = new GameView();
 const gameController = new GameController(gameModel, gameView, false);
 
 GameStore.send({type:"navigate", navigate:"tournament"})
 
-if (!$canvas) await onBackNavigation()
 
-const match = TournamentController?.getCurrentMatch()
 
-await playMatch(match);
+await playMatch();
 
-async function playMatch(match : TournamentMatch | undefined)
+async function playMatch()
 {
-	if (!match)
-	{
-		return await navigate("lobby");
-	}
+	const match = TournamentController?.getCurrentMatch()
+	if (!match) return await navigate("lobby")
+	if ($canvas === null) return await navigate("lobby")
+	if (gameView.setCanvas($canvas) === false) return await navigate("lobby")
 
 	gameModel?.init(match.playerLeft.alias, match.playerRight.alias, true);
 

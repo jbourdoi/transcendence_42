@@ -1,9 +1,9 @@
 import { navigate } from '../js/routing'
 import { StateStore } from '../stores/state.store'
 import { UserStore } from '../stores/user.store'
-import { ChatStore } from '../stores/chat.store'
-import { json_parse } from '../functions/json_wrapper'
 import { GameStore } from '../stores/game.store'
+import { LobbyStore } from '../stores/lobby.store'
+import { json_stringify } from '../functions/json_wrapper'
 
 const $page: HTMLElement = document.querySelector('page[type=friends]')!
 const $tableData: HTMLElement = document.querySelector('friends table tbody')!
@@ -16,9 +16,10 @@ type FriendType = {
 
 GameStore.send({ type: 'navigate', navigate: 'friends' })
 
-let username
+let username : string | undefined
+let onlineList : string[] = []
 
-UserStore.subscribe(user => {
+const unsubsribeUserStore = UserStore.subscribe(user => {
 	username = user.username
 	if (username && username != '') {
 		fetch(`https://${location.host}/friends`, {
@@ -26,7 +27,7 @@ UserStore.subscribe(user => {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ name: username })
+			body: json_stringify({ name: username })
 		})
 			.then(res => {
 				if (res.status >= 400) return
@@ -34,13 +35,14 @@ UserStore.subscribe(user => {
 			})
 			.then(res => {
 				if (res) {
-					setFriends(res, null)
+					setFriends(res, onlineList)
 				}
 			})
 	}
 })
 
-function setFriends(friends: FriendType[], onlineList: string[] | null) {
+function setFriends(friends: FriendType[], onlineList: string[] | null)
+{
 	$tableData.innerHTML = ''
 	friendsList = friends
 	friends
@@ -79,26 +81,16 @@ function setFriends(friends: FriendType[], onlineList: string[] | null) {
 		})
 }
 
-const unsubChatStore = ChatStore.subscribe(chat => {
-	const onlineUsers: any = []
-	chat.forEach(newChat => {
-		if (newChat.type === 'users') {
-			const users: string[] | undefined = json_parse(newChat?.msg) as string[] | undefined
-			if (users) {
-				users.forEach(user => {
-					if (onlineUsers.findIndex(item => item === user) == -1) {
-						onlineUsers.push(user)
-					}
-				})
-			}
-		}
-	})
-	setFriends(friendsList, onlineUsers)
+const unsubscribeLobbyStore = LobbyStore.subscribe(({users})=>{
+	onlineList = users
+	setFriends(friendsList, users)
+
 })
 
 const cleanPage = () => {
 	$page.removeEventListener('cleanup', cleanPage)
-	unsubChatStore()
+	unsubscribeLobbyStore()
+	unsubsribeUserStore()
 }
 
 $page.addEventListener('cleanup', cleanPage)

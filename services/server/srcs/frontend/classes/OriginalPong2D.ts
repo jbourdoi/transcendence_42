@@ -184,15 +184,25 @@ export class GameView
     private offsetX = 0;
     private offsetY = 0;
     private controller : GameController | undefined;
-    private ctx : CanvasRenderingContext2D
+    private ctx : CanvasRenderingContext2D | null = null
+    private canvas : HTMLCanvasElement | null = null
     private lastState : GameModel | null = null
     private resizeHandler = () => this.resize();
 
-    constructor(private canvas: HTMLCanvasElement)
+    constructor()
     {
-        this.ctx = canvas.getContext('2d')!
 		this.arena = new Arena()
         window.addEventListener("resize", this.resizeHandler);
+    }
+
+    setCanvas(canvas: HTMLCanvasElement) : boolean
+    {
+        if (canvas === null) return false
+        this.canvas = canvas;
+        const ctx = this.canvas.getContext("2d")
+        if (ctx === null) return false
+        this.ctx = ctx
+        return true
     }
 
     setController(controller : GameController)

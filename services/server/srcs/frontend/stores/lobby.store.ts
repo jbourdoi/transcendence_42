@@ -93,6 +93,11 @@ function createLobbyStore()
 		emit()
 	}
 
+	function getUsersOnline() : string[]
+	{
+		return state.users
+	}
+
 	function getState()
 	{
 		return state
@@ -106,7 +111,8 @@ function createLobbyStore()
 		addIncomingDuel,
 		removeDuel,
 		refreshSessionId,
-		setUserList
+		setUserList,
+		getUsersOnline
 	}
 }
 

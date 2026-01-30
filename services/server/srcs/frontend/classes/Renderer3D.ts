@@ -13,14 +13,14 @@ export class Renderer3D
 private mesh3D : Mesh3D = {ballMesh:null, paddleMeshes:[], backgroundArcs:[]}
 private color: any
 private worldScale = 0.08
-private canvas: HTMLCanvasElement
+private canvas: HTMLCanvasElement | null = null
 private engine: BABYLON.Engine
 private scene: BABYLON.Scene
 private getState: () => GameState | null
 private getAnglePlayer: () => number
 private getEnd: () => boolean
 
-constructor(canvas: HTMLCanvasElement, deps: {
+constructor(deps: {
 	color: any,
 	getState: () => GameState | null,
 	getAnglePlayer: () => number,
@@ -30,8 +30,14 @@ constructor(canvas: HTMLCanvasElement, deps: {
 	this.getState = deps.getState
 	this.getAnglePlayer = deps.getAnglePlayer
 	this.getEnd = deps.getEnd
+}
+
+setCanvas(canvas: HTMLCanvasElement) : boolean
+{
+	if (canvas === null) return false
 	this.canvas = canvas
 	this.resizeCanvas()
+	return true
 }
 
 async start()
@@ -60,9 +66,7 @@ private renderCanvas3D()
 
 private resizeCanvas()
 {
-	const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
-	if (!$canvas3D) return ;
-	this.canvas = $canvas3D
+	if (this.canvas === null) return;
 	const w = Math.min(1920, window.innerWidth)
 	const h = Math.min(1080, window.innerHeight * 0.8)
 

@@ -27,11 +27,6 @@ const $pageGameRemote = document.querySelector("page[type=game]")!
 
 GameStore.send({type:"navigate", navigate:"remote_game"})
 
-if (!$canvas3D) await navigate("lobby")
-
-$canvas3D.width = 0
-$canvas3D.height = 0
-
 let state : GameState = {
 	type: 'state',
 	ball: { dist: 0, theta: 0, x: 0, y: 0 },
@@ -47,16 +42,24 @@ let ws : WebSocket | null;
 let renderer3D : Renderer3D;
 let keyState: any = {}
 
+await playRemote()
 
-function playRemote()
+async function playRemote()
 {
 	ws = GameStore.getWebGameSocket()
-	if (!ws) return ;
+	if (ws === null) return await navigate("lobby");
+	if ($canvas3D === null) return await navigate("lobby");
+	renderer3D = new Renderer3D( {
+		color,
+		getState: () => state,
+		getAnglePlayer: () => anglePlayer,
+		getEnd: () => end
+	})
+	if (renderer3D.setCanvas($canvas3D) === false) return await navigate("lobby")
 	ws.send(json_stringify({type:"navigate", navigate:"remote_game"}))
 	const pseudo = UserStore.getUserName()
 	launchGame(ws, pseudo);
 }
-playRemote()
 
 function buildMatchPayload(gameState: GameState): MatchTypeToSave {
   const winnerScore = Math.max(...gameState.players.map(p => p.score))
@@ -140,12 +143,7 @@ function launchGame(webSocket: WebSocket, pseu: string)
 {
 	pseudo = pseu
 	anglePlayer = -1
-	renderer3D = new Renderer3D($canvas3D, {
-		color,
-		getState: () => state,
-		getAnglePlayer: () => anglePlayer,
-		getEnd: () => end
-	})
+	
 	webSocket.addEventListener("message", onMessage)
 	end = false
 	handlePlayerInput(webSocket)
@@ -288,6 +286,20 @@ function initAnglePlayer(players: any): number
 	return 0
 } //initAnglePlayer
 
+function beforeunload(event: BeforeUnloadEvent)
+{
+	event.preventDefault()
+	event.returnValue = ""
+}
+
+async function onBackNavigation()
+{
+	await navigate("lobby")
+}
+
+window.addEventListener("beforeunload", beforeunload)
+window.addEventListener("popstate", onBackNavigation)
+
 const cleanupGameRemote = () => {
 	renderer3D?.destroy()
 	ws?.send(json_stringify({type:"navigate", navigate:"quit_game"}))
@@ -297,6 +309,8 @@ const cleanupGameRemote = () => {
 	document?.removeEventListener("keyup", handleKeyUp)
 	LobbyStore.refreshSessionId("")
 	resetVictoryState()
+	window.removeEventListener("beforeunload", beforeunload)
+	window.removeEventListener("popstate", onBackNavigation)
 }
 
 $pageGameRemote?.addEventListener("cleanup", cleanupGameRemote)
