@@ -10,10 +10,11 @@ type Mesh3D = {
 
 export class Renderer3D
 {
+private boundResize: () => void = ()=>{};	
 private mesh3D : Mesh3D = {ballMesh:null, paddleMeshes:[], backgroundArcs:[]}
 private color: any
 private worldScale = 0.08
-private canvas: HTMLCanvasElement | null = null
+private canvas: HTMLCanvasElement | undefined
 private engine: BABYLON.Engine
 private scene: BABYLON.Scene
 private getState: () => GameState | null
@@ -32,24 +33,30 @@ constructor(deps: {
 	this.getEnd = deps.getEnd
 }
 
-setCanvas(canvas: HTMLCanvasElement) : boolean
+setCanvas(canvas: HTMLCanvasElement | null) : boolean
 {
 	if (canvas === null) return false
 	this.canvas = canvas
-	this.resizeCanvas()
+	this.boundResize = this.resizeCanvas.bind(this)
 	return true
+}
+
+setColor(color:any)
+{
+	this.color = color;
 }
 
 async start()
 {
 	await this.initBabylon()
+	this.resizeCanvas()
 	this.engine.runRenderLoop(()=>this.renderCanvas3D())
-	window.addEventListener("resize", this.resizeCanvas)
+	window.addEventListener("resize", this.boundResize)
 }
 
 public destroy()
 {
-	window.removeEventListener("resize", this.resizeCanvas)
+	window.removeEventListener("resize", this.boundResize)
 	this.engine.stopRenderLoop()
 	this.engine.dispose()
 	this.scene.dispose()
@@ -64,21 +71,25 @@ private renderCanvas3D()
 	else this.scene.render()
 } //renderCanvas3D
 
-private resizeCanvas()
-{
-	if (this.canvas === null) return;
-	const w = Math.min(1920, window.innerWidth)
-	const h = Math.min(1080, window.innerHeight * 0.8)
+private resizeCanvas = () => {
+    if (!this.canvas) return;
 
-	this.canvas.style.width = w + "px"
-	this.canvas.style.height = h + "px"
+    const verticale = window.innerHeight > window.innerWidth
+    const sizeWidth = window.innerWidth
+	const sizeHeight = verticale? window.innerWidth : window.innerHeight * 0.9
 
-	this.canvas.width = w
-	this.canvas.height = h
+    // appliquer au style CSS
+    this.canvas.style.width = sizeWidth + "px";
+    this.canvas.style.height = sizeHeight + "px";
 
-	if (this.engine)
-		this.engine.resize()
+    // appliquer au canvas réel
+    this.canvas.width = sizeWidth;
+    this.canvas.height = sizeHeight;
+
+    // resize Babylon
+    if (this.engine) this.engine.resize();
 }
+
 
 
 private async initBabylon()

@@ -1,6 +1,6 @@
 import type { Countdown, GamePause, GameState, GameDisconnect } from '../../types/game.type.js'
 import { json_parse, json_stringify } from '../functions/json_wrapper.js'
-import { color } from '../functions/pickerColor.js'
+import { color, generatePaletteHex } from '../functions/pickerColor.js'
 import { Renderer3D } from '../classes/Renderer3D.js'
 import { GameStore } from '../stores/game.store.js'
 import { UserStore } from '../stores/user.store.js'
@@ -22,7 +22,7 @@ if ($keyRight) $keyRight.textContent = PARAMS.key_right
 $countdown?.classList.remove('visible')
 
 
-const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
+const $canvas3D = document.querySelector('#canvas3D') as HTMLCanvasElement | null
 const $pageGameRemote = document.querySelector("page[type=game]")!
 
 GameStore.send({type:"navigate", navigate:"remote_game"})
@@ -42,6 +42,8 @@ let ws : WebSocket | null;
 let renderer3D : Renderer3D;
 let keyState: any = {}
 
+let colorPalette = color
+
 await playRemote()
 
 async function playRemote()
@@ -50,7 +52,7 @@ async function playRemote()
 	if (ws === null) return await navigate("lobby");
 	if ($canvas3D === null) return await navigate("lobby");
 	renderer3D = new Renderer3D( {
-		color,
+		color: colorPalette,
 		getState: () => state,
 		getAnglePlayer: () => anglePlayer,
 		getEnd: () => end
@@ -108,6 +110,9 @@ async function onMessage(e:any)
 			if (anglePlayer === -1)
 			{
 				anglePlayer = initAnglePlayer(state.players)
+				const nb = state.players.length
+				colorPalette = generatePaletteHex(nb)
+				renderer3D.setColor(colorPalette)
 			}
 			break
 		}
@@ -255,8 +260,8 @@ function formatScore(players: any, end: boolean = false): string
 
 	const colored = players.map((p: any, index: number) => ({
 		...p,
-		bg: color.player[index],
-		fg: color.playerComp[index]
+		bg: colorPalette.player[index],
+		fg: colorPalette.playerComp[index]
 	}))
 
 	if (end) colored.sort((a, b) => b.score - a.score)
