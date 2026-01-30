@@ -142,8 +142,9 @@ export async function updateUser(req: FastifyRequest, reply: FastifyReply) {
 	if (user.data.username != newData.data.username) {
 		userInfo.username = username
 	}
-
+	
 	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
+	userInfo.avatar = avatar
 	await generateAndSendToken(userInfo, reply)
 	return reply.status(200).send({ message: `User updated: ${id} ${paramsValue[0]}` })
 }
