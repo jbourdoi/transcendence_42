@@ -2,8 +2,6 @@ import { ChatStore } from '../stores/chat.store'
 import { UserStore } from '../stores/user.store'
 import { MessageType } from '../../types/chat.type'
 import { GameStore } from '../stores/game.store.ts'
-import { NotificationStore } from '../stores/notification.store.ts'
-import { LobbyStore } from '../stores/lobby.store.ts'
 
 const $page: HTMLElement = document.querySelector('page[type=chat]')!
 const $chatInput: HTMLInputElement = document.getElementById('chatInput') as HTMLInputElement

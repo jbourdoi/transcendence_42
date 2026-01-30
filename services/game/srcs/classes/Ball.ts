@@ -19,9 +19,9 @@ export class Ball
 
 	reset(defaultAngle: number)
 	{
-		this.x = arena.centerX * (6.5 - Math.random()) / 5
-		this.y =  arena.centerY * (6.5 - Math.random()) / 5
-		const minV : number = 4
+		this.x = arena.centerX
+		this.y =  arena.centerY
+		const minV : number = 5
 		const maxV : number = 6
 		const randomV : number = minV + Math.random() * (maxV - minV);
 		const randomNoiseAngle : number = - (Math.PI / 6) + Math.random() * (Math.PI / 3)

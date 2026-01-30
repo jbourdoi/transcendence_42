@@ -4,9 +4,6 @@ import { Ball } from "./Ball.js";
 import User from "./User.js";
 import { arena, board } from "../functions/game.scale.js"
 import type { Impact, GameState, Countdown, GamePause, GameDisconnect } from "../types/game.type.js";
-import { HumanController } from "../controllers/HumanController.js"
-import { BotController } from "../controllers/BotController.js"
-import { saveMatchFromGameService } from '../functions/saveMatchFromGameService.js';
 
 enum GameEndReason
 {
@@ -43,11 +40,6 @@ constructor ( users: User[], onEnd?: (game: RemoteGame) => void)
 	this.predictions = this.ball.predictImpact(hertz)
 	const nbPlayer = users.length
 	this.players = users.map((user:User, index:number) => {
-
-		// const controller = 	(user.id === "")
-		// ? new BotController(min, max, paddleSize, defaultAngle)
-		// : new HumanController(user)
- 		// return new Player(index, nbPlayer, controller)
 		return new Player(index, nbPlayer, user)
 	})
 	this.startGameLoop();
@@ -56,26 +48,6 @@ constructor ( users: User[], onEnd?: (game: RemoteGame) => void)
 
 private endGame(reason: GameEndReason): void {
     console.log(`${this.id} game ended with ${GameEndReasonStr[reason]}`)
-
-    // if (reason === GameEndReason.SCORE) {
-
-    //     // score maximum (plusieurs gagnants possibles)
-    //     const winnerScore = this.players.reduce(
-    //         (max, p) => Math.max(max, p.score),
-    //         0
-    //     )
-
-    //     const playersStat = this.players.map(p => ({
-    //         username: p.pseudo,
-    //         gameRes: p.score === winnerScore ? 'win' : 'lose' as 'win' | 'lose'
-    //     }))
-
-    //     // fire-and-forget volontaire
-    //     saveMatchFromGameService({
-    //         matchType: 'classic',
-    //         players: playersStat
-    //     })
-    // }
 
     this.onEndCallback?.(this)
 }
@@ -110,7 +82,7 @@ public destroy()
 	this.players = []
 	this.ball = null
 	this.predictions = []
-}//destroy()
+}//destroy
 
 private broadcast(data: GameState | Countdown | GamePause | GameDisconnect): void
 {
@@ -189,10 +161,6 @@ private gameTick()
 	{
 		return this.broadcastState()
 	}
-	// if (this.players.some(p => p.pause))
-	// {
-	// 	return this.broadcast({ type: "pause" });
-	// }
 	this.ball.x += this.ball.vx
 	this.ball.y += this.ball.vy
 	const dx = this.ball.x - arena.centerX
@@ -260,19 +228,13 @@ private gameTick()
 		}
 		else // one player missed
 		{
-			// 1) Arrête la balle et recentre la balle
 			this.ball.vx = 0
 			this.ball.vy = 0
 			this.ball.x = arena.centerX
 			this.ball.y = arena.centerY
-			// recentrer les paddles des joueurs?
-			// this.players.forEach(p => p.resetAngle());
-			// 2) Lancer le countdown
 			this.startCountdown().then(() => {
 				if (!this.ball) return
-				// 3) Quand le décompte est fini → vraie remise en jeu
 				this.ball.reset(this.getRandomWeightedPlayer().defaultAngle);
-				// 4) Recalcul de trajectoire IA au relancement de la balle
 				this.predictions = this.ball.predictImpact(hertz);
 			});
 		}

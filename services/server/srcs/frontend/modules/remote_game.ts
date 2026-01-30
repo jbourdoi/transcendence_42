@@ -8,9 +8,20 @@ import { NotificationStore } from '../stores/notification.store.js'
 import { navigate } from '../js/routing.js'
 import { LobbyStore } from '../stores/lobby.store.js'
 import { MatchTypeToSave, saveMatch } from '../functions/saveMatch.js'
+import { PARAMS } from '../../types/params.game.js'
 
 const $score = document.getElementById('score') as HTMLElement
-const $countdown = document.querySelector('countdown') as HTMLElement
+const $countdown = document.querySelector('countdown') as HTMLElement | null
+const $countdownValue = $countdown?.querySelector('.countdown-value') as HTMLElement | null
+const $keyLeft = $countdown?.querySelector('#key-left') as HTMLElement | null
+const $keyRight = $countdown?.querySelector('#key-right') as HTMLElement | null
+
+if ($keyLeft) $keyLeft.textContent = PARAMS.key_left
+if ($keyRight) $keyRight.textContent = PARAMS.key_right
+
+$countdown?.classList.remove('visible')
+
+
 const $canvas3D = document.getElementById('canvas3D') as HTMLCanvasElement
 const $pageGameRemote = document.querySelector("page[type=game]")!
 
@@ -20,8 +31,6 @@ if (!$canvas3D) await navigate("lobby")
 
 $canvas3D.width = 0
 $canvas3D.height = 0
-$countdown.textContent = ""
-$countdown.classList.remove('visible')
 
 let state : GameState = {
 	type: 'state',
@@ -77,7 +86,7 @@ function saveMatchResult(data:GameState)
 		saveMatch(buildMatchPayload(data))
 }
 
-function onMessage(e:any)
+async function onMessage(e:any)
 {
 	const data = json_parse(e.data) as GameState | GamePause | Countdown | GameDisconnect
 	if (!data) return
@@ -87,7 +96,7 @@ function onMessage(e:any)
 		{
 			end = true
 			NotificationStore.notify(data.text, "INFO")
-			navigate('lobby')
+			await navigate('lobby')
 			return
 		}
 		case 'state':
@@ -110,7 +119,8 @@ function onMessage(e:any)
 		}
 		case 'countdown':
 		{
-			$countdown.textContent = data.value.toString()
+			if (!$countdown || !$countdownValue) break
+			$countdownValue.textContent = data.value.toString()
 			if (data.value != "GO")
 			{
 				$countdown.classList.add('visible')
@@ -122,6 +132,7 @@ function onMessage(e:any)
 			break
 		}
 	}
+	if (!$score) return
 	$score.innerHTML = formatScore(state.players, end)
 } //onmessage
 
@@ -155,8 +166,8 @@ function handlePlayerInput(webSocket: WebSocket)
 	document?.addEventListener('keyup', handleKeyUp)
 	const idInterval = setInterval(async () => {
 		if (end) return clearInterval(idInterval)
-		if (keyState['s'] && !keyState['d']) webSocket?.send(json_stringify({ type: 'input', key: '-' }))
-		else if (!keyState['s'] && keyState['d']) webSocket?.send(json_stringify({ type: 'input', key: '+' }))
+		if (keyState[PARAMS.key_left] && !keyState[PARAMS.key_right]) webSocket?.send(json_stringify({ type: 'input', key: '-' }))
+		else if (!keyState[PARAMS.key_left] && keyState[PARAMS.key_right]) webSocket?.send(json_stringify({ type: 'input', key: '+' }))
 	}, 10)
 } //handlePlayerInput
 

@@ -2,52 +2,107 @@
 	<title>Game</title>
 	<meta name="description" content="PongPong Game Page" module />
 	<style module>
-		body
-		{
-			margin: 0;
-			display: flex;
-			place-items: center;
-			min-width: 320px;
-			min-height: 100vh;
-		}
+body
+{
+	margin: 0;
+	display: flex;
+	place-items: center;
+	min-width: 320px;
+	min-height: 100vh;
+}
 
-		page
-		{
-			display: flex;
-			width: 100vw;
-			flex-direction: column;
-		}
+page
+{
+	display: flex;
+	width: 100vw;
+	flex-direction: column;
+}
 
-		countdown
-		{
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100vw;
-			height: 100vh;
+countdown
+{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
 
-			display: flex;
-			justify-content: center;
-			align-items: center;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 24px;
 
-			font-size: 15vw; /* énorme */
-			font-weight: bold;
-			color: white;
+	font-size: 15vw;
+	font-weight: bold;
 
-			background: rgba(0, 0, 0, 0.4); /* léger voile */
-			z-index: 1000;
+	background: rgba(0, 0, 0, 0.4);
+	z-index: 1000;
 
-			pointer-events: none; /* ne bloque pas les inputs */
-			opacity: 0;
-			transition: opacity 0.3s ease;
-		}
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 0.3s ease;
+}
 
-		countdown.visible
-		{
-			opacity: 1;
-		}
+countdown.visible
+{
+	opacity: 1;
+}
 
-		#score {
+/* chiffre */
+.countdown-value
+{
+	font-size: 15vw;
+	font-weight: bold;
+	color: white;
+}
+
+/* bloc d'aide */
+.countdown-help
+{
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+
+	font-size: clamp(14px, 2vw, 18px);
+	font-weight: 600;
+
+	color: white;
+	text-align: center;
+
+	opacity: 0.85;
+}
+
+/* ligne touche */
+.help-line
+{
+	display: flex;
+	justify-content: center;
+	gap: 12px;
+}
+
+/* touche stylée */
+.key
+{
+	padding: 4px 10px;
+	border-radius: 8px;
+	background: rgba(0,0,0,0.45);
+	box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+
+	font-family: monospace;
+	font-weight: 800;
+}
+
+/* hint final */
+.help-hint
+{
+	margin-top: 6px;
+	font-size: 0.95em;
+	opacity: 0.8;
+}
+
+
+#score
+{
 	position: fixed;
 	top: 8px;
 	left: 50%;
@@ -200,7 +255,24 @@
 </head>
 
 <page type="game">
-	<countdown></countdown>
+	<countdown>
+		<div class="countdown-value"></div>
+
+		<div class="countdown-help">
+			<div class="help-line">
+				<span class="key" id="key-left"></span>
+				<span>Move left</span>
+			</div>
+			<div class="help-line">
+				<span class="key" id="key-right"></span>
+				<span>Move right</span>
+			</div>
+			<div class="help-hint">
+				You are the player <strong>at the bottom of the circle</strong>
+			</div>
+		</div>
+	</countdown>
+
 	<div id="game-container">
 		<div id="score"></div>
 		<canvas id="canvas3D"></canvas>
