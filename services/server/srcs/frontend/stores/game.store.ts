@@ -22,8 +22,7 @@ function createGameStore() {
 	}
 
 	function send(message: MessageType) {
-		if (!ws || ws.readyState >= WebSocket.CLOSING) return ;
-		ws.send(json_stringify(message))
+		if (ws && ws.readyState === WebSocket.OPEN) ws.send(json_stringify(message))
 	}
 
 	function removeWebGameSocket() {
