@@ -82,11 +82,6 @@ export async function userRoutes(fastify: FastifyInstance) {
 		handler: updateUser
 	})
 	fastify.route({
-		method: 'DELETE',
-		url: '/users',
-		handler: deleteUser
-	})
-	fastify.route({
 		method: 'POST',
 		url: '/get_blocked_user',
 		handler: getBlockedUser
