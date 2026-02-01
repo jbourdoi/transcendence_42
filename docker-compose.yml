@@ -18,6 +18,7 @@ services:
         condition: service_healthy
     volumes:
       - "./services/server/srcs:/app/srcs"
+      - "./services/server/srcs/frontend/images/avatars:/app/dist/public/images/avatars"
       - "./services/server/build.ts:/app/build.ts"
       - ${LOGS_PATH}:${LOGS_DIR}
     networks:
