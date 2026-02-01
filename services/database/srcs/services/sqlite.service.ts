@@ -1,26 +1,7 @@
 import sqlite3 from 'sqlite3'
 import bcrypt from 'bcrypt'
 import { log } from '../logs'
-
-async function vaultPostQuery(endpoint: string, body: object) {
-	const res = await fetch(`http://vault:6988/vault/${endpoint}`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(body)
-	})
-	return res.json()
-}
-
-async function getVaultSecret<T>(name: string, parser: (value: string) => T): Promise<T | null> {
-	const res = await vaultPostQuery('getSecret', { name })
-	try {
-		return parser(res.message.value)
-	} catch (error) {
-		return null
-	}
-}
+import { getVaultSecret } from '../services/vault.service.js'
 
 export default function initDb() {
 	getVaultSecret<string>('bcrypt_salt', value => value).then(salt => {
