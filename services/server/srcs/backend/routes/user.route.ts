@@ -92,11 +92,11 @@ export async function updateUsername(req: FastifyRequest, reply: FastifyReply) {
 
 	let user = await dbPostQuery({
 		endpoint: 'dbGet',
-		query: { verb: 'read', sql: 'SELECT * FROM users WHERE id = ? AND username <> ?', data: [id] }
+		query: { verb: 'read', sql: 'SELECT * FROM users WHERE id = ?', data: [id] }
 	})
 	if (user.status >= 400) return reply.status(user.status).send({ message: user.message })
 
-	let body = await dbPostQuery({ endpoint: 'dbRun', query: { verb: 'update', sql: 'UPDATE users SET username = ? WHERE id = ?', data: [username, id] } })
+	let body = await dbPostQuery({ endpoint: 'dbRun', query: { verb: 'update', sql: 'UPDATE users SET username = ? WHERE id = ? AND username <> ?', data: [username, id, username] } })
 	console.log(body)
 	if (body.data?.changes === 0) return reply.status(200).send({ message: 'No changes made' })
 	else if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
