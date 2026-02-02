@@ -1,6 +1,9 @@
 import { build } from 'esbuild'
 import fg from 'fast-glob'
 import { watch } from 'chokidar'
+import path from 'path'
+
+const ignoreExt = new Set(['.png', '.jpg', '.jpeg', '.DS_Store'])
 
 async function buildAll() {
 	const entryPoints = await fg('srcs/frontend/**/*.ts')
@@ -19,7 +22,8 @@ async function buildAll() {
 
 buildAll().catch(console.error)
 
-watch('srcs/frontend', { ignoreInitial: true }).on('all', async () => {
-	console.log('Change detected, rebuilding...')
-	await buildAll()
+watch('srcs/frontend', {
+	ignoreInitial: true
+}).on('all', async (evt, filePath) => {
+	if (!ignoreExt.has(path.extname(filePath))) await buildAll()
 })

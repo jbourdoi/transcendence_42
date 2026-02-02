@@ -3,7 +3,7 @@ import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
 import { NotificationStore } from '../stores/notification.store'
-import { createLoginFormData } from '../functions/formValidation.js'
+import { createLoginData } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchLogin } from '../functions/loginRegisterFetch.js'
 import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
@@ -110,8 +110,8 @@ function handleUserForm(self: HTMLElement) {
 
 		$submitBtn.onclick = e => {
 			e.preventDefault()
-			const formData = createLoginFormData($loginForm)
-			fetchLogin(formData)
+			const data = createLoginData($loginForm)
+			fetchLogin(data)
 		}
 	}
 

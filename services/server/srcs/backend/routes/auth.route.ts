@@ -12,7 +12,6 @@ import {
 	validateConfirmEmailFormat,
 	validateConfirmPwdFormat
 } from '../../frontend/functions/formValidation.js'
-import { getMultipartFormData } from '../crud/multipartForm.js'
 import { InfoFetchType } from '../../types/infofetch.type.js'
 import { create2FAChallenge } from './2fa.route.js'
 
@@ -42,13 +41,9 @@ import { create2FAChallenge } from './2fa.route.js'
 */
 
 export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
-	const data = await getMultipartFormData(req)
-	let avatar = data['avatar']
-	if (avatar === '') avatar = '/images/avatars/baseAvatar.jpg'
-
-	console.log('--BACK-- avatar:', avatar)
-
-	const { username, email, checkmail, pwd, checkpwd } = data as UserRegisterType
+	console.log(req)
+	const { username, email, checkmail, pwd, checkpwd } = await req.body.data as UserRegisterType
+	const avatar = '/images/avatars/baseAvatar.jpg'
 
 	console.log('--BACK-- Registering user with data:', {
 		username: username,
@@ -110,8 +105,7 @@ export async function registerUser(req: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function logUser(req: FastifyRequest, reply: FastifyReply) {
-	const data = await getMultipartFormData(req)
-	const { username, pwd } = (await data) as UserLoginType
+	const { username, pwd } = await req.body.data as UserLoginType
 
 	console.log('--BACK-- Logging in user with data:', { username: username, pwd: pwd })
 

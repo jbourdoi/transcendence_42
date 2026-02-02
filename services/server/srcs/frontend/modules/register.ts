@@ -7,13 +7,15 @@ import {
 	setupAllFieldValidation,
 	createFormData,
 	hasInvalidFields,
-	resetAvatarButton
+	resetAvatarButton,
+	createData
 } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchRegister } from '../functions/loginRegisterFetch.js'
 import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
 import { NotificationStore } from '../stores/notification.store.js'
 import { GameStore } from '../stores/game.store.js'
+import { UserRegisterType } from '../../types/user.type.js'
 
 GameStore.send({type:"navigate", navigate:"register"})
 
@@ -84,10 +86,6 @@ function handleUserForm(self: HTMLElement) {
 	const $navRight = document.createElement('nav-right')
 	const $span = document.createElement('span')
 	const $submitBtn = document.querySelector('form span[type="submit"]') as HTMLElement
-	const $avatarInput = $registerForm.querySelector('input[name="avatar"]') as HTMLInputElement
-	const $avatarPreview = $registerForm.querySelector('#avatarPreview') as HTMLImageElement
-	const $resetAvatarBtn = $registerForm.querySelector('#resetAvatarButton') as HTMLButtonElement
-	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
 
 	if (trackEvent === false) {
 		trackEvent = true
@@ -97,8 +95,8 @@ function handleUserForm(self: HTMLElement) {
 			NotificationStore.notify('Form contains invalid fields.', 'ERROR')
 			return
 			}
-			const formData = createFormData($registerForm, $avatarInput)
-			fetchRegister(formData, $registerForm)
+			const data: UserRegisterType = createData($registerForm)
+			fetchRegister(data)
 		}
 	}
 
@@ -115,7 +113,6 @@ function handleUserForm(self: HTMLElement) {
 
 	$registerForm.style.display = 'grid'
 
-	setupAvatarPreview($avatarInput, $avatarPreview)
 	setupAllFieldValidation($registerForm)
 }
 console.log(`https://${location.host}/register`)

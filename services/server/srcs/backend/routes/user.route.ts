@@ -1,8 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { dbPostQuery } from '../services/db.service.js'
 import { generateAndSendToken, getPayload } from '../crud/auth.crud.js'
-import { UserUpdateType } from '../../types/user.type.js'
-import { getMultipartFormData } from '../crud/multipartForm.js'
 import { validateUsernameFormat } from '../../frontend/functions/formValidation.js'
 
 export async function userDashboard(req: FastifyRequest, reply: FastifyReply) {
@@ -94,11 +92,12 @@ export async function updateUsername(req: FastifyRequest, reply: FastifyReply) {
 
 	let user = await dbPostQuery({
 		endpoint: 'dbGet',
-		query: { verb: 'read', sql: 'SELECT * FROM users WHERE id = ?', data: [id] }
+		query: { verb: 'read', sql: 'SELECT * FROM users WHERE id = ? AND username <> ?', data: [id] }
 	})
 	if (user.status >= 400) return reply.status(user.status).send({ message: user.message })
 
 	let body = await dbPostQuery({ endpoint: 'dbRun', query: { verb: 'update', sql: 'UPDATE users SET username = ? WHERE id = ?', data: [username, id] } })
+	console.log(body)
 	if (body.data?.changes === 0) return reply.status(200).send({ message: 'No changes made' })
 	else if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
 
