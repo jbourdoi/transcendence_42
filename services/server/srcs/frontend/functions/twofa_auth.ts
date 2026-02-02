@@ -75,7 +75,7 @@ function validate2FACode(
 	}
 }
 
-export function render2FAState(toggle2FABtn: HTMLButtonElement, enabled: boolean) {
+export function render2FAState(toggle2FABtn: HTMLButtonElement, enabled: boolean | undefined) {
 	toggle2FABtn.innerText = enabled ? 'Disable' : 'Enable'
 }
 

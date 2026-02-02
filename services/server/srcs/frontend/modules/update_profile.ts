@@ -18,6 +18,10 @@ const $page: HTMLElement = document.querySelector('page[type=update_profile]')!
 const $usernameInput: HTMLInputElement = document.querySelector('input[name="username"]')!
 const $toggle2FABtn = $page?.querySelector('#toggle-2fa-btn') as HTMLButtonElement | null
 const $avatarPreview = $page?.querySelector('#avatarPreview') as HTMLImageElement | null
+const $avatarValidateBtn = $page.querySelector('#avatarValidateBtn') as HTMLButtonElement | null
+
+let timeoutAvatarUpdate: NodeJS.Timeout
+
 
 function onSuccess() {
 	$toggle2FABtn?.removeAttribute('disabled')
@@ -28,6 +32,38 @@ function onExit() {
 	$toggle2FABtn?.removeAttribute('disabled')
 }
 
+function handleAvatarReset($resetAvatarBtn: HTMLElement, $avatarPreview: HTMLImageElement) {
+	$resetAvatarBtn.addEventListener('click', () => {
+		clearTimeout(timeoutAvatarUpdate)
+
+		timeoutAvatarUpdate = setTimeout(() => {
+
+			$avatarPreview.src = '/images/avatars/baseAvatar.jpg'
+			fieldValid($avatarPreview.parentElement as HTMLElement)
+
+			if ($page.getAttribute('type') === 'update_profile' && $avatarValidateBtn) {
+				$avatarValidateBtn.classList.add('hidden')
+				fetch(`https://${location.host}/update_avatar`, {
+					method: 'DELETE'
+				}).then(res => {
+					if (res.status >= 400)
+						return { message: res.statusText, error: true }
+					return res.json()
+				})
+					.then(res => {
+						if (res?.error == true) {
+							NotificationStore.notify(res.message, 'ERROR')
+							return
+						}
+						NotificationStore.notify('Avatar reseted.', 'SUCCESS')
+						UserStore.emit(res)
+					})
+			}
+		}, 200);
+
+	})
+}
+
 function handleUpdateProfile() {
 	if (!$page) return;
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement | null
@@ -35,9 +71,11 @@ function handleUpdateProfile() {
 	const $usernameValidateBtn = $page.querySelector('#usernameValidateBtn') as HTMLButtonElement | null
 
 	if (!$avatarInput || !$resetAvatarBtn || !$usernameValidateBtn || !$avatarPreview || !$toggle2FABtn) return;
-	resetAvatarButton($resetAvatarBtn, $avatarInput, $avatarPreview)
+
+	handleAvatarReset($resetAvatarBtn, $avatarPreview)
 
 	render2FAState($toggle2FABtn, UserStore.getUser2FAStatus())
+
 	$toggle2FABtn.onclick = () => {
 		if ($toggle2FABtn.getAttribute('disabled') === 'true') return
 		$toggle2FABtn.setAttribute('disabled', 'true')
@@ -111,49 +149,47 @@ function updateUsername(usernameValidateBtn: HTMLButtonElement) {
 	}
 }
 
-let timeout: NodeJS.Timeout
 
 function updateAvatar() {
 	if (!$page) return;
 	const $avatarLabel = $page.querySelector('.avatar-label') as HTMLLabelElement | null
-	const $avatarValidateBtn = $page.querySelector('#avatarValidateBtn') as HTMLButtonElement | null
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement | null
 
 	if (!$avatarLabel || !$avatarValidateBtn || !$avatarInput) return;
 	$avatarValidateBtn.onclick = e => {
 		e.preventDefault()
-		clearTimeout(timeout)
-		timeout = setTimeout(() => {
-		if ($avatarLabel.classList.contains('field-invalid')) {
-			NotificationStore.notify('Avatar is invalid.', 'ERROR')
-			return
-		}
-		if (!$avatarInput.files || $avatarInput.files.length === 0) {
-			NotificationStore.notify('No avatar selected.', 'ERROR')
-			return
-		}
-		const avatarFile = $avatarInput.files[0]
-		const formData = new FormData()
-		formData.append('avatar', avatarFile)
+		clearTimeout(timeoutAvatarUpdate)
+		timeoutAvatarUpdate = setTimeout(() => {
+			if ($avatarLabel.classList.contains('field-invalid')) {
+				NotificationStore.notify('Avatar is invalid.', 'ERROR')
+				return
+			}
+			if (!$avatarInput.files || $avatarInput.files.length === 0) {
+				NotificationStore.notify('No avatar selected.', 'ERROR')
+				return
+			}
+			const avatarFile = $avatarInput.files[0]
+			const formData = new FormData()
+			formData.append('avatar', avatarFile)
 
-		fetch(`https://${location.host}/update_avatar`, {
-			method: 'PUT',
-			body: formData
-		})
-			.then(res => {
-				if (res.status >= 400)
-					return { message: res.statusText, error: true }
-				return res.json()
+			fetch(`https://${location.host}/update_avatar`, {
+				method: 'PUT',
+				body: formData
 			})
-			.then(res => {
-				if (res?.error == true) {
-					NotificationStore.notify(res.message, 'ERROR')
-					return
-				}
-				NotificationStore.notify('Avatar updated.', 'SUCCESS')
-				UserStore.emit(res)
-			})
-		}, 500);
+				.then(res => {
+					if (res.status >= 400)
+						return { message: res.statusText, error: true }
+					return res.json()
+				})
+				.then(res => {
+					if (res?.error == true) {
+						NotificationStore.notify(res.message, 'ERROR')
+						return
+					}
+					NotificationStore.notify('Avatar updated.', 'SUCCESS')
+					UserStore.emit(res)
+				})
+		}, 200);
 	}
 }
 

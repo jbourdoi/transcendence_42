@@ -20,3 +20,4 @@ package-lock.json
 services/metrics/thanosSidecar/thanos-storage.yml
 services/vault/.env.vault
 game_bak
+scripts/setup_project.sh

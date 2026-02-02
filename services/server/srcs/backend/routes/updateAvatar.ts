@@ -58,3 +58,30 @@ export async function updateAvatar(req: FastifyRequest, reply: FastifyReply) {
 
 	return reply.status(200).send({ message: `Avatar updated: ${id} ${data.filename}` })
 }
+
+export async function resetAvatar(req: FastifyRequest, reply: FastifyReply) {
+	const token = await getPayload(req)
+	if (!token) return reply.status(401).send('Invalid or missing token.')
+	const userInfo = token.userInfo
+	const { id } = userInfo
+
+	let user = await dbPostQuery({
+		endpoint: 'dbGet',
+		query: { verb: 'read', sql: 'SELECT * FROM users WHERE id = ?', data: [id] }
+	})
+	if (user.status >= 400) return reply.status(user.status).send({ message: user.message })
+
+	const relativeFilePath = '/images/avatars/baseAvatar.jpg'
+
+	let body = await dbPostQuery({
+		endpoint: 'dbRun',
+		query: { verb: 'update', sql: 'UPDATE users SET avatar = ? WHERE id = ?', data: [relativeFilePath, id] }
+	})
+	if (body.status >= 400) return reply.status(body.status).send({ message: body.message })
+
+	userInfo.avatar = relativeFilePath
+	const tokenResult = await generateAndSendToken(userInfo, reply)
+	if (tokenResult.status >= 400) return reply.status(tokenResult.status).send({ message: tokenResult.message })
+
+	return reply.status(200).send({ message: `Avatar reseted` })
+}

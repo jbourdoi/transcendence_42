@@ -65,16 +65,16 @@ export function setupAllFieldValidation($form: HTMLElement) {
 	setupFieldValidation($confirmPasswordField, validateConfirmPwdFormat)
 }
 
-export function resetAvatarButton(resetBtn: HTMLButtonElement, avatarInput: HTMLInputElement, avatarPreview: HTMLImageElement) {
-	const $page = document.querySelector('page') as HTMLElement
-	const $validateBtn = document.querySelector('#avatarValidateBtn') as HTMLButtonElement
+// export function resetAvatarButton(resetBtn: HTMLButtonElement, avatarInput: HTMLInputElement, avatarPreview: HTMLImageElement) {
+// 	const $page = document.querySelector('page') as HTMLElement
+// 	const $validateBtn = document.querySelector('#avatarValidateBtn') as HTMLButtonElement
 
-	resetBtn.addEventListener('click', () => {
-		avatarPreview.src = '/images/avatars/baseAvatar.jpg'
-		fieldValid(avatarPreview.parentElement as HTMLElement)
-		if ($page.getAttribute('type') === 'update_profile') $validateBtn.classList.add('hidden')
-	})
-}
+// 	resetBtn.addEventListener('click', () => {
+// 		avatarPreview.src = '/images/avatars/baseAvatar.jpg'
+// 		fieldValid(avatarPreview.parentElement as HTMLElement)
+// 		if ($page.getAttribute('type') === 'update_profile') $validateBtn.classList.add('hidden')
+// 	})
+// }
 
 export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview: HTMLImageElement) {
 	const $page = document.querySelector('page') as HTMLElement

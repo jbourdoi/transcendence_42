@@ -6,7 +6,7 @@ import { handlePOSTApiAuthRegister, handlePOSTApiAuthLogin, getClientID } from '
 import { getPayload } from '../crud/auth.crud.js'
 import { send2FACode, validate2FACode } from './2fa.route.js'
 import { addMatch } from './match.route.js'
-import { updateAvatar} from './updateAvatar.js'
+import { resetAvatar, updateAvatar} from './updateAvatar.js'
 
 export async function authRoutes(fastify: FastifyInstance) {
 	fastify.route({
@@ -86,6 +86,11 @@ export async function userRoutes(fastify: FastifyInstance) {
 		method:'PUT',
 		url:'/update_avatar',
 		handler: updateAvatar
+	})
+	fastify.route({
+		method:'DELETE',
+		url:'/update_avatar',
+		handler: resetAvatar
 	})
 	fastify.route({
 		method: 'POST',

@@ -3,7 +3,7 @@ import fg from 'fast-glob'
 import { watch } from 'chokidar'
 import path from 'path'
 
-const ignoreExt = new Set(['.png', '.jpg', '.jpeg', '.DS_Store'])
+const ignoreExt = new Set(['.png', '.jpg', '.jpeg', '.DS_Store', '.webp'])
 
 async function buildAll() {
 	const entryPoints = await fg('srcs/frontend/**/*.ts')
