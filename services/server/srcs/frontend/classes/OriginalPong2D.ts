@@ -230,6 +230,7 @@ export class GameView
             widthScreen = h * targetRatio;
         }
 
+        if (!this.canvas) return;
         this.canvas.width = widthScreen * 0.9;
         this.canvas.height = heightScreen * 0.9;
         const { width, height } = this.arena;
@@ -248,6 +249,7 @@ export class GameView
     {
         this.lastState = model
         const ctx = this.ctx;
+        if (!ctx) return;
 		const width = ctx.canvas.width;
 		const height = ctx.canvas.height;
 
