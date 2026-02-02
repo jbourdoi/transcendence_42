@@ -2,14 +2,7 @@ import { navigate } from '../js/routing'
 import { CurrentButtonStore } from '../stores/current_button.store'
 import { KeyboardKeyEvent, KeyboardStore } from '../stores/keyboard.store'
 import { UserStore } from '../stores/user.store'
-import {
-	setupAvatarPreview,
-	setupAllFieldValidation,
-	createFormData,
-	hasInvalidFields,
-	resetAvatarButton,
-	createData
-} from '../functions/formValidation.js'
+import { setupAllFieldValidation, hasInvalidFields, createData } from '../functions/formValidation.js'
 import { start42OAuth } from '../functions/start42OAuth.js'
 import { fetchRegister } from '../functions/loginRegisterFetch.js'
 import { inertForm, redirectIfAuthenticated } from '../functions/authGuard.js'
@@ -26,7 +19,7 @@ const $menuButtons = document.querySelector('menu-buttons') as HTMLElement
 const $navButton = document.querySelector('nav-button') as HTMLElement
 const $registerForm = document.querySelector('form') as HTMLElement
 const urlParams = new URLSearchParams(window.location.search)
-const codeParam = urlParams.get('code')
+const codeParam = urlParams?.get('code')
 let keyboardKey: KeyboardKeyEvent
 
 const actions = {
@@ -50,15 +43,15 @@ const unsubCurrentButtonStore = CurrentButtonStore.subscribe(el => (currentButto
 start42OAuth(document.querySelector('nav-button')!, `https://${location.host}/register`)
 
 if (codeParam) {
-	$navButton.style.display = 'none'
+	if ($navButton)	$navButton.style.display = 'none'
 	fetch(`/api/auth/register`, {
 		method: 'POST',
 		body: JSON.stringify({ code: codeParam, redirect: location.host })
 	})
 		.then(res => {
 			if (res.status === 200) return res.json()
-			$spinner.style.display = 'none'
-			$menuButtons.style.display = 'flex'
+			if ($spinner) $spinner.style.display = 'none'
+			if ($menuButtons) $menuButtons.style.display = 'flex'
 			return res.json()
 		})
 		.then(async res => {
@@ -76,16 +69,19 @@ if (codeParam) {
 			await navigate('')
 		})
 } else {
-	$spinner.style.display = 'none'
-	$menuButtons.style.display = 'flex'
-	$navButton.style.display = 'flex'
+	if ($spinner) $spinner.style.display = 'none'
+	if ($menuButtons) $menuButtons.style.display = 'flex'
+	if ($navButton) $navButton.style.display = 'flex'
 }
 
 function handleUserForm(self: HTMLElement) {
+	if (!self) return;
+	const $submitBtn = document.querySelector('form span[type="submit"]') as HTMLElement
+	if (!$submitBtn) return;
+	if (!$registerForm) return;
 	const $navLeft = document.createElement('nav-left')
 	const $navRight = document.createElement('nav-right')
 	const $span = document.createElement('span')
-	const $submitBtn = document.querySelector('form span[type="submit"]') as HTMLElement
 
 	if (trackEvent === false) {
 		trackEvent = true
@@ -159,9 +155,9 @@ const unsubKeyStore = KeyboardStore.subscribe(key => {
 })
 
 const cleanPage = () => {
-	$page.removeEventListener('cleanup', cleanPage)
+	$page?.removeEventListener('cleanup', cleanPage)
 	unsubCurrentButtonStore()
 	unsubKeyStore()
 }
 
-$page.addEventListener('cleanup', cleanPage)
+$page?.addEventListener('cleanup', cleanPage)
