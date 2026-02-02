@@ -8,6 +8,11 @@ export type Player = {
 	paddleSize:number
 }
 
+export type PlayerColored = Player & {
+	bg:string,
+	fg:string
+}
+
 export type GamePause = {
 	type: 'pause'
 }

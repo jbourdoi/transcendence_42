@@ -1,4 +1,4 @@
-import type { Countdown, GamePause, GameState, GameDisconnect } from '../../types/game.type.js'
+import type { Countdown, GamePause, GameState, GameDisconnect, Player, PlayerColored } from '../../types/game.type.js'
 import { json_parse, json_stringify } from '../functions/json_wrapper.js'
 import { color, generatePaletteHex } from '../functions/pickerColor.js'
 import { Renderer3D } from '../classes/Renderer3D.js'
@@ -252,21 +252,21 @@ function resetVictoryState(): void
 }
 
 
-function formatScore(players: any, end: boolean = false): string
+function formatScore(players: Player[], end: boolean = false): string
 {
 	if (!players.length) return ''
 
-	let bestScore = Math.max(...players.map(p => p.score))
+	let bestScore = Math.max(...players.map((p: any) => p.score))
 
-	const colored = players.map((p: any, index: number) => ({
+	const colored : PlayerColored[] = players.map((p: any, index: number) => ({
 		...p,
 		bg: colorPalette.player[index],
 		fg: colorPalette.playerComp[index]
 	}))
 
-	if (end) colored.sort((a, b) => b.score - a.score)
+	if (end) colored.sort((a: Player, b: Player) => b.score - a.score)
 
-	return colored.map((p: any) => {
+	return colored.map((p: PlayerColored) => {
 		const leader = p.score === bestScore ? 'score-leader' : ''
 		const AI = p.ai ? '🤖' : ''
 		const crown = p.score === bestScore ? '👑' : ''
