@@ -107,6 +107,8 @@ function updateUsername(usernameValidateBtn: HTMLButtonElement) {
 	}
 }
 
+let timeout: NodeJS.Timeout
+
 function updateAvatar() {
 	const $avatarLabel = $page.querySelector('.avatar-label') as HTMLLabelElement
 	const $avatarValidateBtn = $page.querySelector('#avatarValidateBtn') as HTMLButtonElement
@@ -114,6 +116,8 @@ function updateAvatar() {
 
 	$avatarValidateBtn.onclick = e => {
 		e.preventDefault()
+		clearTimeout(timeout)
+		timeout = setTimeout(() => {
 		if ($avatarLabel.classList.contains('field-invalid')) {
 			NotificationStore.notify('Avatar is invalid.', 'ERROR')
 			return
@@ -131,23 +135,19 @@ function updateAvatar() {
 			body: formData
 		})
 			.then(res => {
-				if (res.status >= 400) {
-					console.log('Error updating avatar: ', res)
-					return {
-						error: true
-					}
-				}
+				if (res.status >= 400)
+					return { message: res.statusText, error: true }
 				return res.json()
 			})
 			.then(res => {
-				console.log('Update avatar response: ', res)
 				if (res?.error == true) {
-					NotificationStore.notify('Error updating avatar.', 'ERROR')
+					NotificationStore.notify(res.message, 'ERROR')
 					return
 				}
 				NotificationStore.notify('Avatar updated.', 'SUCCESS')
 				UserStore.emit(res)
 			})
+		}, 500);
 	}
 }
 
