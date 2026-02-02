@@ -103,7 +103,6 @@ export function resetAvatarButton(resetBtn: HTMLButtonElement, avatarInput: HTML
 export function setupAvatarPreview(avatarInput: HTMLInputElement, avatarPreview: HTMLImageElement) {
 	const $page = document.querySelector('page') as HTMLElement
 	const $validateBtn = document.querySelector('#avatarValidateBtn') as HTMLButtonElement
-	avatarPreview.src = '/images/avatars/baseAvatar.jpg'
 
 	let avatarObjectURL: string | null = null
 	avatarInput.addEventListener('change', () => {
