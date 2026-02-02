@@ -2,17 +2,19 @@ import { GameStore } from '../stores/game.store'
 import { StateStore } from '../stores/state.store'
 import { UserStore } from '../stores/user.store'
 
+GameStore.send({ type: 'navigate', navigate: 'profile' })
 const $page: HTMLElement = document.querySelector('page[type=profile]')!
 const $pageTitle: HTMLElement = document.querySelector('page-title')!
 const $profileStats: HTMLElement = document.querySelector('profile-stats')!
 const $tableData: HTMLElement = document.querySelector('profile-history table tbody')!
-const $winStat: HTMLElement = $profileStats.querySelector('user-wins stat-value')!
-const $ratioStat: HTMLElement = $profileStats.querySelector('user-ratio stat-value')!
-const $lossesStat: HTMLElement = $profileStats.querySelector('user-losses stat-value')!
+const $winStat: HTMLElement = $profileStats?.querySelector('user-wins stat-value')!
+const $ratioStat: HTMLElement = $profileStats?.querySelector('user-ratio stat-value')!
+const $lossesStat: HTMLElement = $profileStats?.querySelector('user-losses stat-value')!
 
-GameStore.send({ type: 'navigate', navigate: 'profile' })
 
 const unsubStateStore = StateStore.subscribe(async data => {
+
+	if (!$pageTitle) return;
 	let selectedProfile = data.selectedProfile
 	if (selectedProfile === undefined) selectedProfile = UserStore.getUserName()
 
@@ -47,6 +49,7 @@ type MatchType = {
 }
 
 function setWinLoss(matches: MatchType[], username: string) {
+	if (!$winStat) return;
 	let win: number = matches.reduce((total: number, current: MatchType) => {
 		return total + (current.winner === username ? 1 : 0)
 	}, 0)
@@ -60,6 +63,7 @@ function setWinLoss(matches: MatchType[], username: string) {
 }
 
 function setMatches(matches: MatchType[]) {
+	if (!$tableData) return;
 	$tableData.innerHTML = ''
 	matches.forEach(match => {
 		const $trEl = document.createElement('tr')
@@ -92,8 +96,8 @@ function setMatches(matches: MatchType[]) {
 }
 
 const cleanPage = () => {
-	$page.removeEventListener('cleanup', cleanPage)
 	unsubStateStore()
+	$page?.removeEventListener('cleanup', cleanPage)
 }
 
-$page.addEventListener('cleanup', cleanPage)
+$page?.addEventListener('cleanup', cleanPage)

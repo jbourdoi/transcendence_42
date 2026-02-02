@@ -1,3 +1,5 @@
+import { UserLoginType, UserRegisterType } from "../../types/user.type.js"
+
 export function hasInvalidFields(form: HTMLElement): boolean {
 	if (form.querySelectorAll('.invalid-field').length > 0)
 		return true
@@ -180,24 +182,21 @@ export function validateAvatarFormat(avatarFile: File | null): string | null {
 	return null
 }
 
-export function createFormData(form: HTMLElement, avatarInput: HTMLInputElement): FormData {
-	const formData = new FormData()
-	formData.append('username', (form.querySelector('input[name="username"]') as HTMLInputElement).value.trim())
-	formData.append('email', (form.querySelector('input[name="email"]') as HTMLInputElement).value.trim())
-	formData.append('checkmail', (form.querySelector('input[name="checkmail"]') as HTMLInputElement).value.trim())
-	formData.append('pwd', (form.querySelector('input[name="pwd"]') as HTMLInputElement).value)
-	formData.append('checkpwd', (form.querySelector('input[name="checkpwd"]') as HTMLInputElement).value)
-	const avatarFile: File | null = avatarInput.files?.[0] || null
-	if (avatarFile) formData.append('avatar', avatarFile)
-	else formData.append('avatar', '')
+export function createData(form: HTMLElement): UserRegisterType {
+	const username = (form.querySelector('input[name="username"]') as HTMLInputElement).value.trim()
+	const email = (form.querySelector('input[name="email"]') as HTMLInputElement).value.trim()
+	const checkmail = (form.querySelector('input[name="checkmail"]') as HTMLInputElement).value.trim()
+	const pwd = (form.querySelector('input[name="pwd"]') as HTMLInputElement).value
+	const checkpwd = (form.querySelector('input[name="checkpwd"]') as HTMLInputElement).value
 
-	return formData
+	const data: UserRegisterType = {username, email, checkmail, pwd, checkpwd}
+	return data
 }
 
-export function createLoginFormData(form: HTMLElement): FormData {
-	const formData = new FormData()
-	formData.append('username', (form.querySelector('input[name="username"]') as HTMLInputElement).value.trim())
-	formData.append('pwd', (form.querySelector('input[name="pwd"]') as HTMLInputElement).value.trim())
+export function createLoginData(form: HTMLElement): UserLoginType {
+	const username = (form.querySelector('input[name="username"]') as HTMLInputElement).value.trim()
+	const pwd = (form.querySelector('input[name="pwd"]') as HTMLInputElement).value.trim()
 
-	return formData
+	const data: UserLoginType = {username, pwd}
+	return data
 }
