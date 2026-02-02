@@ -60,7 +60,7 @@ if (codeParam) {
 			return res.json()
 		})
 		.then(async res => {
-			if (res.info.status >= 400) {
+			if (res.info?.status >= 400) {
 				if (res.info.message?.errno === 19) {
 					NotificationStore.notify('Username or email already taken', 'ERROR')
 				} else {
