@@ -19,18 +19,19 @@ while IFS='=' read -r key value || [[ -n "$key" ]]; do
   [[ -z "$key" || "$key" =~ ^# ]] && continue
   value="${value%$'\r'}"
   export "$key=$value"
-done < <(curl -s https://pastebin.com/raw/xVZfbNms)
+done < <(curl -s https://pastebin.com/raw/<CHANGE-ME>)
 
-VAULT_UNSEAL_PASSPHRASE="abcde"
+# Give them each a value
+VAULT_UNSEAL_PASSPHRASE=""
 LOGS_PATH="./logs"
-GF_ADMIN_USER="adminuser"
-GF_ADMIN_PWD="adminpwd"
-GF_USER_NAME="grafanauser"
-GF_USER_MAIL="grafanauser@example.com"
-GF_USER_PWD="grafanauserpwd"
-MINIO_ROOT_USER="minioroot"
-MINIO_ROOT_PASSWORD="miniorootpwd"
-ELASTICSEARCH_PWD="elasticpwd"
+GF_ADMIN_USER=""
+GF_ADMIN_PWD=""
+GF_USER_NAME=""
+GF_USER_MAIL=""
+GF_USER_PWD=""
+MINIO_ROOT_USER=""
+MINIO_ROOT_PASSWORD=""
+ELASTICSEARCH_PWD=""
 
 if [ "$(uname)" = "Darwin" ]; then
     SED="gsed -i"

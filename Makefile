@@ -7,7 +7,7 @@ up:
 	./scripts/setup_project.sh
 	COMPOSE_BAKE=true docker compose -f $(FILEPATH) build
 	COMPOSE_BAKE=true docker compose -f $(FILEPATH) up -d
-	COMPOSE_BAKE=true docker compose -f $(FILEPATH) logs -f
+# 	COMPOSE_BAKE=true docker compose -f $(FILEPATH) logs -f
 
 # open https://localhost:443
 # xdg-open https://localhost:443
