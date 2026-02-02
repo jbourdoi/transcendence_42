@@ -5,6 +5,7 @@ import { GameStore } from '../stores/game.store'
 import { LobbyStore } from '../stores/lobby.store'
 import { json_stringify } from '../functions/json_wrapper'
 
+GameStore.send({ type: 'navigate', navigate: 'friends' })
 const $page: HTMLElement = document.querySelector('page[type=friends]')!
 const $tableData: HTMLElement = document.querySelector('friends table tbody')!
 let friendsList: FriendType[] = []
@@ -13,8 +14,6 @@ type FriendType = {
 	username_1: string
 	username_2: string
 }
-
-GameStore.send({ type: 'navigate', navigate: 'friends' })
 
 let username : string | undefined
 let onlineList : string[] = []
@@ -43,6 +42,7 @@ const unsubsribeUserStore = UserStore.subscribe(user => {
 
 function setFriends(friends: FriendType[], onlineList: string[] | null)
 {
+	if (!$tableData) return;
 	$tableData.innerHTML = ''
 	friendsList = friends
 	friends
@@ -88,9 +88,9 @@ const unsubscribeLobbyStore = LobbyStore.subscribe(({users})=>{
 })
 
 const cleanPage = () => {
-	$page.removeEventListener('cleanup', cleanPage)
+	$page?.removeEventListener('cleanup', cleanPage)
 	unsubscribeLobbyStore()
 	unsubsribeUserStore()
 }
 
-$page.addEventListener('cleanup', cleanPage)
+$page?.addEventListener('cleanup', cleanPage)
