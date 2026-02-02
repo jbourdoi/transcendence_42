@@ -22,11 +22,8 @@ export async function updateAvatar(req: FastifyRequest, reply: FastifyReply) {
   })
   if (user.status >= 400) return reply.status(user.status).send({ message: user.message })
 
-  // IF NEEDED -> filename = userID + file extension:
-  // const fileExtension = path.extname(data.filename)
-  // data.filename = `${id}${fileExtension}`
-
-  data.filename = `${id}`
+  const fileExtension = path.extname(data.filename)
+  data.filename = `${id}${fileExtension}`
 
   const uploadDir = path.join(process.cwd(), 'dist/public/images/avatars')
   await fs.promises.mkdir(uploadDir, { recursive: true })
