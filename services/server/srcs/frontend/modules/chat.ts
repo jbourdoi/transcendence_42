@@ -208,7 +208,8 @@ async function updateButtons() {
 
 function trimMessage(message: string): string[] {
 	const trimmedMessage: string[] = []
-	const CHUNK_SIZE = 30
+
+	const CHUNK_SIZE = Math.floor(0.08 * $chatWindow.getBoundingClientRect().width)
 
 	for (let i = 0; i < message.length; i += CHUNK_SIZE) {
 		trimmedMessage.push(message.slice(i, i + CHUNK_SIZE))
@@ -249,7 +250,7 @@ function updateChat(newChat: MessageType[]) {
 		})
 
 		$time.innerText = String(time)
-
+		
 		const trimmedMessage: string[] = trimMessage(chat.msg)
 		if (trimmedMessage.length > 1) {
 			trimmedMessage.forEach(msgChunk => {
