@@ -12,11 +12,12 @@ import { ChatStore } from '../stores/chat.store'
 import { render2FAState, start2FAFlow } from '../functions/twofa_auth'
 import { GameStore } from '../stores/game.store'
 
-GameStore.send({ type: "navigate", navigate: "update_profile" })
+GameStore.send({ type: 'navigate', navigate: 'update_profile' })
 
 const $page: HTMLElement = document.querySelector('page[type=update_profile]')!
 const $usernameInput: HTMLInputElement = document.querySelector('input[name="username"]')!
 const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
+const $avatarPreview = $page.querySelector('#avatarPreview') as HTMLImageElement
 
 function onSuccess() {
 	$toggle2FABtn.removeAttribute('disabled')
@@ -29,7 +30,6 @@ function onExit() {
 
 function handleUpdateProfile() {
 	const $avatarInput = $page.querySelector('input[name="avatar"]') as HTMLInputElement
-	const $avatarPreview = $page.querySelector('#avatarPreview') as HTMLImageElement
 	const $resetAvatarBtn = $page.querySelector('#resetAvatarButton') as HTMLButtonElement
 	const $usernameValidateBtn = $page.querySelector('#usernameValidateBtn') as HTMLButtonElement
 
@@ -158,8 +158,7 @@ function setupUsernameFieldValidation(usernameValidateBtn: HTMLButtonElement) {
 		if (error) fieldInvalid($usernameInput, error)
 		else {
 			fieldValid($usernameInput)
-			if ($usernameInput.value.trim().length > 0)
-				usernameValidateBtn.classList.remove('hidden')
+			if ($usernameInput.value.trim().length > 0) usernameValidateBtn.classList.remove('hidden')
 		}
 	})
 }
@@ -171,6 +170,7 @@ const unsubUserStore = UserStore.subscribe(value => {
 	// console.log(($usernameInput.placeholder = value.username))
 	const $toggle2FABtn = $page.querySelector('#toggle-2fa-btn') as HTMLButtonElement
 	render2FAState($toggle2FABtn, value.has_2fa)
+	$avatarPreview.setAttribute('src', value.avatar + `?t=${Math.random()}`)
 })
 
 const cleanPage = () => {
