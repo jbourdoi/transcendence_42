@@ -111,7 +111,7 @@ function handleUserForm(self: HTMLElement) {
 
 	setupAllFieldValidation($registerForm)
 }
-console.log(`https://${location.host}/register`)
+// console.log(`https://${location.host}/register`)
 function selectRegisterType(registerType: string, self: HTMLElement) {
 	if (registerType === '42') {
 		start42OAuth(self, `https://${location.host}/register`)

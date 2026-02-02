@@ -38,14 +38,14 @@ export function fetchLogin(data: UserLoginType) {
 				)
 				return
 			}
-			console.log('log: ', res)
+			// console.log('log: ', res)
 			UserStore.emit(res)
 			await navigate('')
 		})
 }
 
 export function fetchRegister(data: UserRegisterType) {
-	console.log(data)
+	// console.log(data)
 	fetch('/register', {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -67,7 +67,7 @@ export function fetchRegister(data: UserRegisterType) {
 				NotificationStore.notify('Form invalid', 'ERROR')
 				return
 			}
-			console.log('FRONTEND --- registering form response: ', res)
+			// console.log('FRONTEND --- registering form response: ', res)
 			UserStore.emit(res)
 			await navigate('')
 		})

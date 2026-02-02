@@ -32,7 +32,7 @@ function createUserStore() {
 
 	function emit(newUser: UserType) {
 		if (!newUser) return
-		console.log('newuser: ', newUser)
+		// console.log('newuser: ', newUser)
 		user.email = newUser.email
 		user.username = newUser.username
 		user.id = newUser.id

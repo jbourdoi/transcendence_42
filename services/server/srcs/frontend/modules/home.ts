@@ -78,7 +78,7 @@ const unsubUserStore = UserStore.subscribe((user: UserType) => {
 		$elementBackup = $loginButton
 		$loginButton?.remove()
 
-		console.log(user)
+		// console.log(user)
 		$avatar?.setAttribute('src', user.avatar)
 
 		StateStore.update({ username: user.username })

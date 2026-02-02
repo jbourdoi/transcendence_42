@@ -77,7 +77,7 @@ function updateUsername(usernameValidateBtn: HTMLButtonElement) {
 		})
 			.then(res => {
 				if (res.status >= 400) {
-					console.log('Error updating username: ', res)
+					// console.log('Error updating username: ', res)
 					return {
 						error: true
 					}
@@ -85,7 +85,7 @@ function updateUsername(usernameValidateBtn: HTMLButtonElement) {
 				return res.json()
 			})
 			.then(res => {
-				console.log('Update username response: ', res)
+				// console.log('Update username response: ', res)
 				if (res?.error == true) {
 					NotificationStore.notify('Error updating username', 'ERROR')
 					return
