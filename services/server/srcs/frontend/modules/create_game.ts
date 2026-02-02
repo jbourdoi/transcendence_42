@@ -102,7 +102,7 @@ $createGame?.addEventListener('click', async () => {
 const cleanupCreateGamePage = () =>
 {
 	unsubscribeUserStore()
-	$pageCreateGame.removeEventListener("cleanup", cleanupCreateGamePage)
+	$pageCreateGame?.removeEventListener("cleanup", cleanupCreateGamePage)
 }
 
 $pageCreateGame?.addEventListener("cleanup", cleanupCreateGamePage)
