@@ -4,56 +4,20 @@ set -e
 
 echo "Starting project setup..."
 
-if [ -f ".env" ]; then
-    if ! grep -q "<CHANGE-ME>" .env; then
-        echo ".env file already exists and is configured. Skipping setup."
-        exit 0
-    fi
+if ! [ -f ".env" ]; then
+    echo ".env file do not exist. Create it before retrying."
+    exit 1
 fi
 
-echo "Generating .env file from .env.tpl"
-ENV=".env"
-cp .env.tpl $ENV
-
-while IFS='=' read -r key value || [[ -n "$key" ]]; do
-  [[ -z "$key" || "$key" =~ ^# ]] && continue
-  value="${value%$'\r'}"
-  export "$key=$value"
-done < <(curl -s https://pastebin.com/raw/<CHANGE-ME>)
-
-# Give them each a value
-VAULT_UNSEAL_PASSPHRASE="123"
-LOGS_PATH="./logs"
-GF_ADMIN_USER="1234"
-GF_ADMIN_PWD="123"
-GF_USER_NAME="123"
-GF_USER_MAIL="123"
-GF_USER_PWD="123"
-MINIO_ROOT_USER="123"
-MINIO_ROOT_PASSWORD="123"
-ELASTICSEARCH_PWD="123"
-
-if [ "$(uname)" = "Darwin" ]; then
-    SED="gsed -i"
-else
-    SED="sed -i"
+if grep -q "<CHANGE-ME>" .env; then
+    echo ".env file still contains placeholders. Change them before retrying."
+    exit 1
 fi
 
-echo "Filling in the placeholders in .env file"
-$SED "s|^\(CLIENT_ID=\).*|\1${CLIENT_ID}|" $ENV
-$SED "s|^\(CLIENT_SECRET=\).*|\1${CLIENT_SECRET}|" $ENV
-$SED "s|^\(GMAIL_USER=\).*|\1${GMAIL_USER}|" $ENV
-$SED "s|^\(GMAIL_PWD=\).*|\1${GMAIL_PWD}|" $ENV
-$SED "s|^\(VAULT_UNSEAL_PASSPHRASE=\).*|\1${VAULT_UNSEAL_PASSPHRASE}|" $ENV
-$SED "s|^\(LOGS_PATH=\).*|\1${LOGS_PATH}|" $ENV
-$SED "s|^\(GF_ADMIN_USER=\).*|\1${GF_ADMIN_USER}|" $ENV
-$SED "s|^\(GF_ADMIN_PWD=\).*|\1${GF_ADMIN_PWD}|" $ENV
-$SED "s|^\(GF_USER_NAME=\).*|\1${GF_USER_NAME}|" $ENV
-$SED "s|^\(GF_USER_MAIL=\).*|\1${GF_USER_MAIL}|" $ENV
-$SED "s|^\(GF_USER_PWD=\).*|\1${GF_USER_PWD}|" $ENV
-$SED "s|^\(MINIO_ROOT_USER=\).*|\1${MINIO_ROOT_USER}|" $ENV
-$SED "s|^\(MINIO_ROOT_PASSWORD=\).*|\1${MINIO_ROOT_PASSWORD}|" $ENV
-$SED "s|^\(ELASTICSEARCH_PWD=\).*|\1${ELASTICSEARCH_PWD}|" $ENV
+if [ -f "./services/vault/.env.vault" ]; then
+    echo ".env.vault file already exists. Please remove it before retrying."
+    exit 1
+fi
 
 echo "Setting up Ethereal email account"
 bash ./scripts/setup_ethereal.sh
@@ -64,7 +28,25 @@ bash ./scripts/generate_yml_conf_files.sh
 echo "Setting up Thanos Store volume"
 bash ./services/metrics/thanosStore/init_volume.sh
 
+ENV=".env"
 
+echo "Taking some .env values to send to .env.vault"
+CLIENT_ID_VALUE=$(grep '^CLIENT_ID=' "$ENV" | cut -d '=' -f2-)
+CLIENT_SECRET=$(grep '^CLIENT_SECRET=' "$ENV" | cut -d '=' -f2-)
+GMAIL_USER=$(grep '^GMAIL_USER=' "$ENV" | cut -d '=' -f2-)
+GMAIL_PWD=$(grep '^GMAIL_PWD=' "$ENV" | cut -d '=' -f2-)
+GF_ADMIN_USER=$(grep '^GF_ADMIN_USER=' "$ENV" | cut -d '=' -f2-)
+GF_ADMIN_PWD=$(grep '^GF_ADMIN_PWD=' "$ENV" | cut -d '=' -f2-)
+GF_USER_NAME=$(grep '^GF_USER_NAME=' "$ENV" | cut -d '=' -f2-)
+GF_USER_MAIL=$(grep '^GF_USER_MAIL=' "$ENV" | cut -d '=' -f2-)
+GF_USER_PWD=$(grep '^GF_USER_PWD=' "$ENV" | cut -d '=' -f2-)
+MINIO_ROOT_USER=$(grep '^MINIO_ROOT_USER=' "$ENV" | cut -d '=' -f2-)
+MINIO_ROOT_PASSWORD=$(grep '^MINIO_ROOT_PASSWORD=' "$ENV" | cut -d '=' -f2-)
+ETHEREAL_TO=$(grep '^ETHEREAL_TO=' "$ENV" | cut -d '=' -f2-)
+ETHEREAL_FROM=$(grep '^ETHEREAL_FROM=' "$ENV" | cut -d '=' -f2-)
+ETHEREAL_AUTH_USER=$(grep '^ETHEREAL_AUTH_USER=' "$ENV" | cut -d '=' -f2-)
+ETHEREAL_AUTH_PWD=$(grep '^ETHEREAL_AUTH_PWD=' "$ENV" | cut -d '=' -f2-)
+ELASTICSEARCH_PWD=$(grep '^ELASTICSEARCH_PWD=' "$ENV" | cut -d '=' -f2-)
 
 echo "Setting up .env.vault"
 ENV_VAULT="./services/vault/.env.vault"
@@ -88,6 +70,12 @@ ELASTICSEARCH_PWD)
 
 echo "Creating or empty $ENV_VAULT if already exists"
 > $ENV_VAULT
+
+if [ "$(uname)" = "Darwin" ]; then
+    SED="gsed -i"
+else
+    SED="sed -i"
+fi
 
 echo "Extracting sensitive keys to $ENV_VAULT and removing them from $ENV"
 for key in "${KEYS[@]}"; do

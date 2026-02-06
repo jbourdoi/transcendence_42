@@ -61,8 +61,6 @@ nuke:
 	docker ps -q | xargs -r docker stop
 	docker system prune -fa --volumes
 	docker volume rm $$(docker volume ls -q) || true
-	rm -rf .env
-	rm -rf ./services/vault/.env.vault
 
 fclean:
 	find . -type d -name node_modules -prune -exec rm -rf '{}' +
