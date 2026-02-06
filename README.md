@@ -1,18 +1,45 @@
-# Welcome to Transcendence!!!
+# Welcome to Transcendence!
+42 School group project. This is Pong website.
 
-## Server
-PORT: 8433
+It includes:
+- Pong local and remote game
+- Pong tournament and duels
+- Live chat
+- Login with options: 2FA security and 42 OAuth
+- Register with option: 42 OAuth
+- Friends list
+- Profile page
+- Metrics management with Grafana, Prometheus and 3 Thanos services
+- Services log management with ELK Stack
+- SQlite3 database
+- Custom-made WAF as server's reverse proxy
+- Vault for keeping secrets secure
 
-## Grafana
-PORT: 4000
+## Skills developed
+- Docker and Docker Compose
+- Persistent storage with Docker volumes
+- Service interconneciton via Docker custom networks
+- Microservices architecture
+- Communication between multiple microservices via fetch API
+- Database design and integration with SQlite3
+- Websockets for real-time communication
+- Webdev: Node.js, Typescript, Fastify, Bun, Tailwind
+- Keyboard arrows navigation
+- Monitoring tools: Grafana, Prometheus, Thanos, ELK Stack
+- Bash scripts
+- Tokens: JWT, JWS, JWE
+- File upload with Fastify Multipart
+- Hash passwords with bcrypt
+- Send emails with nodemailer, ethereal and GMail
+- Custom-made SRR/SPA
 
-## Kibana
-PORT: 5601
-
+## Ports used
+- Server: 8433
+- Grafana: 4000
+- Kibana: 5601
 
 ## Setup
-- Go to `scripts/setup_project.sh`
-- Create a pastebin for your vault secrets that are visible from line `72` to `75` included
-- Add to `scripts/setup_project.sh` your pastebin url at line `22`
-- Add values for each variables from line `25` to line `34` included
-- Start docker compose with `make all`
+1. Copy/paste .env.tpl to .env and change all `<CHANGE-ME>` placeholders with your own values
+  - 1.1 Do not change the `<CHANGE-ME-WITH-ETHEREAL-SETUP>` placeholders
+  - 1.2 Change containers ports if there are conflicts
+2. `make all`
