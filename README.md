@@ -18,7 +18,7 @@ It includes:
 ## Skills developed
 - Docker and Docker Compose
 - Persistent storage with Docker volumes
-- Service interconneciton via Docker custom networks
+- Service interconnection via Docker custom networks
 - Microservices architecture
 - Communication between multiple microservices via fetch API
 - Database design and integration with SQlite3
