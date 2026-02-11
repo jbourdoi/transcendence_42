@@ -16,7 +16,7 @@ It includes:
 - Vault for keeping secrets secure
 
 # Demo
-<video src="assets/demo.mp4" controls width="100%"></video>
+<video src="https://github.com/PacoGim/transcendence_42/raw/refs/heads/main/assets/demo.mp4" controls width="100%"></video>
 
 ## Skills developed
 - Docker and Docker Compose
