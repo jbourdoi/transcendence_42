@@ -16,7 +16,7 @@ It includes:
 - Vault for keeping secrets secure
 
 # Demo
-[![Watch the demo](assets/demo.jpg)](assets/demo.mp4)
+<video src="assets/demo.mp4" controls width="100%"></video>
 
 ## Skills developed
 - Docker and Docker Compose
