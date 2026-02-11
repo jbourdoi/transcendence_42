@@ -15,8 +15,8 @@ It includes:
 - Custom-made WAF as server's reverse proxy
 - Vault for keeping secrets secure
 
-# Demo
-<video src="https://github.com/PacoGim/transcendence_42/raw/refs/heads/main/assets/demo.mp4" controls width="100%"></video>
+## Demo
+![Quick Preview](assets/demo.webp)
 
 ## Skills developed
 - Docker and Docker Compose
