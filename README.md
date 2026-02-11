@@ -15,6 +15,9 @@ It includes:
 - Custom-made WAF as server's reverse proxy
 - Vault for keeping secrets secure
 
+# Demo
+[![Watch the demo](assets/demo.jpg)](assets/demo.mp4)
+
 ## Skills developed
 - Docker and Docker Compose
 - Persistent storage with Docker volumes
